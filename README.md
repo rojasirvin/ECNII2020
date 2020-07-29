@@ -1,2 +1,3 @@
-# ECNII
-Econometría II Otoño 2020
+# Econometría II Otoño 2020
+
+Profesor: Irvin Rojas
