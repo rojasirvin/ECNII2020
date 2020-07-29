@@ -90,8 +90,8 @@ Cada alumno realizará una o dos presentaciones (dependiendo del tamaño de la c
 ## Reglas de convivencia mínimas
 + No se tolerarán actos de discriminación. Se procura un ambiente de respeto entre todos los miembros de la clase.
 + Toda la comunicación relativa al curso se dará por medio del correo institucional del CIDE.
-+ Las tareas y materiales de clase se subirán en el grupo ECN 2020 en Microsoft Teams.
++ Las tareas y materiales de clase se subirán en el grupo ECNII 2020 en Teams.
 + Los participantes en la sesión deberán procurar que haya un ambiente silencioso para el desarrollo de la clase cerrando sus micrófonos cuando no requieran hacer uso de la palabra.
 + Se aplicarán estrictamente los lineamientos generales del CIDE en términos de plagio y fraude en tareas, exámenes y trabajo final.
-+ De acuerdo con los lineamientos del CIDE se requiere una asistencia mínima de 80 por ciento de las clases para tener derecho a calificación final. La lista se pasa a los 10 minutos de haber iniciado la clase.
++ De acuerdo con los lineamientos del CIDE se requiere una asistencia mínima de 80 por ciento de las clases para tener derecho a calificación final. La lista se tomará a los 10 minutos de haber iniciado la clase.
 

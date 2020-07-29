@@ -1,5 +1,3 @@
 ---
 title: "about"
 ---
-
-# About my website
