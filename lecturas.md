@@ -7,7 +7,7 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 
 *Semana 1*
 +CT, Capítulo 4 (secciones 4.1 – 4.4).  
-Angrist, J. D., y Pischke, J. S. (2017). Undergraduate Econometrics Instruction: Through Our Classes, Darkly. *Journal of Economic Perspectives*,31(2), 125-44.  
+Angrist, J. D., y Pischke, J. S. (2017). Undergraduate Econometrics Instruction: Through Our Classes, Darkly. *Journal of Economic Perspectives*,31(2), 125-44. 
 +*Nakamura, E., y Steinsson, J. (2018). Identification in macroeconomics. _Journal of Economic Perspectives_, 32(3), 59-86.
 
 
