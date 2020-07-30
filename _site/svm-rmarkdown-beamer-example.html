@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Steven V. Miller" />
+
+
+<title>An Example R Markdown Document</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">My Website</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">An Example R Markdown Document</h1>
+<h3 class="subtitle">(A Subtitle Would Go Here if This Were a Class)</h3>
+<h4 class="author">Steven V. Miller</h4>
+
+</div>
+
+
+<style>
+slides > slide.backdrop {
+  background: white;
+  border-bottom: 0px;
+  box-shadow: 0 0 0;
+}
+
+
+slides > slide {
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+  border-bottom: 3px solid  #F66733;
+  box-shadow:  0 3px 0 #522D80;
+
+}
+
+.title-slide hgroup h1 {
+  color: #522D80;
+}
+
+
+
+h2 {
+
+  color: #522D80;
+}
+
+slides > slide.dark {
+  background: #522D80 !important;
+  border-bottom: 0;
+  box-shadow: 0 0 0;
+}
+
+.segue h2 {
+  color: white;
+}
+
+slides > slide.title-slide {
+  border-bottom: 0;
+  box-shadow: 0 0 0;
+}
+
+ol, ul {
+
+padding-bottom: 10px;
+
+}
+
+</style>
+<div id="pop-songs-and-political-science" class="section level1">
+<h1>Pop Songs and Political Science</h1>
+<div id="sheena-easton-and-game-theory" class="section level2">
+<h2>Sheena Easton and Game Theory</h2>
+<p>Sheena Easton describes the following scenario for her baby:</p>
+<ol style="list-style-type: decimal">
+<li>Takes the morning train</li>
+<li>Works from nine ’til five</li>
+<li>Takes another train home again</li>
+<li>Finds Sheena Easton waiting for him</li>
+</ol>
+<p>Sheena Easton and her baby are playing a <strong>zero-sum (total conflict) game</strong>.</p>
+<ul>
+<li>Akin to Holmes-Moriarty game (see: von Neumann and Morgenstern)</li>
+<li>Solution: <strong>mixed strategy</strong></li>
+</ul>
+</div>
+<div id="rick-astleys-re-election-platform" class="section level2">
+<h2>Rick Astley’s Re-election Platform</h2>
+<p>Rick Astley’s campaign promises:</p>
+<ul>
+<li>Never gonna give you up.</li>
+<li>Never gonna let you down.</li>
+<li>Never gonna run around and desert you.</li>
+<li>Never gonna make you cry.</li>
+<li>Never gonna say goodbye.</li>
+<li>Never gonna tell a lie and hurt you.</li>
+</ul>
+<p>Whereas these pledges conform to the preferences of the <strong>median voter</strong>, we expect Congressman Astley to secure re-election.</p>
+</div>
+<div id="caribbean-queen-and-operation-urgent-fury" class="section level2">
+<h2>Caribbean Queen and Operation Urgent Fury</h2>
+<p>Billy Ocean released “Caribbean Queen” in 1984.</p>
+<ul>
+<li>Emphasized sharing the same dream</li>
+<li>Hearts beating as one</li>
+</ul>
+<p>“Caribbean Queen” is about the poor execution of Operation Urgent Fury.</p>
+<ul>
+<li>Echoed JCS chairman David Jones’ frustrations with military establishment.</li>
+</ul>
+<p>Billy Ocean is advocating for what became the Goldwater-Nichols Act.</p>
+<ul>
+<li>Wanted to take advantage of <strong>economies of scale</strong>, resolve <strong>coordination problems</strong> in U.S. military.</li>
+</ul>
+</div>
+<div id="the-good-day-hypothesis" class="section level2">
+<h2>The Good Day Hypothesis</h2>
+<p>We know the following about Ice Cube’s day.</p>
+<ol style="list-style-type: decimal">
+<li>The Lakers beat the Supersonics.</li>
+<li>No helicopter looked for a murder.</li>
+<li>Consumed Fatburger at 2 a.m.</li>
+<li>Goodyear blimp: “Ice Cube’s a pimp.”</li>
+</ol>
+<p>This leads to two different hypotheses:</p>
+<ul>
+<li><span class="math inline">\(H_0\)</span>: Ice Cube’s day is statistically indistinguishable from a typical day.</li>
+<li><span class="math inline">\(H_1\)</span>: Ice Cube is having a good (i.e. greater than average) day.</li>
+</ul>
+<p>These hypotheses are tested using archival data of Ice Cube’s life.</p>
+</div>
+</div>
+<div id="example-r-code" class="section level1">
+<h1>Example R code</h1>
+<div id="example-r-stuff" class="section level2">
+<h2>Example R stuff</h2>
+<pre class="r"><code>summary(cars)</code></pre>
+<pre><code>##      speed           dist       
+##  Min.   : 4.0   Min.   :  2.00  
+##  1st Qu.:12.0   1st Qu.: 26.00  
+##  Median :15.0   Median : 36.00  
+##  Mean   :15.4   Mean   : 42.98  
+##  3rd Qu.:19.0   3rd Qu.: 56.00  
+##  Max.   :25.0   Max.   :120.00</code></pre>
+</div>
+<div id="slide-with-plot" class="section level2">
+<h2>Slide with Plot</h2>
+<pre class="r"><code>plot(pressure)</code></pre>
+<p><img src="svm-rmarkdown-beamer-example_files/figure-html/pressure-1.png" width="672" /></p>
+</div>
+<div id="ggplot-code" class="section level2">
+<h2>ggplot code</h2>
+<pre class="r"><code>df &lt;- data.frame(x = rnorm(1000))
+x &lt;- df$x
+base &lt;- ggplot(df, aes(x)) + geom_density()  + scale_x_continuous(limits = c(-5, 5))
+base + stat_function(fun = dnorm, colour = &quot;red&quot;)</code></pre>
+</div>
+<div id="another-plot" class="section level2">
+<h2>Another Plot</h2>
+<p><img src="svm-rmarkdown-beamer-example_files/figure-html/plotit-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
