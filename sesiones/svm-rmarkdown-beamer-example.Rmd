@@ -4,15 +4,7 @@ subtitle: (A Subtitle Would Go Here if This Were a Class)
 author: Steven V. Miller
 institute: Department of Political Science
 fontsize: 10pt
-output:
- beamer_presentation:
-    template: ~/Dropbox/miscelanea/svm-r-markdown-templates/svm-latex-beamer.tex
-    keep_tex: true
-# toc: true
-    slide_level: 2
- ioslides_presentation:
-    smaller: true
-make149: true
+output: beamer_presentation
 ---
 
 <style>
