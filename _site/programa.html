@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>programa.utf8</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">My Website</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<div id="centro-de-investigación-y-docencia-económicas" class="section level2">
+<h2>Centro de Investigación y Docencia Económicas</h2>
+</div>
+<div id="maestría-en-economía" class="section level2">
+<h2>Maestría en Economía</h2>
+</div>
+<div id="econometría-ii" class="section level2">
+<h2>Econometría II</h2>
+</div>
+<div id="semestre-otoño-de-2020" class="section level2">
+<h2>Semestre Otoño de 2020</h2>
+<ul>
+<li>Profesor: Irvin Rojas (<a href="mailto:irvin.rojas@cide.edu" class="email">irvin.rojas@cide.edu</a>).</li>
+<li>Laboratorista: Alejando Alberto (<a href="mailto:alejandro.alberto@alumnos.cide.edu" class="email">alejandro.alberto@alumnos.cide.edu</a>).</li>
+<li>Horario de clases: martes y jueves (11:20 a 12:50).</li>
+<li>Plataforma de enseñanza: Microsoft Teams</li>
+<li>Horario de laboratorio: lunes (7:00 a 9:00).</li>
+<li>Horario de oficina: por definir.</li>
+</ul>
+<div id="objetivos" class="section level3">
+<h3>Objetivos</h3>
+<ul>
+<li>Conocer la teoría sobre la que se fundamentan los métodos para la estimación de relaciones empíricas y la inferencia usando datos de sección cruzada y de panel.</li>
+<li>Diseñar estrategias econométricas usando los modelos adecuados de acuerdo con la pregunta de investigación.</li>
+<li>Emplear software para estimar los modelos econométricos apropiados de acuerdo con la naturaleza de los datos disponibles.</li>
+<li>Conocer los métodos que se emplean en la investigación económica actual.</li>
+</ul>
+</div>
+<div id="referencias" class="section level3">
+<h3>Referencias</h3>
+<p>El curso se basa en los siguientes textos: 1. Angrist, J.D. y Pischke, J.S. (2013). Mostly <em>Harmless Econometrics: An Empiricists Companion</em>. Princeton University Press. 2. Angrist, J.D. y Pischke, J.S. (2014). <em>Mastering ’Metrics: The Path from Cause to Effect</em>. Princeton University Press. 3. <em>(CT) Cameron, A.C. y Trivedi, P.K. (2005). </em>Microeconometrics: Methods and applications<em>. Oxford University Press. 4. Cameron, A.C., y Trivedi, P.K. (2010). </em>Microeconometrics using Stata<em>, Revised Edition. StataCorp LP. 5. Hayashi, F. (2000). </em>Econometrics<em>. Princeton University Press. 6. </em>(W) Wooldridge, J.M. (2010). <em>Econometric analysis of cross section and panel data</em>. Segunda edición, MIT Press.</p>
+</div>
+</div>
+<div id="contenido-temático" class="section level2">
+<h2>Contenido temático</h2>
+<p>Unidad 1. Introducción 1. Revisión de fundamentos de estadística y regresión lineal 2. Máxima verosimilitud 3. Mínimos cuadrados no lineales 4. Pruebas de hipótesis 5. Pruebas de especificación y selección de modelos</p>
+<p>Unidad 2. Modelos de variable dependiente no continua 6. Modelos de variable dependiente binaria 7. Modelos multinomiales 8. Modelos ordenados 9. Modelos de conteo</p>
+<p>Unidad 3. Modelos de selección 10. Modelo de Tobit 11. Modelo de Heckman</p>
+<p>Unidad 3. Endogeneidad 12. Variables instrumentales 13. Estimación con instrumentos débiles</p>
+<p>Unidad 4. Datos de panel 14. Modelos agrupados 15. Modelos de efectos fijos y de efectos aleatorios 16. Estimadores between y within 17. Estimadores de primeras diferencias y de efectos aleatorios 18. Errores estándar agrupados 19. Modelos de panel con endogeneidad 20. Modelos de panel no lineales</p>
+<p>Unidad 6. Extensiones 21. Bootstrap 22. Modelos de riesgo y de sobrevivencia 23. Regresión por cuantiles 24. Métodos semi paramétricos y no paramétricos 25. Efectos de tratamiento 26. Modelos de efectos de pares 27. Variables instrumentales shift share 28. Econometría espacial</p>
+</div>
+<div id="evaluación-del-curso" class="section level2">
+<h2>Evaluación del curso</h2>
+<ul>
+<li>Examen parcial: 30%.</li>
+<li>Examen final acumulativo: 40%.</li>
+<li>Tareas (4): 20% (5% cada una).</li>
+<li>Exposiciones (2): 10% (5% cada una).</li>
+</ul>
+</div>
+<div id="tareas" class="section level2">
+<h2>Tareas</h2>
+<p>Cuatro tareas teórico-prácticas. Las tareas deben entregarse de manera individual, pero se recomienda ampliamente colaborar en grupos de estudio. Las secciones teóricas deben estar desarrolladas en un procesador de textos y enviadas en formato .docx o .pdf. Las secciones prácticas deberán contener archivos de código replicable y archivos de salida en R (o similares, en caso de usar otro software) para considerarse completas. Las tareas deben entregarse el día señalado antes del inicio de la clase, a través de Teams.</p>
+</div>
+<div id="software" class="section level2">
+<h2>Software</h2>
+<p>R será el paquete standard usado en las sesiones prácticas. Más aún, el uso de cualquier software es aceptado siempre que se cumplan con los requisitos de replicabilidad y reportes de salidas en las tareas y exámenes.</p>
+</div>
+<div id="exámenes" class="section level2">
+<h2>Exámenes</h2>
+<ul>
+<li>Examen parcial: martes 6 de octubre de 2019 en el horario de clase.</li>
+<li>Examen final: martes 8 de diciembre de 2019 en horario por definir.</li>
+</ul>
+</div>
+<div id="exposiciones" class="section level2">
+<h2>Exposiciones</h2>
+<p>Cada alumno realizará una o dos presentaciones (dependiendo del tamaño de la clase) de los artículos aplicados marcados con negritas en la lista de lecturas. Cada presentación deberá ser de máximo 15 minutos y deberá incluir el contenido que el presentador considere más relevante. La presentación deberá abordar, mínimamente: 1) el problema a investigar, 2) la metodología empleada, 3) la relación entre la metodología y la teoría vista en el curso, 4) los datos empleados, 5) los principales resultados, y 6) una crítica sobre la validez y las conclusiones del estudio.</p>
+</div>
+<div id="reglas-de-convivencia-mínimas" class="section level2">
+<h2>Reglas de convivencia mínimas</h2>
+<ul>
+<li>No se tolerarán actos de discriminación. Se procura un ambiente de respeto entre todos los miembros de la clase.</li>
+<li>Toda la comunicación relativa al curso se dará por medio del correo institucional del CIDE.</li>
+<li>Las tareas y materiales de clase se subirán en el grupo ECNII 2020 en Teams.</li>
+<li>Los participantes en la sesión deberán procurar que haya un ambiente silencioso para el desarrollo de la clase cerrando sus micrófonos cuando no requieran hacer uso de la palabra.</li>
+<li>Se aplicarán estrictamente los lineamientos generales del CIDE en términos de plagio y fraude en tareas, exámenes y trabajo final.</li>
+<li>De acuerdo con los lineamientos del CIDE se requiere una asistencia mínima de 80 por ciento de las clases para tener derecho a calificación final. La lista se tomará a los 10 minutos de haber iniciado la clase.</li>
+</ul>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>lecturas.utf8</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">My Website</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<div id="lista-de-lecturas" class="section level3">
+<h3>Lista de lecturas</h3>
+<p>Todas las lecturas son obligatorias pues permiten una discusión informada en la clase, salvo las marcadas con un asterisco (*), que no serán cubiertas en clase, pero que son ampliamente recomendables. En las sesiones de exposiciones cada alumno presentará uno de los artículos enlistados con <strong>negritas</strong>, por lo que se espera que el resto de la clase tenga el conocimiento suficiente para participar en la discusión.</p>
+<p><em>Prerrequisitos</em> W, Capítulos 1-4</p>
+<p><em>Semana 1</em> CT, Capítulo 4 (secciones 4.1 – 4.4). Angrist, J. D., y Pischke, J. S. (2017). Undergraduate Econometrics Instruction: Through Our Classes, Darkly. <em>Journal of Economic Perspectives</em>,31(2), 125-44. *Nakamura, E., y Steinsson, J. (2018). Identification in macroeconomics. Journal of Economic Perspectives, 32(3), 59-86.</p>
+<p><em>Semana 2</em> CT, Capítulos 5 y 7.</p>
+<p><em>Semana 3</em> CT, Capítulos 14 (secciones 14.1 - 14.4), 15 (secciones 15.1 - 15.4) y 20 (secciones 21.1 - 20.4). Binaria: Avila-Foucat, V. S., y Pérez-Campuzano, E. (2015). Municipality socioeconomic characteristics and the probability of occurrence of Wildlife Management Units in Mexico. <em>Environmental Science &amp; Policy</em>, 45, 146-153. Multinomial: Kveder, C. L. M., y Flahaux, M. L. (2013). Returning to Dakar: A mixed methods analysis of the role of migration experience for occupational status. <em>World Development</em>, 45, 223-238. Ordenados: Conigliani, C., Manca, A., &amp; Tancredi, A. (2015). Prediction of patient-reported outcome measures via multivariate ordered probit models. <em>Journal of the Royal Statistical Society</em>. Series A (Statistics in Society), 567-591. Poisson: White, K., &amp; Buckley, C. J. (2011). Exposure to international migration and its effect on childbearing in Turkey. International <em>Migration Review</em>, 45(1), 123-147. Negativo binomial: Antón, J. I., &amp; De Bustillo, R. M. (2010). Health care utilisation and immigration in Spain. <em>The European Journal of Health Economics</em>, 11(5), 487-498. Inflado en cero: Young, J. D., Anderson, N. M., Naughton, H. T., &amp; Mullan, K. (2018). Economic and policy factors driving adoption of institutional woody biomass heating systems in the US. <em>Energy Economics</em>, 69, 456-470.</p>
+<p><em>Semana 4</em> CT, Capítulo 16 (secciones 16.1 – 16.6).</p>
+<p><em>Semana 5</em> Tobit: Zou, B., y Luo, B. (2019). Rural Household Energy Consumption Characteristics and Determinants in China. Energy. Heckman: Parey, M., Ruhose, J., Waldinger, F., y Netz, N. (2017). The selection of high-skilled emigrants. <em>Review of Economics and Statistics</em>, 99(5), 776-792. Dos partes: Colchero, M. A., Molina, M., y Guerrero-López, C. M. (2017). After Mexico implemented a tax, purchases of sugar-sweetened beverages decreased and water increased: difference by place of residence, household composition, and income level. <em>The Journal of nutrition</em>, 147(8), 1552-1557. Ordenado + selección: Alemi, F., Circella, G., Mokhtarian, P., &amp; Handy, S. (2019). What drives the use of ridehailing in California? Ordered probit models of the usage frequency of Uber and Lyft. <em>Transportation Research Part C: Emerging Technologies</em>, 102, 233-248.</p>
+<p><em>Semana 6</em> W, Capítulo 5. CT, Capítulo 4 (secciones 4.8 y 4.9). VI: Hackett, L., y Marquez-Padilla, F. (2019). Working for Change: the Effect of Female Labor Force Participation on Fertility. SSRN Working Paper 3354753. VI: Campos-Vazquez, R. M., y Nuñez, R. (2019). Obesity and labor market outcomes in Mexico/Obesidad y el mercado de trabajo en México. <em>Estudios Económicos</em>, 34(2), 159-196. VI: López-Feldman, A., y Chávez, E. (2017). Remittances and natural resource extraction: Evidence from Mexico. <em>Ecological Economics</em>, 132, 69-79. MC2E2M: Mocetti, S. (2007). Intergenerational earnings mobility in Italy. <em>The BE Journal of Economic Analysis &amp; Policy</em>, 7(2). Poisson + VI: Hirvonen, K., &amp; Hoddinott, J. (2017). Agricultural production and children’s diets: Evidence from rural Ethiopia. <em>Agricultural Economics</em>, 48(4), 469-480.</p>
+<p><em>Semana 7</em> CT, Capítulo 21.</p>
+<p><em>Semana 8</em> CT, Capítulo 22. Panel: Pendiente. Panel: Kagin, J., Taylor, J. E., y Yúnez-Naude, A. (2016). Inverse productivity or inverse efficiency? Evidence from Mexico. <em>The Journal of Development Studies</em>, 52(3), 396-411. Panel: Bwalya, S. M. (2006). Foreign direct investment and technology spillovers: Evidence from panel data analysis of manufacturing firms in Zambia. <em>Journal of development economics</em>, 81(2), 514-526.</p>
+<p><em>Semana 9</em> CT, Capítulo 11 Bootstrap: Li, H., y Maddala, G. S. (1999). Bootstrap variance estimation of nonlinear functions of parameters: an application to long-run elasticities of energy demand. <em>Review of Economics and Statistics</em>, 81(4), 728-733.</p>
+<p><em>Semana 10</em> CT, Capítulo 23 <em>Semykina, A., &amp; Wooldridge, J. M. (2010). Estimating panel data models in the presence of endogeneity and selection. <em>Journal of Econometrics</em>, 157(2), 375-380. Wooldridge, J. (2012). Panel data models with heterogeneity and endogeneity. Institute for Fiscal Studies. Panel Poisson: Castillo, J. C., Mejía, D., &amp; Restrepo, P. (2020). Scarcity without leviathan: The violent effects of cocaine supply shortages in the mexican drug war. </em>Review of Economics and Statistics*, 102(2), 269-286. Panel + VI: Pendiente.</p>
+<p><em>Semana 11</em> CT, Capítulo 17 (secciones 17.1 – 17.4 y 17.6-17.11). Riesgo: De Uña-Alvarez, J., Otero-Giráldez, M. S., y Alvarez-Llorente, G. (2003). Estimation under length-bias and right-censoring: an application to unemployment duration analysis for married women. <em>Journal of Applied Statistics</em>, 30(3), 283-291.</p>
+<p><em>Semana 12</em> CT, Capítulo 4 (sección 4.6). CT, Capítulo 9. Cuantil: Pendiente. Semiparamétrico: Hussinger, K. (2008). R&amp;D and subsidies at the firm level: An application of parametric and semiparametric two‐step selection models. <em>Journal of applied econometric</em>s, 23(6), 729-747.</p>
+<p><em>Semana 13</em> CT, Capítulo 25. Experimento de campo: Jensen, R. T., y Miller, N. H. (2008). Giffen behavior and subsistence consumption. <em>American economic review</em>, 98(4), 1553-77. Correspondencia: Bertrand, M., y Mullainathan, S. (2004). Are Emily and Greg more employable than Lakisha and Jamal? A field experiment on labor market discrimination. <em>American economic review</em>, 94(4), 991-1013. LATE: McIntosh, C., Alegría, T., Ordóñez, G., y Zenteno, R. (2018). The neighborhood impacts of local infrastructure investment: Evidence from urban Mexico. <em>American Economic Journal: Applied Economics</em>, 10(3), 263-86.</p>
+<p><em>Semana 14 </em> <em>Angrist, J. D. (2014). The perils of peer effects. <em>Labour Economics</em>, 30, 98-108. Sacerdote, B. (2011). Peer effects in education: How might they work, how big are they and how much do we know thus far?. In </em>Handbook of the Economics of Education* (Vol. 3, pp. 249-277). Elsevier. Pares: Carrell, S. E., Malmstrom, F. V., y West, J. E. (2008). Peer effects in academic cheating. <em>Journal of human resources</em>, 43(1), 173-207.</p>
+<p><em>Semana 15</em> Broxterman, D. A., &amp; Larson, W. D. (2020). An empirical examination of shift‐share instruments. <em>Journal of Regional Science</em>. LeSage, J. P. (2008). An introduction to spatial econometrics. <em>Revue d’économie industrielle</em>, (123), 19-44. Shift share: Peri, G., y Sparber, C. (2009). Task specialization, immigration, and wages. A<em>merican Economic Journal: Applied Economics</em>, 1(3), 135-69. Espacial: Pendiente.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
