@@ -1,11 +1,4 @@
-##Programa del curso
-
-+ Profesor: Irvin Rojas (irvin.rojas@cide.edu).
-+ Laboratorista: Alejando Alberto (alejandro.alberto@alumnos.cide.edu).
-+ Horario de clases: martes y jueves (11:20 a 12:50).
-+ Plataforma de enseñanza: Microsoft Teams
-+ Horario de laboratorio: lunes (7:00 a 9:00).
-+ Horario de oficina: por definir.
+## Programa del curso
 
 ### Objetivos
 * Conocer la teoría sobre la que se fundamentan los métodos para la estimación de relaciones empíricas y la inferencia usando datos de sección cruzada y de panel.
