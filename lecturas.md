@@ -6,10 +6,8 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 W, Capítulos 1-4
 
 *Semana 1*
-CT, Capítulo 4 (secciones 4.1 – 4.4).
-
-Angrist, J. D., y Pischke, J. S. (2017). Undergraduate Econometrics Instruction: Through Our Classes, Darkly. *Journal of Economic Perspectives*,31(2), 125-44.
-
+CT, Capítulo 4 (secciones 4.1 – 4.4).  
+Angrist, J. D., y Pischke, J. S. (2017). Undergraduate Econometrics Instruction: Through Our Classes, Darkly. *Journal of Economic Perspectives*,31(2), 125-44.  
 *Nakamura, E., y Steinsson, J. (2018). Identification in macroeconomics. Journal of Economic Perspectives, 32(3), 59-86.
 
 
@@ -17,7 +15,7 @@ Angrist, J. D., y Pischke, J. S. (2017). Undergraduate Econometrics Instruction:
 CT, Capítulos 5 y 7.
 
 *Semana 3*
-CT, Capítulos 14 (secciones 14.1 - 14.4), 15 (secciones 15.1 - 15.4) y 20 (secciones 21.1 - 20.4).
+CT, Capítulos 14 (secciones 14.1 - 14.4), 15 (secciones 15.1 - 15.4) y 20 (secciones 21.1 - 20.4).  
 Binaria: Avila-Foucat, V. S., y Pérez-Campuzano, E. (2015). Municipality socioeconomic characteristics and the probability of occurrence of Wildlife Management Units in Mexico. *Environmental Science & Policy*, 45, 146-153.
 Multinomial: Kveder, C. L. M., y Flahaux, M. L. (2013). Returning to Dakar: A mixed methods analysis of the role of migration experience for occupational status. *World Development*, 45, 223-238.
 Ordenados: Conigliani, C., Manca, A., & Tancredi, A. (2015). Prediction of patient-reported outcome measures via multivariate ordered probit models. *Journal of the Royal Statistical Society*. Series A (Statistics in Society), 567-591.
