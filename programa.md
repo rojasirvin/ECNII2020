@@ -1,7 +1,4 @@
-## Centro de Investigación y Docencia Económicas
-## Maestría en Economía
-## Econometría II
-## Semestre Otoño de 2020
+##Programa del curso
 
 + Profesor: Irvin Rojas (irvin.rojas@cide.edu).
 + Laboratorista: Alejando Alberto (alejandro.alberto@alumnos.cide.edu).
