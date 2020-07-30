@@ -1,18 +1,18 @@
 ---
-title: "An Example R Markdown Document"
-author: "Steven V. Miller"
+title: An Example R Markdown Document
 subtitle: (A Subtitle Would Go Here if This Were a Class)
-output:
-  ioslides_presentation:
-    smaller: yes
-  pdf_document: default
-  beamer_presentation:
-    template: ~/Dropbox/miscelanea/svm-r-markdown-templates/svm-latex-beamer.tex
-    keep_tex: yes
-    slide_level: 2
-fontsize: 10pt
+author: Steven V. Miller
 institute: Department of Political Science
-make149: yes
+fontsize: 10pt
+output:
+ beamer_presentation:
+    template: ~/Dropbox/miscelanea/svm-r-markdown-templates/svm-latex-beamer.tex
+    keep_tex: true
+# toc: true
+    slide_level: 2
+ ioslides_presentation:
+    smaller: true
+make149: true
 ---
 
 <style>
