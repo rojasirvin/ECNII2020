@@ -78,7 +78,7 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 + *LATE*: McIntosh, C., Alegría, T., Ordóñez, G., y Zenteno, R. (2018). The neighborhood impacts of local infrastructure investment: Evidence from urban Mexico. *American Economic Journal: Applied Economics*, 10(3), 263-86.
 
 *Semana 14 *
-+ *Angrist, J. D. (2014). The perils of peer effects. _Labour Economics_, 30, 98-108.
++ \*Angrist, J. D. (2014). The perils of peer effects. _Labour Economics_, 30, 98-108.
 + Sacerdote, B. (2011). Peer effects in education: How might they work, how big are they and how much do we know thus far?. In *Handbook of the Economics of Education* (Vol. 3, pp. 249-277). Elsevier.
 + Pares: Carrell, S. E., Malmstrom, F. V., y West, J. E. (2008). Peer effects in academic cheating. *Journal of human resources*, 43(1), 173-207.
 
