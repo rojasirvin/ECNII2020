@@ -16,7 +16,7 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 
 *Semana 3*
 +CT, Capítulos 14 (secciones 14.1 - 14.4), 15 (secciones 15.1 - 15.4) y 20 (secciones 21.1 - 20.4).
-+Binaria: Avila-Foucat, V. S., y Pérez-Campuzano, E. (2015). Municipality socioeconomic characteristics and the probability of occurrence of Wildlife Management Units in Mexico. *Environmental Science & Policy*, 45, 146-153.  
++Binaria: Avila-Foucat, V. S., y Pérez-Campuzano, E. (2015). Municipality socioeconomic characteristics and the probability of occurrence of Wildlife Management Units in Mexico. *Environmental Science & Policy*, 45, 146-153.
 +Multinomial: Kveder, C. L. M., y Flahaux, M. L. (2013). Returning to Dakar: A mixed methods analysis of the role of migration experience for occupational status. *World Development*, 45, 223-238.
 +Ordenados: Conigliani, C., Manca, A., & Tancredi, A. (2015). Prediction of patient-reported outcome measures via multivariate ordered probit models. *Journal of the Royal Statistical Society*. Series A (Statistics in Society), 567-591.
 +Poisson: White, K., & Buckley, C. J. (2011). Exposure to international migration and its effect on childbearing in Turkey. International *Migration Review*, 45(1), 123-147.
@@ -28,7 +28,7 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 
 *Semana 5*
 +Tobit: Zou, B., y Luo, B. (2019). Rural Household Energy Consumption Characteristics and Determinants in China. Energy.
-+Heckman: Parey, M., Ruhose, J., Waldinger, F., y Netz, N. (2017). The selection of high-skilled emigrants. *Review of Economics and Statistics*, 99(5), 776-792. 
++Heckman: Parey, M., Ruhose, J., Waldinger, F., y Netz, N. (2017). The selection of high-skilled emigrants. *Review of Economics and Statistics*, 99(5), 776-792.
 +Dos partes: Colchero, M. A., Molina, M., y Guerrero-López, C. M. (2017). After Mexico implemented a tax, purchases of sugar-sweetened beverages decreased and water increased: difference by place of residence, household composition, and income level. *The Journal of nutrition*, 147(8), 1552-1557.
 +Ordenado + selección: Alemi, F., Circella, G., Mokhtarian, P., & Handy, S. (2019). What drives the use of ridehailing in California?
 +Ordered probit models of the usage frequency of Uber and Lyft. *Transportation Research Part C: Emerging Technologies*, 102, 233-248.
@@ -48,7 +48,7 @@ Poisson + VI: Hirvonen, K., & Hoddinott, J. (2017). Agricultural production and 
 *Semana 8*
 +CT, Capítulo 22.
 +Panel: Pendiente.
-+Panel: Kagin, J., Taylor, J. E., y Yúnez-Naude, A. (2016). Inverse productivity or inverse efficiency? Evidence from Mexico. *The Journal of Development Studies*, 52(3), 396-411.  
++Panel: Kagin, J., Taylor, J. E., y Yúnez-Naude, A. (2016). Inverse productivity or inverse efficiency? Evidence from Mexico. *The Journal of Development Studies*, 52(3), 396-411.
 +Panel: Bwalya, S. M. (2006). Foreign direct investment and technology spillovers: Evidence from panel data analysis of manufacturing firms in Zambia. *Journal of development economics*, 81(2), 514-526.
 
 *Semana 9*
@@ -63,7 +63,7 @@ Poisson + VI: Hirvonen, K., & Hoddinott, J. (2017). Agricultural production and 
 +Panel + VI: Pendiente.
 
 *Semana 11*
-+CT, Capítulo 17 (secciones 17.1 – 17.4 y 17.6-17.11).  
++CT, Capítulo 17 (secciones 17.1 – 17.4 y 17.6-17.11).
 +Riesgo: De Uña-Alvarez, J., Otero-Giráldez, M. S., y Alvarez-Llorente, G. (2003). Estimation under length-bias and right-censoring: an application to unemployment duration analysis for married women. *Journal of Applied Statistics*, 30(3), 283-291.
 
 *Semana 12*
@@ -75,7 +75,7 @@ Poisson + VI: Hirvonen, K., & Hoddinott, J. (2017). Agricultural production and 
 *Semana 13*
 CT, Capítulo 25.
 +Experimento de campo: Jensen, R. T., y Miller, N. H. (2008). Giffen behavior and subsistence consumption. *American economic review*, 98(4), 1553-77.
-+Correspondencia: Bertrand, M., y Mullainathan, S. (2004). Are Emily and Greg more employable than Lakisha and Jamal? A field experiment on labor market discrimination. *American economic review*, 94(4), 991-1013. 
++Correspondencia: Bertrand, M., y Mullainathan, S. (2004). Are Emily and Greg more employable than Lakisha and Jamal? A field experiment on labor market discrimination. *American economic review*, 94(4), 991-1013.
 +LATE: McIntosh, C., Alegría, T., Ordóñez, G., y Zenteno, R. (2018). The neighborhood impacts of local infrastructure investment: Evidence from urban Mexico. *American Economic Journal: Applied Economics*, 10(3), 263-86.
 
 *Semana 14 *
