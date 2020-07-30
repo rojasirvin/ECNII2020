@@ -2,6 +2,6 @@
 
 Profesor: Irvin Rojas
 
-Programa del curso:
+[Programa del curso](https://github.com/rojasirvin/ECNII/blob/master/programa.md)
 
 Lista de lecturas:
