@@ -20,7 +20,7 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 + **Multinomial**: Kveder, C. L. M., y Flahaux, M. L. (2013). Returning to Dakar: A mixed methods analysis of the role of migration experience for occupational status. *World Development*, 45, 223-238.
 + **Ordenados**: Conigliani, C., Manca, A., & Tancredi, A. (2015). Prediction of patient-reported outcome measures via multivariate ordered probit models. *Journal of the Royal Statistical Society*. Series A (Statistics in Society), 567-591.
 + **Poisson**: White, K., & Buckley, C. J. (2011). Exposure to international migration and its effect on childbearing in Turkey. International *Migration Review*, 45(1), 123-147.
-+ **Negativo* binomial*: Antón, J. I., & De Bustillo, R. M. (2010). Health care utilisation and immigration in Spain. *The European Journal of Health Economics*, 11(5), 487-498.
++ **Negativo binomial**: Antón, J. I., & De Bustillo, R. M. (2010). Health care utilisation and immigration in Spain. *The European Journal of Health Economics*, 11(5), 487-498.
 + **Inflado en cero**: Young, J. D., Anderson, N. M., Naughton, H. T., & Mullan, K. (2018). Economic and policy factors driving adoption of institutional woody biomass heating systems in the US. *Energy Economics*, 69, 456-470.
 
 *Semana 4*
