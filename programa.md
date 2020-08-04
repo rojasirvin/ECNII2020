@@ -40,13 +40,13 @@ Unidad 3. Endogeneidad
 13. Estimación con instrumentos débiles
 
 Unidad 4. Datos de panel
-14.	Modelos agrupados
-15.	Modelos de efectos fijos y de efectos aleatorios
-16.	Estimadores between y within
-17.	Estimadores de primeras diferencias y de efectos aleatorios
-18.	Errores estándar agrupados
-19.	Modelos de panel con endogeneidad
-20.	Modelos de panel no lineales
+14. Modelos agrupados
+15. Modelos de efectos fijos y de efectos aleatorios
+16. Estimadores between y within
+17. Estimadores de primeras diferencias y de efectos aleatorios
+18. Errores estándar agrupados
+19. Modelos de panel con endogeneidad
+20. Modelos de panel no lineales
 
 Unidad 6. Extensiones
 21.	Bootstrap
