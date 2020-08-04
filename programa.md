@@ -24,7 +24,6 @@ Unidad 1. Introducción
 4. Pruebas de hipótesis
 5. Pruebas de especificación y selección de modelos
 
-Unidad 2. Modelos de variable dependiente no continua
 6. Modelos de variable dependiente binaria
 7. Modelos multinomiales
 8. Modelos ordenados
