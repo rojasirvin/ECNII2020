@@ -1,6 +1,6 @@
-name: "my-website"
+name: "ECNII2020""
 navbar:
-  title: "My Website"
+  title: "Econometría II 2020"
   left:
     - text: "Home"
       href: index.html
