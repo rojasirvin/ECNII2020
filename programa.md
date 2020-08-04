@@ -17,7 +17,7 @@ El curso se basa en los siguientes textos:
 
 ## Contenido temático
 
-Unidad 1. Introducciónaqaa
+Unidad 1. Introducción
 1. Revisión de fundamentos de estadística y regresión lineal
 2. Máxima verosimilitud
 3. Mínimos cuadrados no lineales
@@ -25,6 +25,7 @@ Unidad 1. Introducciónaqaa
 5. Pruebas de especificación y selección de modelos
 
 Unidad 2. Modelos de variable dependiente no continua
+
 6. Modelos de variable dependiente binaria
 7. Modelos multinomiales
 8. Modelos ordenados
