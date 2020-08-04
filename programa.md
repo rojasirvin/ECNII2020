@@ -38,7 +38,7 @@ Unidad 3. Modelos de selección
 Unidad 3. Endogeneidad
 12. Variables instrumentales
 13. Estimación con instrumentos débiles
-
+asasas
 Unidad 4. Datos de panel
 14. Modelos agrupados
 15. Modelos de efectos fijos y de efectos aleatorios
