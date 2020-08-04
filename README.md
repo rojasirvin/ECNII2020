@@ -1,6 +1,6 @@
 ## Centro de Investigación y Docencia Económicas
 ## Maestría en Economía
-## Econometría II
+### Econometría II
 ## Semestre Otoño de 2020
 
 Profesor: Irvin Rojas (irvin.rojas@cide.edu).
