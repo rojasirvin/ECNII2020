@@ -35,11 +35,11 @@ Unidad 3. Modelos de selección
 10. Modelo de Tobit
 11. Modelo de Heckman
 
-Unidad 3. Endogeneidad
+Unidad 4. Endogeneidad
 12. Variables instrumentales
 13. Estimación con instrumentos débiles
-asasas
-Unidad 4. Datos de panel
+
+Unidad 5. Datos de panel
 14. Modelos agrupados
 15. Modelos de efectos fijos y de efectos aleatorios
 16. Estimadores between y within
