@@ -23,6 +23,38 @@ Unidad 1. Introducción
 3. Mínimos cuadrados no lineales
 4. Pruebas de hipótesis
 5. Pruebas de especificación y selección de modelos
+Unidad 2. Modelos de variable dependiente no continua
+6. Modelos de variable dependiente binaria
+7. Modelos multinomiales
+8. Modelos ordenados
+9. Modelos de conteo
+
+Unidad 3. Modelos de selección
+10. Modelo de Tobit
+11. Modelo de Heckman
+
+Unidad 4. Endogeneidad
+12. Variables instrumentales
+13. Estimación con instrumentos débiles
+
+Unidad 5. Datos de panel
+14. Modelos agrupados
+15. Modelos de efectos fijos y de efectos aleatorios
+16. Estimadores between y within
+17. Estimadores de primeras diferencias y de efectos aleatorios
+18. Errores estándar agrupados
+19. Modelos de panel con endogeneidad
+20. Modelos de panel no lineales
+
+Unidad 6. Extensiones
+21.	Bootstrap
+22.	Modelos de riesgo y de sobrevivencia
+23.	Regresión por cuantiles
+24.	Métodos semi paramétricos y no paramétricos
+25.	Efectos de tratamiento
+26.	Modelos de efectos de pares
+27.	Variables instrumentales shift share
+28.	Econometría espacial
 
 ## Evaluación del curso
 
