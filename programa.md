@@ -18,16 +18,17 @@ El curso se basa en los siguientes textos:
 ## Contenido temático
 
 Unidad 1. Introducción
-1. Revisión de fundamentos de estadística y regresión lineal
-2. Máxima verosimilitud
-3. Mínimos cuadrados no lineales
-4. Pruebas de hipótesis
-5. Pruebas de especificación y selección de modelos
+1. Revisión de fundamentos de estadística y regresión lineal  
+2. Máxima verosimilitud  
+3. Mínimos cuadrados no lineales  
+4. Pruebas de hipótesis  
+5. Pruebas de especificación y selección de modelos  
 
-6. Modelos de variable dependiente binaria
-7. Modelos multinomiales
-8. Modelos ordenados
-9. Modelos de conteo
+Unidad 2. Modelos de variable dependiente no continua  
+6. Modelos de variable dependiente binaria  
+7. Modelos multinomiales  
+8. Modelos ordenados  
+9. Modelos de conteo  
 
 Unidad 3. Modelos de selección
 10. Modelo de Tobit
