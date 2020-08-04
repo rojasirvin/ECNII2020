@@ -18,3 +18,5 @@ Horario de oficina: por definir.
 [Programa del curso](https://github.com/rojasirvin/ECNII/blob/master/programa.md).
 
 [Lista de lecturas](https://github.com/rojasirvin/ECNII/blob/master/lecturas.md).
+
+[Calendario](https://github.com/rojasirvin/ECNII2020/blob/master/ECNII_calendario_otono_2020.pdf).
