@@ -25,7 +25,6 @@ Unidad 1. Introducción
 5. Pruebas de especificación y selección de modelos
 
 Unidad 2. Modelos de variable dependiente no continua
-
 6. Modelos de variable dependiente binaria
 7. Modelos multinomiales
 8. Modelos ordenados
@@ -57,7 +56,6 @@ Unidad 6. Extensiones
 26.	Modelos de efectos de pares
 27.	Variables instrumentales shift share
 28.	Econometría espacial
-
 ## Evaluación del curso
 
 + Examen parcial: 30%.
