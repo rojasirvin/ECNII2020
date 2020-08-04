@@ -17,7 +17,7 @@ El curso se basa en los siguientes textos:
 
 ## Contenido temático
 
-Unidad 1. Introducción
+Unidad 1. Introducciónaqaa
 1. Revisión de fundamentos de estadística y regresión lineal
 2. Máxima verosimilitud
 3. Mínimos cuadrados no lineales
