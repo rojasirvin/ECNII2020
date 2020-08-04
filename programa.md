@@ -23,6 +23,7 @@ Unidad 1. Introducción
 3. Mínimos cuadrados no lineales
 4. Pruebas de hipótesis
 5. Pruebas de especificación y selección de modelos
+
 Unidad 2. Modelos de variable dependiente no continua
 6. Modelos de variable dependiente binaria
 7. Modelos multinomiales
