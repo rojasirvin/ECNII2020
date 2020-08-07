@@ -75,7 +75,7 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 + CT, Capítulo 25.
 + **Experimento de campo**: Jensen, R. T., & Miller, N. H. (2008). Giffen behavior and subsistence consumption. *American economic review*, 98(4), 1553-77.
 + **Correspondencia**: Bertrand, M., & Mullainathan, S. (2004). Are Emily and Greg more employable than Lakisha and Jamal? A field experiment on labor market discrimination. *American economic review*, 94(4), 991-1013.
-+ **LATE**:Pendiente.
++ **LATE**: Pendiente.
 
 *Semana 14*
 + \*Angrist, J. D. (2014). The perils of peer effects. _Labour Economics_, 30, 98-108.
