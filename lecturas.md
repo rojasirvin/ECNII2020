@@ -1,6 +1,6 @@
 ## Lista de lecturas
 
-Todas las lecturas son obligatorias pues permiten una discusión informada en la clase, salvo las marcadas con un asterisco (*), que no serán cubiertas en clase, pero que son ampliamente recomendables. En las sesiones de exposiciones cada alumno presentará uno de los artículos enlistados con __negritas__, por lo que se espera que el resto de la clase tenga el conocimiento suficiente para participar en la discusión.
+Todas las lecturas son obligatorias pues permiten una discusión informada en la clase, salvo las marcadas con "*", que no serán cubiertas en clase, pero que son ampliamente recomendables. En las sesiones de exposiciones cada alumno presentará uno de los artículos enlistados con __negritas__, por lo que se espera que el resto de la clase tenga el conocimiento suficiente para participar en la discusión.
 
 *Prerrequisitos*
 + W, Capítulos 1-4

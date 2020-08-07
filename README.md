@@ -5,7 +5,7 @@
 
 Profesor: Irvin Rojas (irvin.rojas@cide.edu).
 
-Laboratoristas: Alejando Alberto (alejandro.alberto@alumnos.cide.edu) y Carolina Sánchez (carolina.sanchez@alumnos.cide.edu).
+Laboratoristas: Carolina Sánchez (carolina.sanchez@alumnos.cide.edu) y Alejando Alberto (alejandro.alberto@alumnos.cide.edu).
 
 Horario de clases: martes y jueves (11:20 a 12:50).
 

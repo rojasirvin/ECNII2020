@@ -71,8 +71,8 @@ Cuatro tareas teórico-prácticas. Las tareas deben entregarse de manera individ
 R será el paquete standard usado en las sesiones prácticas. Más aún, el uso de cualquier software es aceptado siempre que se cumplan con los requisitos de replicabilidad y reportes de salidas en las tareas y exámenes.
 
 ## Exámenes
-+ Examen parcial: martes 6 de octubre de 2019 en el horario de clase.
-+ Examen final: martes 8 de diciembre de 2019 en horario por definir.
++ Examen parcial: martes 6 de octubre de 2020 en el horario de clase.
++ Examen final: martes 8 de diciembre de 2020 en horario por definir.
 
 ## Exposiciones
 Cada alumno realizará dos presentaciones de dos de los artículos aplicados marcados con negritas en la lista de lecturas. Cada presentación deberá ser de máximo 15 minutos y deberá incluir el contenido que el presentador considere más relevante. La presentación deberá abordar, mínimamente: 1) el problema a investigar, 2) la metodología empleada, 3) la relación entre la metodología y la teoría vista en el curso, 4) los datos empleados, 5) los principales resultados, y 6) una crítica sobre la validez y las conclusiones del estudio.
