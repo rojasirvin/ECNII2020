@@ -75,7 +75,13 @@ R será el paquete standard usado en las sesiones prácticas. Más aún, el uso 
 + Examen final: martes 8 de diciembre de 2019 en horario por definir.
 
 ## Exposiciones
-Cada alumno realizará una o dos presentaciones (dependiendo del tamaño de la clase) de los artículos aplicados marcados con negritas en la lista de lecturas. Cada presentación deberá ser de máximo 15 minutos y deberá incluir el contenido que el presentador considere más relevante. La presentación deberá abordar, mínimamente: 1) el problema a investigar, 2) la metodología empleada, 3) la relación entre la metodología y la teoría vista en el curso, 4) los datos empleados, 5) los principales resultados, y 6) una crítica sobre la validez y las conclusiones del estudio.
+Cada alumno realizará una presentación de uno los artículos aplicados marcados con “+” en la lista de lecturas. Cada presentación deberá ser de máximo 15 minutos y debe incluir el contenido que el presentador considere relevante. La presentación deberá abordar, mínimamente: 1) el problema a investigar, 2) la metodología empleada, 3) la relación entre la metodología y la teoría vista en el curso, 4) los datos empleados, 5) los principales resultados, y 6) una crítica sobre la validez y las conclusiones del estudio.
+
+
+## Entrada al blog
+Cada alumno contribuirá con una entrada al blog del curso (sitio por definir). El propósito de cada entrada será difundir la evidencia más reciente del impacto de intervenciones o fenómenos naturales, económicos y sociales, usando la metodología de evaluación de impacto, para un público amplio de interesados en evaluación (no necesariamente de economistas). El blog está inspirado en el blog Development Impact del Banco Mundial: https://blogs.worldbank.org/impactevaluations.
+En cada entrada, el autor incluirá: 1) la relevancia del tema a investigar, 2) al menos dos ejemplos de estudios alrededor del tema en los últimos cinco años, 3) la descripción de cómo se ha estudiado la relación causal en cuestión a través del tiempo, 4) las metodologías actuales empleadas en dichos estudios, explicadas de forma simple e intuitiva, 5) los principales resultados obtenidos y 6) las lecciones de política que se pueden aprender sobre lo que funciona y no funciona. La entrada debe leerse de forma amena y debe incluir ligas, cuadros y figuras apropiados para su publicación en línea. La extensión de cada entrada debe estar entre 3 y 4 cuartillas. Cada entrada será publicada en el blog con crédito al autor.
+
 
 ## Reglas de convivencia mínimas
 + No se tolerarán actos de discriminación. Se procura un ambiente de respeto entre todos los miembros de la clase.
@@ -83,5 +89,3 @@ Cada alumno realizará una o dos presentaciones (dependiendo del tamaño de la c
 + Las tareas y materiales de clase se subirán en el grupo ECNII 2020 en Teams.
 + Los participantes en la sesión deberán procurar que haya un ambiente silencioso para el desarrollo de la clase cerrando sus micrófonos cuando no requieran hacer uso de la palabra.
 + Se aplicarán estrictamente los lineamientos generales del CIDE en términos de plagio y fraude en tareas, exámenes y trabajo final.
-+ De acuerdo con los lineamientos del CIDE se requiere una asistencia mínima de 80 por ciento de las clases para tener derecho a calificación final. La lista se tomará a los 10 minutos de haber iniciado la clase.
-
