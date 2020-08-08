@@ -1,17 +1,18 @@
 ---
 title: "Introducción a la Microeconometría"
-subtitle: Sesión 1
-author: Irvin Rojas
-institute: Centro de Investigación y Docencia Económicas
+author: "Irvin Rojas"
 date: "18 de agosto de 2020"
 output:
+  slidy_presentation: default
   beamer_presentation:
     theme: Madrid
     fonttheme: structurebold
     toc: yes
+subtitle: Sesión 1
+institute: Centro de Investigación y Docencia Económicas
 fontsize: 10pt
 section-titles: no
-header-includes: 
+header-includes:
 - \definecolor{yourcolourname}{rgb}{0.0,0.42,0.24}
 - \setbeamercolor{structure}{fg=yourcolourname}
 - \AtBeginDocument{\institute[CIDE]{Centro de Investigación y Docencia Económicas}}
