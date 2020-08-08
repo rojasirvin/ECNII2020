@@ -3,11 +3,12 @@ title: "Introducción a la Microeconometría"
 author: "Irvin Rojas"
 date: "18 de agosto de 2020"
 output:
-  slidy_presentation: default
+  ioslides_presentation: default
   beamer_presentation:
     theme: Madrid
     fonttheme: structurebold
     toc: yes
+  slidy_presentation: default
 subtitle: Sesión 1
 institute: Centro de Investigación y Docencia Económicas
 fontsize: 10pt
