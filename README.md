@@ -3,7 +3,7 @@
 ### Econometría II
 ### Semestre Otoño de 2020
 
-Profesor: Irvin Rojas (irvin.rojas@cide.edu). Try
+Profesor: Irvin Rojas (irvin.rojas@cide.edu).
 
 Laboratoristas: Carolina Sánchez (carolina.sanchez@alumnos.cide.edu) y Alejando Alberto (alejandro.alberto@alumnos.cide.edu).
 
