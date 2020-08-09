@@ -1,0 +1,14 @@
+---
+title: "Presentation Ninja"
+subtitle: "asdad"
+author: "Yihui Xie"
+institute: "RStudio, PBC"
+date: "2016/12/12"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
