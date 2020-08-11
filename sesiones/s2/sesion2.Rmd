@@ -1,25 +1,25 @@
 ---
-  title: "Introducción"
+title: "Introducción"
 subtitle: "Revisión de regresión lineal y teoría asintótica"
 author: "Irvin Rojas"
 institute: "CIDE"
 date: "20 de agosto de 2020"
 output:
   xaringan::moon_reader:
-  seal: false
-chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
-lib_dir: libs
-nature:
-  highlightLines: true
-countIncrementalSlides: false
-titleSlideClass: ["middle", "center"]
-ratio: "16:9"
-beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
-navigation:
-  scroll: false
-css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
 ---
-  class: title-slide
+class: title-slide
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
@@ -30,31 +30,31 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 ```
 
 .title[
-  # Sesión 2. Revisión de regresión lineal y teoría asintótica
+# Sesión 2. Revisión de regresión lineal y teoría asintótica
 ]
 .subtitle[
-  ## Econometría II
+## Econometría II
 ]
 .author[
-  ### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
 ]
 
 .affiliation[
-  ### Centro de Investigación y Docencia Económicas <br> División de Economía
+### Centro de Investigación y Docencia Económicas <br> División de Economía
 ]
 
 ---
-  # Agenda
+# Agenda
   
-  1. Presentación mía y de ustedes
+1. Presentación mía y de ustedes
 
 1. Descripción general del curso
 
 1. ¿Qué cosas distintas veremos con respecto a Econometría I?
   
-  1. ¿Qué utilidad tiene el curso en su formación?
+1. ¿Qué utilidad tiene el curso en su formación?
   
-  1. ¿Qué tipo de preguntas y datos son relevantes para la investigación empírica?
+1. ¿Qué tipo de preguntas y datos son relevantes para la investigación empírica?
 
 ---
 
