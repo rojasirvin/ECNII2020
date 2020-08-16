@@ -770,3 +770,14 @@ curve( dnorm(x,1,sqrt(2/1000)), add=TRUE,lty=2)
 ```
 ]
 
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No citar, no distribuir, no distribuir.**
