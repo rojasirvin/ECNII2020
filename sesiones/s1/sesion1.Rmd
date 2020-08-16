@@ -1,6 +1,5 @@
 ---
-title: "Introducción"
-subtitle: "Más allá de MCO"
+title: "Más allá de MCO"
 author: "Irvin Rojas"
 institute: "CIDE"
 date: "18 de agosto de 2020"

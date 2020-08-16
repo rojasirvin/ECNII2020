@@ -1,6 +1,5 @@
 ---
-title: "Introducción"
-subtitle: "Revisión de regresión lineal y teoría asintótica"
+title: "Revisión de regresión lineal y teoría asintótica"
 author: "Irvin Rojas"
 institute: "CIDE"
 date: "20 de agosto de 2020"
