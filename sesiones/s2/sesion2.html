@@ -36,21 +36,659 @@ class: title-slide
 ---
 # Agenda
   
-1. Presentación mía y de ustedes
+1. Recordatorio de modelos lineales
 
-1. Descripción general del curso
+1. Revisión de teoría asintótica
 
-1. ¿Qué cosas distintas veremos con respecto a Econometría I?
+1. Implicaciones de la teoría asintótica para el estimador de MCO
   
-1. ¿Qué utilidad tiene el curso en su formación?
-  
-1. ¿Qué tipo de preguntas y datos son relevantes para la investigación empírica?
+1. Ejemplos en *R* de la teoría asintótica en acción
 
 ---
 
-# Modelos lineales
+# Funciones de pérdida
 
-- Sea `\(\hat{y}\)`
+- Consideremos `\(\hat{y}\)`, un predictor de `\(y\)` que es función de `\(X\)`
+
+- Definamos el error de la predicción como `$$L(e)=L(y-\hat{y})$$`
+
+- `\(L(e)\)` es la función de pérdida asociada al error `\(e\)`
+
+- Si `\(y\)` y `\(\hat{y}\)` son aleatorios, se busca minimizar la pérdida esperada `\(E(L(e))\)`
+
+- Si la función depende del vector `\(X\)` de dimensión `\(k\)`, la pérdida esperada se puede escribir como `\(L(e)=L(y-\hat{y}|X)\)`
+
+- La función de pérdida típicamente usada es la del error cuadrático: `$$min_{\hat{y}} E((y-\hat{y})^2)$$`
+
+---
+
+# Funciones de pérdida
+
+- En el caso general, no hacemos supuestos sobre la forma de la expectativa y la podemos estimar de forma no paramétrica
+
+- Comúnmente, se especifica una función `\(E(y|X)=g(X,\beta)\)`
+
+- El problema es escoger `\(\beta\)` que minimice la pérdida dentro de la muestra: `$$\sum_{i=1}^{N}L(e_i)=\sum_{i=1}^{N}e_i^2=\sum_{i=1}^{N}(y_i-g(x_i,\beta))^2$$`
+
+- Cuando asumimos que `\(g(\cdot)\)` es lineal en `\(\beta\)`, es decir, `\(E(y|X)=X'\beta\)`, entonces el predictor óptimo es `\(\hat{y}=X'\hat{\beta}\)`, con `\(\hat{\beta}=\hat{\beta}_{MCO}\)`
+
+---
+
+# Predicción lineal
+
+- Supongamos ahora que la función de esperanza condicional es lineal, `\(E(y|X)=X'\beta\)`, entonces `\(\beta\)` tiene una interpretación estructural y estimar consistentemente `\(\beta\)` significa estimar consistentemente la función de esperanza condicional
+
+- Pero si `\(E(y|X)\neq X'\beta\)`, aunque no podemos interpretar `\(\beta\)` de forma estructural, `\(\beta\)` conserva la propiedad de ser el mejor predictor lineal:
+
+$$
+min_{\beta} L(e)=E((y-X'\beta)^2)
+$$
+- La condición de primer orden (CPO) es:
+
+`$$-2E(X(y-X'\beta))=0$$`
+
+- Que resulta en `\(\beta=(E(XX'))^{-1}E(X'Y)\)`
+
+- Cuyo análogo muestra es el estimador de MCO
+
+---
+
+# Ejemplo: función de salarios
+
+- Consideremos el siguiente modelo para estudiar el salario
+
+`$$\ln w_i=\alpha s_i + x_i'\beta+u_i$$`
+
+donde `\(s_i\)` es la escolaridad
+
+- ¿Cómo se interpreta `\(\hat{\alpha}=0.10\)`?
+
+--
+
+- *Un año más de educación se asocia con un aumento en el ingreso de 10%, controlando por `\(x_i\)`*
+
+- Si quisiéramos hacer una política pública, ¿podemos decir que cómo cambia `\(w_i\)` con un cambio exógeno de `\(s_i\)`
+
+- Sin embargo, es muy probable que `\(w_i\)` y `\(s_i\)` sean *endógenas*
+
+- En ese caso, la función de media condicional no tiene una interpretación causal
+
+- Sin embargo, `\(\beta_{MCO}\)` conserva su propiedad de ser el mejor predictor lineal
+
+---
+
+# Regresión lineal
+
+- `\(N\)` observaciones
+
+- `\(y\)` variable dependiente, escalar
+
+- `\(X\)` vector de regresores
+
+- `\((y,X)\)` matriz de datos
+
+&lt;br /&gt;
+
+- Un modelo de regresión lineal con error aditivo tiene la siguiente forma:
+
+`$$y=E(y|X)+u$$`
+donde `\(E(y|X)\)` es la esperanza condicional de `\(y\)` dado `\(X\)` y `\(u\)` es un vector de perturbaciones aletorias
+
+- Un modelo de regresión lineal se obtiene al espeficicar `\(E(y|X)\)` como una función lineal de `\(X\)`
+
+---
+
+# Regresión lineal
+
+- Para un individuo: 
+
+`$$\underbrace{y_i}_\text{escalar}=\overbrace{x_i'}^\text{vector de (k x 1)}\underbrace{\beta}_\text{vector de (k x 1)}+u_i$$`
+
+- En forma matricial:
+
+`$$y=\underbrace{X}_\text{(n x k)}\overbrace{\beta}^\text{(k x 1)}+u$$`
+- El estimador de MCO se define como el estimador que minimiza la suma de errores cruadráticos:
+
+`$$\sum_{i=1}^N u_i^2=u'u(y-X\beta)'(y-X\beta)$$`
+
+
+---
+
+# Regresión lineal
+
+- Derivando con respecto a `\(\beta\)` e igualando a cero obtenemos:
+
+`$$\hat{\beta}_{MCO}=(X'X)^{-1}X'y$$`
+
+- `\(\hat{\beta}_{MCO}\)` puede ser calculado si `\(X'X\)` es no singular
+
+- Una matriz `\(A\)` es singular si tiene determinante cero
+
+- Una matriz singular no es invertible
+
+- El problema cuando hay multicolinealidad es que `\(X'X\)` no puede ser invertida y, por tanto, `\(\hat{\beta}_{MCO}\)` no puede ser calculado
+
+---
+
+class: inverse, center, middle
+
+# Revisión de teoría asintótica
+
+---
+
+# Teoría asintótica
+
+- Consideremos secuencias de variables aleatorios `\(b_N\)`
+
+- Queremos decir algo sobre `\(b_N\)` cuando `\(N\to \infty\)`:
+
+  1. La convergencia en probabilidad de `\(b_N\)` a un límite `\(b\)` (una constante)
+  
+  1. Si el límite `\(b\)` es en sí misma una variable aletoria, queremos conocer su distribución límite
+  
+- Los estimadores que usamos en econometría son regularmente funciones de sumas y promedios
+  
+- Esto nos permite usar leyes de los grandes números y teoremas de límite central para derivar resultados sobre las características de estos estimadores
+
+---
+
+# Convergencia de secuencias
+
+- `\(\{a_N\}\)` converge a `\(a\)` si para todo `\(\varepsilon&gt;0\)` existe `\(N^*=N(\varepsilon)\)` tal que para `\(N&gt;N^*\)` `\(|a_N-a|&lt;\varepsilon\)`
+
+- Por ejemplo:
+
+  - `\(a_N=2+3/N\)`
+  
+  - Converge a `\(a=2\)` pues `\(|a_N-a|=3/N&lt;\varepsilon \quad \forall \quad N&gt;N^*=3/\varepsilon\)`
+
+- Cuando tenemos una secuencia de variables aleatorias, no podemos estar seguros de que la diferencia estará siempre dentro del límite `\(\varepsilon\)`
+
+- Buscamos entonces que la **probabilidad** de estar en el límite de `\(\varepsilon\)` sea muy cercana a uno
+
+- **Convergencia en probabilidad**: `\(\{b_N\}\)` converge en probabilidad a `\(b\)` si para todo `\(\varepsilon\)` y `\(\delta&gt;0\)` existe `\(N^*=N*(\varepsilon, \delta)\)` tal que:
+
+`$$Pr(|b_n-b|&lt;\varepsilon) &gt; 1-\delta$$`
+- La notación más usada es escribir `\(p\lim b=b\)` o `\(b_n\xrightarrow{p}b\)`, donde `\(b\)` puede ser una constante o una variable aleatoria
+---
+
+# Consistencia
+
+- Sea `\(\{b_N\}\)` una secuencia de parámetros estimados `\(\hat{\theta}\)`
+
+- Un estimador `\(\hat{\theta}\)` es consistente si:
+
+`$$p\lim \hat{\theta}=\theta_0$$`
+---
+
+# Teorema de Slutsky
+
+- Sea `\(b_N\)` un vector de dimensión finita y `\(g(\cdot)\)` una función real y continua en un vector `\(b\)`, entonces:
+
+`$$b_n \xrightarrow{p}b \implies g(b_N)\xrightarrow{p}g(b)$$`
+- Por ejemplo, si `\(p\lim(b_{1N},b_{2N})=(b_1,b_2)\)`, entonces `\(p\lim(b_{1N} b_{2N})=(b_1 b_2)\)`
+
+---
+
+# Leyes de grandes números (LGN)
+
+- Las LGN son teoremas de convergencia en probabilidad cuando `\(\{b_N\}\)` es un promedio muestral, `\(b_N\equiv \bar{X}_N\)`
+
+- Son teoremas para establecer el límite de una secuencia `\(\{b_N\}\)` en vez de usar *fuerza bruta* y aplicar la definición 
+
+- *Una ley de grandes números débil*
+
+  - Especifica las condiciones sobre los `\(X_i\)` en `\(\bar{X}_N\)` para que
+  
+  `$$(\bar{X}_N-E(\bar{X}_N))\xrightarrow{p}0$$`
+  - Una LGN débil implica que `\(p\lim\bar{X}_N=\lim E(\bar{X}_N)\)`
+  
+  - Y si los `\(X_i\)` tienen una media común, entonces `\(p\lim\bar{X}_N=\mu\)`
+  
+---
+
+# Leyes de grandes números (LGN)
+
+- *LGN de Khinchine*
+  
+  - Si `\(\{X_i\}\)` son iid y `\(E(X_i)\)` existe, entonces `\((\bar{X}_n-\mu \xrightarrow{p}0)\)`
+  
+- *LGN fuertes*
+
+  - Relajan las condiciones sobre `\(X_i\)` para casos más generales
+  
+  - Ver por ejemplo el Apéndice A en CT
+  
+  - Por ejmpelo, la LGN de Kolmogorov o la de de Markov
+  
+- En resumen, si una LGN se puede aplicar:
+
+.pull-left[
+
+$$
+`\begin{aligned}
+p\lim {X}_N&amp;=\lim E(\bar{X}_N) \\
+&amp;=\lim N^{-1}\sum_{i=1}^N E(X_i) \\
+&amp;=\mu \quad \text{si} 
+\end{aligned}`
+$$
+
+]
+
+.pull-right[
+en general
+
+si `\(X_i\)` independientes
+
+si las `\(X_i\)` son iid
+]
+
+---
+
+# Convergencia en distribución
+
+- La convergencia en distribución implica que `\(\hat{\theta}\)` tiene una distribución degenerada que se colapsa a `\(\theta_0\)`
+
+- Pero si reescalamos, podemos hacer afirmaciones sobre la distribución límite de `\(b_n=\sqrt{N}(\hat{\theta}-\theta_0)\)`
+
+- Una secuencia `\(\{b_N\}\)` converge en distribución a la variable `\(b\)` si `\(\lim_{N\to\infty} F_N= F\)`
+
+donde `\(F\)` es la función de distribución acumulada (cdf) de `\(b\)` en todo punto donde `\(F\)` es continua
+
+- Esto también se escribe como $b_N\xrightarrow{d}b y a `\(F\)` se le conoce como la distribución límite de `\(\{b_N\}\)`
+
+- Puede ser que `\(F_N\)` sea muy complicada pero `\(F\)` puede ser una función de la que conocemos sus propiedades (por ejemplo, una normal estándar)
+
+---
+
+# Teorema del mapeo continuo
+
+- Sea `\(b_N\)` un vector de dimensión finita y sea `\(g(\cdot)\)` una función real:
+
+`$$b_N\xrightarrow{d}b \implies g(b_N) \xrightarrow{d}g(b)$$`
+---
+
+# Teorema de transformación
+
+- Sea `\(a_N\xrightarrow{d}a\)` y `\(b_N\xrightarrow{p}b\)`, donde `\(a\)` es una variable aleatoria y `\(b\)` una constante
+
+  1. `\(a_N+b_N \xrightarrow{d}a+b\)`
+  
+  1. `\(a_n b_N \xrightarrow{d}ab\)`
+  
+  1. `\(a_N/b_N\xrightarrow{d}a/b\)`
+  
+- Es decir, podemos decir algo sobre objetos potencialmente complejos (como productos o cocientes) si sabemos algo de sus partes
+
+---
+
+# Regla del límite normal del producto
+
+- Para un vector `\(a_N\)` y una matriz `\(H_N\)` si
+  
+  - `\(a_N \xrightarrow{d} \mathcal{N}(\mu,A)\)`
+  
+  - `\(H_N\xrightarrow{p}H\)`, donde `\(H\)` es positiva definida
+
+Entonces `\(H_N a_N \xrightarrow{d}\mathcal{N}(H\mu,HAH')\)`
+
+---
+
+# Teoremas del límite central (TLC)
+
+- Son teoremas de convergencia en distribución cuand `\(\{b_N\}\)` es una media muestral
+
+- Primero reescalamos definiendo
+
+$$ b_N\equiv Z_N=\frac{\bar{X}_N-E(\bar{X}_N)}{\sqrt{V(\bar{X}_N)}}\sim(0,1) $$
+
+- Un TLC da condiciones sobre las `\(X_i\)` en `\(\bar{X}_N\)` para que
+
+$$ Z_N\xrightarrow{d}\mathcal{N}(0,1) $$
+
+---
+
+# Teoremas del límite central (TLC)
+
+- *TLC de Lindeberg-Levy*
+
+  - Sea `\(\{X_i\}\)` iid con `\(E(X_i)=\mu\)` y `\(V(X_i)=\sigma^2\)`, entonces
+
+$$ Z_N=\frac{\sqrt{N}(\bar{X}_N-\mu)}{\sigma}\xrightarrow{d} \mathcal N(0,1) $$
+
+ - Noten que si `\(\bar{X}_N\)` satisface un TLC, entonces también `\(h(N)\bar{X}_N\)` lo satisface
+ 
+ - Por ejemplo, `\(h(N)=\sqrt{N}\)`, dado que
+ 
+$$ Z_N=\frac{h(N)\bar{X}_N-E(h(N)\bar{X}_N)}{\sqrt{V(h(N)\bar{X}_N)}}$$
+
+- En la mayoría de los casos, se usan los TLC a la versión normalizada de `\(\bar{X_N}\)`, es decir, `\(\sqrt{N}\bar{X}_N\)` porque `\(V(h(N)\bar{X}_N)\)` es finita
+
+---
+
+# Teoremas del límite central (TLC)
+
+- Bajo iid, podemos escribir
+
+`$$\frac{\bar{X}_N-\mu}{\sigma / \sqrt{N}}\xrightarrow{d}\mathcal{N}(0,1)$$`
+
+- O de manera equivalente:
+
+`$$\sqrt{N}(\bar{X}_N-\mu)\xrightarrow{d} \mathcal{N}(0,\sigma^2)$$`
+---
+
+# Teoremas del límite central (TLC)
+
+- *TLC multivariado*
+
+  - Sea un vector `\(\bar{X}_N\)` con media `\(\mu_N\)` y varianza `\(V_N\)` tal que `\(\bar{X}_N\sim(\mu_N,V_N)\)`
+  
+  - Reescalando, podemos definir:
+  
+  `$$Z_N=V_N^{-1/2}(b_N-\mu_N)\sim(\mathbf{0},I)$$`
+  
+  - Un TLC da condiciones sobre `\(X_i\)` en `\(\bar{X}_N\)` para que
+  
+  `$$Z_N\xrightarrow{d}\mathcal{N}(\mathbf{0},I)$$`
+  
+---
+
+class: inverse, center, middle
+  
+# Distibución de `\(\beta_{MCO}\)`
+
+---
+
+# Consistencia
+
+- Consideremos el proceso generador de datos `\(y=X\beta+\)`
+
+$$
+`\begin{aligned}
+\hat{\beta}_{MCO}&amp;=(X'X)^{-1}X'Y \\
+&amp;=(X'X)^{-1}X'(X\beta + u) \\
+&amp;=(X'X)^{-1}X'X\beta+(X'X)^{-1}X'U \\
+&amp;=\beta+(X'X)^{-1}X'u
+\end{aligned}`
+$$
+
+- Reescalando:
+
+`$$\hat{\beta}_{MCO}=\beta+(N^{-1}X'X)^{-1}N^{-1}X'u$$`
+- Noten que `\(N^{-1}X'X=N^{-1}\sum_{i=1}{N}x_ix_i'\)` es un promedio
+
+- Si  `\(x_ix_i'\)` permite aplicar una LGN, entonces el promedio converge en probabilidad a una matriz finita distinta de `\(\mathbf{0}\)`
+
+---
+
+# Consistencia
+
+- Si una LGN puede aplicarse, entonces usando el Teorema de Slutsky:
+
+`$$p\lim \hat{\beta}_{MCO}=\beta+(p\lim N^{-1}X'X)^{-1}(p\lim N^{-1}X'u)$$`
+
+
+- Entonces `\(\beta_{MCO}\)` es consistente para `\(\beta\)`, es decir, `\(p\lim\hat{\beta}_{MCO}=\beta\)` si `\(p\lim N^{-1}X'u=0\)`
+
+- Si se puede aplicar una LGN al promedio `\(N^{-1}X'u=N^{-1}\sum_ix_iu_i\)` , una condición necesaria es que `\(E(x_iu_i)=0\)`
+
+- Esta es la condición sobre los errores que enumerábamos en nuestra lista de supuestos en los cursos básicos de econometría
+
+---
+
+# Distribución límite
+
+- Dada la consistencia del estimador de MCO,la distribución límite de `\(\beta_{MCO}\)` tiene toda su masa en `\(\beta\)`
+
+- Podemos reescalar multiplicando por `\(\sqrt{N}\)`, lo que nos permite obtener una variable aleatoria con varianza distinta de cero y asintóticamente finita:
+
+`$$\sqrt{N}(\hat{\beta}_{MCO}-\beta)=(N^{-1}X'X)^{-1}N^{-1/2}X'u$$`
+
+- Sabemos que `\(p\lim(N^{-1}X'X)\)` existe y es una matriz finida distinta de `\(\mathbf{0}\)`
+
+- Si se puede aplicar un TLC, `\(N^{-1/2}X'u\)` tendrá una distribución con matriz de covarianzas no singular y finita
+
+- Por la regla del límite normal del producto `\((N^{-1}X'X)^{-1}N^{-1/2}X'u\)` tendrá una distribución límite normal
+
+---
+
+# Distribución del estimador de MCO (Proposición 4.1 en CT)
+
+- Supuestos:
+  1. El proceso generador de datos es `\(y=X\beta+u\)`
+  1. Los datos son independientes entre `\(i\)`, `\(E(u|X)=0\)` y `\(E(uu'|X)=\Omega=Diag(\sigma_i^2)\)`
+  1. `\(X\)` es de rango completo
+  1. La matriz `\(M_{XX}=p\lim N^{-1}X'X=\lim\sum_iE(x_ix_i')\)` existe y es finita y no singular
+  1. El vector `\(N^{-1/2}X'u\xrightarrow{d}\mathcal{N}(0,M_{X\Omega X})\)`, donde
+  `$$M_{X\Omega X}=p\lim N^{-1}X'uu'X=\lim N^{-1}\sum_iE(u_i^2x_ix_i')$$`
+  
+- Entonces `\(\hat{\beta}_{MCO}\)` es consitente para `\(\beta\)` y la *distribución limite* de `\(\sqrt{N}(\hat{\beta}_{MCO}-\beta)\)` es
+
+`$$\sqrt{N}(\hat{\beta}_{MCO}-\beta)\xrightarrow{d}\mathcal{N}(0,M_{XX}^{-1}M_{X\Omega X}M_{XX}^{-1})$$`
+
+---
+
+# Distribución asintótica del estimador de MCO
+
+- Podemos expresar el resultado en términos de  `\(\hat{\beta}_{MCO}\)` dividiendo por `\(\sqrt{N}\)` y sumando `\(\beta\)`:
+
+`$$\hat{\beta}_{MCO} \stackrel{a}{\sim} \mathcal{N}(\beta,N^{-1}M_{XX}^{-1}M_{X\Omega X}M_{XX}^{-1})$$`
+
+- A la matriz `\(V(\hat{\beta})=N^{-1}M_{XX}^{-1}M_{X\Omega X}M_{XX}^{-1}\)` es la *matriz de varianza asintótica*
+
+- Eliminado los límites y las expectativas, una forma más compacta de escribit la distribución del estimador de MCO es
+
+`$$\hat{\beta}_{MCO} \stackrel{a}{\sim} \mathcal{N}(\beta,(X'X)^{-1}X'\Omega X (X'X)^{-1})$$`
+
+- En la práctica, reemplazamos `\(M_{XX}\)` y `\(M_{X\Omega X}\)` por estimadores consistentes para obtener la *matriz estimada de la varianza asintótica*:
+
+`$$\hat{V}(\hat{\beta})=N^{-1}\hat{M}_{XX}^{-1}\hat{M}_{X\Omega X}\hat{M}_{XX}^{-1}$$`
+
+---
+
+# El estimador de *sándwich*
+
+- Frecuentemente nos toparemos con el estimador de la varianza de *sándwich* del tipo `\(\hat{M}_{XX}^{-1}\hat{M}_{X\Omega X}\hat{M}_{XX}^{-1}\)`
+
+- Un estimador para `\(\hat{M}_{XX}\)` es `\(N^{-1}X'X\)`
+
+- El estimador de `\(\hat{M}_{M\Omega M}\)` depende de lo que asumamos de los errores
+
+- En los primeros cursos de econometría se asumen errores homocedásticos tales que `\(\Omega=\sigma^2I\)`, por lo que:
+
+`$$\hat{V}(\hat{\beta}_{MCO,iid})=\hat{s}^2(X'X)^{-1}$$`
+
+- Con errores heterocedásticos, es decir, que dependen de `\(X_i\)`, la v
+
+- Pero si `\(V(u_i|x_i)=E(u_i^2|x_i)=\sigma_i^2\)`, es decir, los errores varían con `\(i\)`, White (1980) propone usar como estimador de la varianza a `\(\hat{M}_{X\Omega X}=N^{-1}\sum_i \hat{u}_i^2x_ix_i'\)`, dando lugar a:
+
+`$$\hat{V}(\hat{\beta}_{MCO,White})=(X'X)^{-1}X'\hat{\Omega}X(X'X)^{-1}$$`
+
+---
+
+class: inverse, middle, center
+
+# Ejemplos en *R*
+
+---
+
+# Simulaciones Monte Carlo
+
+- En muchas ocasiones, las simulaciones nos será útiles para mostrar resultados teóricos cuando trabajamos con datos
+
+- La idea es crear un proceso generador de datos en donde nosotros conocemos los parámetros poblacionales
+
+- En la práctica, regularmente trabajamos con muestras y no conocemos los parámetros poblacionales que dan origen a los datos que observamos
+
+- El propósito de las simulaciones Monte Carlo es evaluar el desempeño de los estimadores
+
+--
+
+- Pensemo que queremos estimar el parámetro de la media `\(\mu\)` de una variable con distribución normal usando una muestra de tamaño `\(n\)`: `\(y_i=\mathcal{N}(\mu,\sigma^2)\)`
+
+- Sabemos de nuestras cláses de estadística que un estimador es la media muestral `\(\bar{y}\)`
+
+- También sabemos de nuestras clases de estadística que la media muestral tendrá la siguiente distribución:
+
+`$$\bar{y}=\mathcal{N}(\mu,\sigma^2/n)$$`
+
+- Podemos usar simulaciones para mostrar que esto es cierto
+
+---
+
+# Simulaciones en *R*
+
+- Generemos una muestra y calculemos su media
+
+
+```r
+# Semilla para poder generar la misma secuencia 
+set.seed(820)
+
+# Obtenemos una muestra de tamaño 100 con media 10 y desviación estándar 2
+sample &lt;- rnorm(100,10,2)
+
+# Veamos 10 de las observaciones
+head(sample,10)
+#  [1] 11.679922 10.180688  8.030958  8.018253  7.965878  5.945978 10.727039  6.837412  9.181732  9.916600
+
+#¿Cuál es la media muestral?
+mean(sample)
+# [1] 9.645554
+```
+
+- ¿Qué pasa si generamos otra muestra?
+
+
+```r
+sample &lt;- rnorm(100,10,2)
+mean(sample)
+## [1] 10.2209
+```
+
+---
+
+# Simulaciones en *R*
+
+- Teóricamente, sabemos que la varianza de la media muestral debería ser `\(2^2/100=0.04\)`
+
+- Podemos repetir el proceso anterior muchas veces
+
+
+```r
+set.seed(820)
+
+# Un vector para guardar las medias calculadas. Haremos 1,000 cálculos
+
+reps &lt;- 1000
+ymedias &lt;- numeric(reps)
+
+# En cada una de las 1000 repeticiones, obtendremos una muestra de tamaño 100
+
+for (i in 1:reps){
+ sample&lt;- rnorm(100,10,2) 
+ ymedias[i]&lt;-mean(sample)
+}
+```
+
+---
+
+# Simulaciones en *R*
+
+- Veamos la media y desviación estándar de las medias calculadas:
+
+
+```r
+mean(ymedias)
+## [1] 10.0084
+
+var(ymedias)
+## [1] 0.0413458
+```
+
+---
+
+# Simulaciones en *R*
+
+- Podemos hacer un gráfico de las medias estimadas junto con una curva normal:
+
+
+```r
+plot(density(ymedias),ylim=c(0,2))  
+
+curve(dnorm(x,10,sqrt(.04)),add=T,lty=2)
+```
+
+&lt;img src="figures/unnamed-chunk-5-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# LGN en acción
+
+- Una LGN nos dice que la media muestral converge en probabilidad al parámetro poblacional `\(\mu\)` cuando `\(n\to\infty\)`
+
+- Una forma de verificar esto es haciendo las muestras arbitrariamente grandes:
+
+
+
+.pull-left[
+&lt;img src="figures/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;&lt;img src="figures/unnamed-chunk-7-2.png" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="figures/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;&lt;img src="figures/unnamed-chunk-8-2.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# TLC en acción
+
+- En el ejemplo anterior, la media muestral se distribuía de formal normal debido a que `\(y_i\)` se distribuía normal
+
+- Sin embargo, un TLC nos indica que la media muestral se distribuye normal cuando `\(n\to\infty\)`, bajo algunas condiciones para la varianza de `\(y_i\)`
+
+- Usemos una distribución `\(\chi^2\)` con un grado de libertad:
+
+.pull-left[
+
+```r
+set.seed(820)
+
+sample &lt;- rchisq(100,1)
+```
+]
+
+--
+.pull-right[
+
+```r
+curve(dchisq(x,1), 0,3)
+```
+
+&lt;img src="figures/unnamed-chunk-10-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# TLC en acción
+
+- Ahora seguimos el procedimiento que usamos en el ejemplo con variables normales
+
+- Recordemos que para una `\(\chi^2\)` con `\(\nu\)` grados de libertad la media es `\(\nu\)` y la varianza es `\(2\nu\)`
+
+- Por tanto, el TLC nos dice que `\(\bar{y}\sim\mathcal{N}(\nu,2\nu/N)\)`
+
+
+
+
+.pull-left[
+&lt;img src="figures/unnamed-chunk-12-1.png" style="display: block; margin: auto;" /&gt;&lt;img src="figures/unnamed-chunk-12-2.png" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="figures/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;&lt;img src="figures/unnamed-chunk-13-2.png" style="display: block; margin: auto;" /&gt;
+]
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
