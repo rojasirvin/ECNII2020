@@ -240,4 +240,4 @@ El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui
 
 Material de clase en versión preliminar.
 
-**No citar, no distribuir, no citar**
+**No reproducir, no distribuir, no citar**
