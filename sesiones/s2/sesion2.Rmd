@@ -60,6 +60,13 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
 ---
 
+class: inverse, middle, center
+
+# Breve recordatorio de regresión lineal
+
+
+---
+
 # Funciones de pérdida
 
 - Consideremos $\hat{y}$, un predictor de $y$ que es función de $X$
