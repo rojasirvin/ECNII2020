@@ -66,7 +66,7 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
 1. Tareas
 
-1. Laboratorios<
+1. Laboratorios
 
 1. Presentaciones
 

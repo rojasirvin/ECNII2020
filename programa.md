@@ -78,9 +78,10 @@ R será el paquete standard usado en las sesiones prácticas. Más aún, el uso 
 Cada alumno realizará dos presentaciones de dos de los artículos aplicados marcados con negritas en la lista de lecturas. Cada presentación deberá ser de máximo 15 minutos y deberá incluir el contenido que el presentador considere más relevante. La presentación deberá abordar, mínimamente: 1) el problema a investigar, 2) la metodología empleada, 3) la relación entre la metodología y la teoría vista en el curso, 4) los datos empleados, 5) los principales resultados, y 6) una crítica sobre la validez y las conclusiones del estudio.
 
 ## Reglas de convivencia mínimas
-+ No se tolerarán actos de discriminación. Se procura un ambiente de respeto entre todos los miembros de la clase.
++ No se tolerarán actos de discriminación.
++ Se procura un ambiente de respeto entre todos los miembros de la clase.
 + Toda la comunicación relativa al curso se dará por medio del correo institucional del CIDE.
 + Las tareas y materiales de clase se subirán en el grupo ECNII 2020 en Teams.
 + Los participantes en la sesión deberán procurar que haya un ambiente silencioso para el desarrollo de la clase cerrando sus micrófonos cuando no requieran hacer uso de la palabra.
-+ Se aplicarán estrictamente los lineamientos generales del CIDE en términos de plagio y fraude en tareas, exámenes y trabajo final.
++ Se aplicarán estrictamente los lineamientos generales del CIDE en términos de plagio y fraude en tareas y exámenes.
 
