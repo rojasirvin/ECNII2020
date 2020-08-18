@@ -106,7 +106,7 @@ $$y=\alpha+\beta x + \varepsilon$$
 
 - Se asume homocedasticidad, que no hay multicolinealidad y regresores fijos
 
-- Resulta que $\beta" es insesgado y el *BLUE*
+- Resulta que $\beta$ es insesgado y el *BLUE*
 
 - Recurrimos a primeros auxilios en caso de autocorrelación, heterocedasticidad o multicolinealidad
 
