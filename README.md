@@ -22,3 +22,5 @@ Horario de oficina: por definir.
 [Calendario](https://github.com/rojasirvin/ECNII2020/blob/master/ECNII_calendario_otono_2020.pdf).
 
 [Sesiones](https://github.com/rojasirvin/ECNII/blob/master/sesiones.md).
+
+[Presentaciones](https://github.com/rojasirvin/ECNII/blob/master/presentaciones.md).
