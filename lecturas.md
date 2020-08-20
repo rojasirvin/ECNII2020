@@ -83,7 +83,7 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 + **Pares**: Carrell, S. E., Malmstrom, F. V., & West, J. E. (2008). Peer effects in academic cheating. *Journal of human resources*, 43(1), 173-207.
 
 *Semana 15*
-+B roxterman, D. A., & Larson, W. D. (2020). An empirical examination of shift‐share instruments. *Journal of Regional Science*.
++ Broxterman, D. A., & Larson, W. D. (2020). An empirical examination of shift‐share instruments. *Journal of Regional Science*.
 + LeSage, J. P. (2008). An introduction to spatial econometrics. *Revue d'économie industrielle*, (123), 19-44.  
 + **Shift share**: Peri, G., & Sparber, C. (2009). Task specialization, immigration, and wages. A*merican Economic Journal: Applied Economics*, 1(3), 135-69.
 + **Espacial**: Pendiente.
