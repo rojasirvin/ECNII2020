@@ -16,7 +16,7 @@
   | Li & Maddala | Bootstrap | 20 de octubre | Eduardo García |
   | Castillo & coautores | Panel Poisson | 27 de octubre | Rafael Martínez |
   | PENDIENTE | Panel + VI | 27 de ocubre | César Ángeles | 
-  | De Uña y coautores | Riesgo | 3 de noviembre | Karla Amaro |
+  | De Uña & coautores | Riesgo | 3 de noviembre | Karla Amaro |
   | Bertrand & Mullainathan | Correspondencia | 12 de noviembre | Wilmer Ferrer |
   | Jensen & Miller | Experimento de campo  | 12 de noviembre | Luis Enrique Ramos | 
   | PENDIENTE | LATE | 12 de noviembre | Diana Castañeda |
