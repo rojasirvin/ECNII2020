@@ -3,6 +3,7 @@
 | **Autores** | **Tema** | **Fecha de exposición** | **Presentador** |
   | --- | --- | --- | --- |
   | Ávila y Pérez | Binaria | 3 de septiembre | Ricardo Solís |
+  | Kveder & Flahaux | Multinomial | 8 de septiembre | Diana Castañeda | 
   | Young & coautores | Inflado en cero   | 8 de septiembre | Rafael Martínez |
   | Antón & Bustillo | Negativo binomial | 8 de septiembre | Miguel Manrique |
   | White & Buckley | Poisson | 8 de septiembre | Eduardo García |
