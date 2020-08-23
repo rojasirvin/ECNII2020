@@ -86,4 +86,4 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 + Broxterman, D. A., & Larson, W. D. (2020). An empirical examination of shift‐share instruments. *Journal of Regional Science*.
 + LeSage, J. P. (2008). An introduction to spatial econometrics. *Revue d'économie industrielle*, (123), 19-44.  
 + **Shift share**: Peri, G., & Sparber, C. (2009). Task specialization, immigration, and wages. A*merican Economic Journal: Applied Economics*, 1(3), 135-69.
-+ **Espacial**: Pendiente.
++ **Espacial**: Li, Y., & Zhu, K. (2017). Spatial dependence and heterogeneity in the location processes of new high‐tech firms in Nanjing, China. *Papers in Regional Science*, 96(3), 519-535.
