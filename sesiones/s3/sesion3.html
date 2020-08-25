@@ -102,7 +102,7 @@ class: inverse, middle, center
 
 - A esto se le llama **función de verosimilitud** y frecuentemente se le denota `\(L_N(\theta|y,X)\)`
 
-- Maximizar `\(L_N\)` es equivalente a maximizar  `\(\mathcal{L}_N(\theta)\ln(L_N(\theta))\)` 
+- Maximizar `\(L_N\)` es equivalente a maximizar  `\(\mathcal{L}_N(\theta)=\ln(L_N(\theta))\)` 
 
 - Cuando trabajamos con secciones cruzadas con observaciones independientes, `\(f(y|X,\theta)=\Pi_i f(y_i|x_i,\theta)\)`
 
@@ -117,7 +117,7 @@ class: inverse, middle, center
 
 - Formalmente, se conoce como el **estimador de maxima verosimilitud condicional** al máximo local que satisface la condición de primer orden:
 
-`$$\frac{1}{2}\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta }=\frac{1}{2}\sum_i\frac{\partial \ln f(y_i|x_i,\theta)}{\partial \theta}=0$$`
+`$$\frac{1}{N}\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta }=\frac{1}{N}\sum_i\frac{\partial \ln f(y_i|x_i,\theta)}{\partial \theta}=0$$`
 - El adjetivo de **condicional** se debe a que el estimador se bajas en la densidad de `\(y\)` dado `\(x\)`, pero comúnmente se emplea solo el término de estimador de máxima verosimilitud
 
 - Al vector gradiente de primeras derivadas parciales `\(\frac{\mathcal{L}_N(\theta)}{\partial \theta}\)` se le conoce como **vector score**
@@ -253,7 +253,7 @@ class: inverse, middle, center
 
 - Recordemos que el **estimador de maxima verosimilitud condicional** al máximo local que satisface la condición de primer orden:
 
-`$$\frac{1}{2}\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta }=\frac{1}{2}\sum_i\frac{\partial \ln f(y_i|x_i,\theta)}{\partial \theta}=0$$`
+`$$\frac{1}{N}\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta }=\frac{1}{N}\sum_i\frac{\partial \ln f(y_i|x_i,\theta)}{\partial \theta}=0$$`
 ---
 
 # Ejemplo Poisson
@@ -304,22 +304,6 @@ con `\(y=0,1,2,\ldots\)`
 
 `$$\frac{1}{N}\sum_i\left(y_i-exp(x_i'\beta)\right)x_i\big|_{\hat{\beta}}=0$$`
 - Esta expresión no tiene una solución cerrada y usamos métodos numéricos para calcular `\(\hat{\beta}\)`
-
-
----
-# Funciones de pérdida
-
-- Consideremos `\(\hat{y}\)`, un predictor de `\(y\)` que es función de `\(X\)`
-
-- Definamos el error de la predicción como `$$L(e)=L(y-\hat{y})$$`
-
-- `\(L(e)\)` es la función de pérdida asociada al error `\(e\)`
-
-- Si `\(y\)` y `\(\hat{y}\)` son aleatorios, se busca minimizar la pérdida esperada `\(E(L(e))\)`
-
-- Si la función depende del vector `\(X\)` de dimensión `\(k\)`, la pérdida esperada se puede escribir como `\(L(e)=L(y-\hat{y}|X)\)`
-
-- La función de pérdida típicamente usada es la del error cuadrático: `$$min_{\hat{y}} E((y-\hat{y})^2)$$`
 
 
 ---
@@ -387,7 +371,7 @@ con `\(y=0,1,2,\ldots\)`
   
   1. La función de densidad `\(f(\cdot)\)` satisface `\(f(y,\theta^{(1)})=f(y,\theta^{(2)})\)` si y solo si `\(\theta^{(1)}=\theta^{(2)}\)`
   
-  1. La matriz `\(A_0=p\lim\frac{1}{N}\frac{\partial^2\mathcal{L}_N(\theta)}{\partial \theta \partial\theta'}\Bigg|_{\theta_0}=0\)` existe y es no singular
+  1. La matriz `\(A_0=p\lim\frac{1}{N}\frac{\partial^2\mathcal{L}_N(\theta)}{\partial \theta \partial\theta'}\Bigg|_{\theta_0}\)` existe y es no singular
   
   1. El orden de la diferenciación e integración de la función de log verosimilitud puede ser invertido
   
