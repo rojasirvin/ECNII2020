@@ -1,0 +1,444 @@
+---
+title: "Estimadores M"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "25 de agosto de 2020"
+mathspec: true
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+library(tidyverse)
+library(magick)
+library(reticulate)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+```
+
+.title[
+# Sesión 3. Estimadores M
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+# Agenda
+  
+1. Introducir las propiedades de los estimadores M
+
+1. Introducir el concepto de máxima verosimilitud
+
+1. Mostrar las propiedades de los estimadores de máxima verosimilitud como un tipo de estimadores M
+
+---
+
+# Estimadores no lineales
+
+- Los estimadores no lineales son funciones no lineales de la variable dependiente
+
+- Pueden surgir por:
+   - Variable dependiente categórica o de conteo
+   
+   - Censura
+   
+   - Truncamiento
+
+- Presentaremos resultados asintóticos para los estimadores M
+
+- Queremos que ustedes comprendan la intuición de las pruebas, más que memorizar las pruebas mismas
+
+- Y que logren relacionar la teoría con lo que realizan de forma inmediata lo que realizan los paquetes estadísticos
+
+
+---
+
+class: inverse, middle, center
+
+# Estimadores extremos
+
+---
+
+# Estimadores extremos
+
+- Nos centraremos por ahora en secciones cruzadas
+
+- Para cada observación, vemos una variable dependiente escalar $y_i$ y un vector de regresores $x_i$
+
+- Un vector de datos entonces es $(y_i,x_i)$
+
+- Podemos acomodar los datos en una matrix $(y,X)$
+
+--
+
+- Existe un vector de parámetros verdadero $\theta_0$, que es el valor de $\theta$ que da origen a los datos
+
+- Buscamos estimar el vector de parámetros $\theta=(\theta_1,\ldots,\theta_q)'$
+
+- Consideremos la función objetivo estocástica $Q_N(\theta)=Q_N(y,x,\theta=\frac{1}{N}\sum_i q(y_i,x_i,\theta$, donde $q(\cdot)$ es una función escalar
+
+- Un **estimador extremo** $\hat{\theta}$ es un estimador que maximiza $Q_N$
+
+- Hay muchos estimadores M, dependiendo de la forma de $q(\cdot)$, entre ellos, los estimadores de máxima verosimilitud y los estimadores de mínimos cuadrados no lineales
+
+---
+
+# Ejemplo: estimador de máxima verosimilitud
+
+- El problema de máxima verosimilitud consiste en estimar el vector de parámetros para $\theta_0$ que maximice la probabilidad de observar los datos
+
+- La función de masa de probabilidad o densidad $f(y,X|\theta)$ es una función del parámetro $\theta$ y los datos $(y,X)$
+
+- A esto se le llama **función de verosimilitud** y frecuentemente se le denota $L_N(\theta|y,X)$
+
+- Maximizar $L_N$ es equivalente a maximizar  $\mathcal{L}_N(\theta)\ln(L_N(\theta))$ 
+
+- Cuando trabajamos con secciones cruzadas con observaciones independientes, $f(y|X,\theta)=\Pi_i f(y_i|x_i,\theta)$
+
+- Y entonces, la función de log verosimilitud se define como:
+
+$$Q_N(\theta)=N^{-1}\mathcal{L}(\theta)=N^{-1}\sum_i\ln f(y_i|x_i,\theta)$$
+---
+
+# Ejemplo: estimador de máxima verosimilitud
+
+- El **estimador de máxima verosimilitud** es el estimador que maximiza la función de log verosimilitud
+
+- Formalmente, se conoce como el **estimador de maxima verosimilitud condicional** al máximo local que satisface la condición de primer orden:
+
+$$\frac{1}{2}\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta }=\frac{1}{2}\sum_i\frac{\partial \ln f(y_i|x_i,\theta)}{\partial \theta}=0$$
+- El adjetivo de **condicional** se debe a que el estimador se bajas en la densidad de $y$ dado $x$, pero comúnmente se emplea solo el término de estimador de máxima verosimilitud
+
+- Al vector gradiente de primeras derivadas parciales $\frac{\mathcal{L}_N(\theta)}{\partial \theta}$ se le conoce como **vector score**
+
+- Al score evaluado en $\theta_0$ se le conoce como **score eficiente**
+
+---
+
+# Propiedades asintóticas de los estimadores M
+
+- De forma general, un estimador extremo es un máximo local, calculado como la solución de las condiciones de primer orden :
+
+$$\frac{\partial Q_N(\theta)}{\partial \theta}\Bigg|_{\hat{\theta}}=0$$
+- Hacemos énfasis en el máximo local pues es lo que se distribuye asintóticamente normal
+
+- Noten que $Q_N$ se definió de forma que es un promedio muestral, de forma análoga a la suma de resiguales cuadrados
+
+- Nuestro objetivo es establecer las propiedades asintóticas en términos de
+
+  - Consistencia
+  
+  - Distribución asintótica
+  
+---
+  
+# Consistencia de estimadores M
+
+- La función objetivo $Q_N(\theta)$ converge en probabilidad a la función límite $Q_0(\theta)$ cuando $N\to \infty$
+
+- Entonces, el máximo local de $Q_N(\theta)$ y $Q_0(\theta)$ deben ocurrir en valores de $\theta$ cada vez más cercanos
+
+- Dado que por definición $\hat{\theta}_{MV}$ maximiza $Q_N(\theta)$, entonces $\hat{\theta}_{MV}$ converge en probabilidad a $\theta_0$, asumiendo que $\theta_0$ maximiza $Q_0(\theta)$
+
+---
+# Consistencia de estimadores M
+
+**Consitencia del máximo local** (Amemiya, 1985, adaptado por CT, 2005)
+
+- Supongamos que:
+
+  1. El espacio de parámetros $\Theta$ es un subconjunto abierto de $R^q$
+  
+  1. $Q_N(\theta)$ es una una [función medible](https://www.math.ucdavis.edu/~hunter/measure_theory/measure_notes_ch3.pdf) de los datos para todo $\theta \in \Theta$ y $\partial Q_N(\theta)/\partial\theta$ existe y es continua en una vecindad de $\theta_0$
+  
+  1. La función objetivo $Q_N(\theta)$ converge uniformemente en probabilidad a $Q_0$ en una vecindad abierta de $\theta_0$ y $Q_0(\theta)$ tiene un único máximo local en $\theta_0$
+  
+- Entonces, la solución a $\partial Q_N(\theta)/\partial \theta =0$ es consistente para $\theta_0$
+
+--
+
+- La condición clave es la 3. y nos dice que le máximo local debe de $Q_N(\theta)$ debe ocurrir en $\theta_0$
+
+- Los primeros dos supuestos se cumplirán en la mayoría de las aplicaciones que usaremos en el curso
+
+- El paso más importante será obtener la probabilidad límite de $Q_N(\theta)$
+
+- Para ello recurrimos a LGN porque $Q_N(\theta)$ fue definido como un promedio $N^{-1}\sum_i q(\theta)$
+
+
+---
+
+# Distribución asintótica de estimadores M
+
+- Consideremos $\hat{\theta}$ que resuleve $\frac{\partial Q_N(\theta)}{\partial \theta}\Bigg|_{\hat{\theta}}=0$
+
+- Realicemos una proximación exacta de primer orden alrededor de $\theta_0$:
+
+$$\frac{\partial Q_N(\theta)}{\partial \theta}\Bigg|_{\hat{\theta}}=\frac{\partial Q_N{\theta}}{\partial \theta}\Bigg|_{\theta_0}+\frac{\partial^2Q_N(\theta)}{\partial \theta \theta'}\Bigg|_{\theta^+}(\hat{\theta}-\theta_0)$$
+
+donde $\theta^+$ es un valor desconocido de $\theta$ entre $\hat{\theta}$ y $\theta_0$
+
+- Por la condición de primer orden, el lado derecho es igual a cero
+
+$$\frac{\partial Q_N{\theta}}{\partial \theta}\Bigg|_{\theta_0}+\frac{\partial^2Q_N(\theta)}{\partial \theta \theta'}\Bigg|_{\theta^+}(\hat{\theta}-\theta_0)=0$$
+---
+
+# Distribución asintótica de estimadores M
+
+- Resolviendo para $(\hat{\theta}-\theta_0)$ y reescalando por $\sqrt{N}$:
+
+$$\sqrt{N}(\hat{\theta}-\theta_0)=-\left(\frac{\partial^2Q_N(\theta)}{\partial \theta\theta'}\right)^{-1}\sqrt{N} \frac{\partial Q_N{\theta}}{\partial \theta}\Bigg|_{\theta_0}$$
+- Noten que esto se parece a lo que teníamos con MCO
+
+- La tarea es asumir las condiciones para aplicar una LGN al primer término y para aplicar un TLC al segundo término
+
+---
+
+# Distribución asintótica de estimadores M
+
+**Distribución límite del máximo local** (Amemiya, 1985, adaptado por CT, 2005)
+
+- Además de los supuestos para la consistencia del máximo local asumimos:
+
+  1. $\partial^2Q_N(\theta)/\partial\theta\partial\theta'$ existe y es continua en una vecindad abierta convexa de $\theta_0$
+  
+  1. $\partial^2Q_N(\theta)/\partial\theta\theta'|_{\theta^+}$ converge en probabilidad a la matriz finita y no singular $A_0$, para toda secuencia $\theta^+$ tal que $\theta^+\xrightarrow{p}\theta_0$:
+
+  1. $\sqrt{N}\partial Q_N(\theta)/\partial \theta |_{\theta_0}\xrightarrow{d}\mathcal{N}(0,B_0)$
+  
+- Entonces, la distribución límite del estimador extremo es:
+
+$$\sqrt{N}(\hat{\theta}-\theta_0)\xrightarrow{d}\mathcal{N}(0,A_0^{-1}B_0A_0^{-1})$$
+con $A_0=p\lim \partial^2Q_N(\theta)/\partial\theta\partial\theta'|_{\theta_0}$, $B_0=p\lim\left(N\frac{\partial Q_N(\theta)}{\partial \theta}\frac{\partial Q_N{\theta}}{\partial \theta'}|_{\theta_0}\right)$ y con $\hat{\theta}$ consistente
+
+
+---
+
+# Distribución asintótica de estimadores M
+
+- Noten que el resultado de la distribución del estimador M asume que ya se ha mostrado la consistencia
+
+- La distribución es un resultado directo de aplicar el límite normal del producto
+
+
+---
+
+class: inverse, middle, center
+
+
+# Máxima verosimilitud
+
+---
+
+# Máxima verosimilitud
+
+- El estimador de máxima verosimilitud es comúnmente usado en econometría
+
+- Es el estimador más eficiente de entre los estimadores asintóticamente normales
+
+- El principio de verosimilitud (Fisher, 1922) consiste en escoger el vector de parámetros que maximice la probabilidad de observar los datos
+
+- En este contexto, consideramos a la función de masa de probabilidad o densidad $f(y,X|\theta)$ como una función de $\theta$, dados unos datos $(y,X)$
+
+- Recordemos que el **estimador de maxima verosimilitud condicional** al máximo local que satisface la condición de primer orden:
+
+$$\frac{1}{2}\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta }=\frac{1}{2}\sum_i\frac{\partial \ln f(y_i|x_i,\theta)}{\partial \theta}=0$$
+---
+
+# Ejemplo Poisson
+
+- Una de las aplicaciones que veremos más adelante trata el problema de modelos de conteo
+
+- En estadística, los problemas de conteo muchas veces se modelan con la función de masa de probabilidad Poisson, que tiene un único parámetro $\lambda$:
+
+$$f(y|\lambda)=e^{\lambda}\lambda^y/y!$$
+
+con $y=0,1,2,\ldots$
+
+- Sabemos además que $E(y)=V(y)=\lambda$
+
+--
+
+- Un modelo de regresión frecuentemente usado *parametriza* $\lambda$ para que varíe de acuerdo a las caracteísticas $X$ y un vector de parámetros: $\lambda=exp(x'\beta)$
+
+- Así, el modelo de regresión Poisson puede escribirse como:
+
+$$f(y|x,\beta)=e^{exp(x'\beta)}exp(x'\beta)^y / y!$$
+
+---
+
+# Ejemplo Poisson
+
+- El problema de máxima verosimilitud con una muestra $\{(y_i,x_i\}$ con $N$ datos consiste en encontre $\beta$ que maximice la función de log verosimilitud
+
+- La función de verosimilitud es la densidad conjunta
+
+- Bajo independencia, la densidad conjunta es $\Pi_i f(y_i|x_i,\beta)$
+
+- Y la función de log verosimilitud es el log del producto, es decir, la suma de los logs: $\sum_i \ln f(y_i|x_i,\beta)$
+
+- En el caso Possion, la log densidad para la observación $i$ es:
+
+$$\ln f(y_i|x_i,\beta)=-exp(x_i\beta)+y_ix_i'\beta-\ln y_i!$$
+
+---
+
+# El estimador de MV
+
+- El estimador $\hat{\beta}_{MV}$ maximiza:
+
+$$Q_N(\beta)=\frac{1}{N}\sum_i\{-exp(x_i\beta)+y_ix_i'\beta-\ln y_i!\}$$
+
+- La condición de primer orden es:
+
+$$\frac{1}{N}\sum_i\left(y_i-exp(x_i'\beta)\right)x_i\big|_{\hat{\beta}}=0$$
+- Esta expresión no tiene una solución cerrada y usamos métodos numéricos para calcular $\hat{\beta}$
+
+
+---
+# Funciones de pérdida
+
+- Consideremos $\hat{y}$, un predictor de $y$ que es función de $X$
+
+- Definamos el error de la predicción como $$L(e)=L(y-\hat{y})$$
+
+- $L(e)$ es la función de pérdida asociada al error $e$
+
+- Si $y$ y $\hat{y}$ son aleatorios, se busca minimizar la pérdida esperada $E(L(e))$
+
+- Si la función depende del vector $X$ de dimensión $k$, la pérdida esperada se puede escribir como $L(e)=L(y-\hat{y}|X)$
+
+- La función de pérdida típicamente usada es la del error cuadrático: $$min_{\hat{y}} E((y-\hat{y})^2)$$
+
+
+---
+
+# Condiciones de regularidad
+
+- Las dos condiciones de regularidad son:
+
+
+1. El vector score tiene esperanza cero: $$E_f\left(\frac{\partial \ln f(y|x,\theta)}{\partial \theta}\right)=\int\frac{\partial \ln f(y|x,\theta)}{\partial \theta}f(y|x,\theta)=0$$
+
+--
+
+1. Con un vector score con esperanza cero, se cumple que: $$-E_f\left(\frac{\partial^2\ln f(y|x,\theta)}{\partial \theta \partial \theta'}\right)=E_f\left(\frac{\partial \ln f(y|x,\theta)}{\partial \theta} \frac{\partial \ln f(y|x,\theta)}{\partial \theta'}\right)$$
+
+---
+
+# Igualdad de la matriz de información
+
+- La **matriz de información de Fisher** es la esperanza del producto exterior del score:
+
+$$\mathcal{I}=E\left(\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta} \frac{\partial \mathcal{L}_N(\theta)}{\partial \theta'} \right)$$
+- Noten que $\mathcal{I}$ es la varianza del score, dado que por la primera condición de regularidad, el score tiene expectativa cero
+
+- El término *información* indica que si $\mathcal{I}$ es grande, entonces cambios en $\theta$ tiene cambios grandes en la log verosimilitud, revelando mucha información sobre $\theta$
+
+
+--
+
+- En nuestro problema de MV, la igualdad de la matriz de información implica y la segunda condición de regularidad implican:
+
+ $$-E_f\left(\frac{\partial^2\mathcal{L}_N(\theta))}{\partial \theta \partial \theta'}\Bigg|_{\theta_0}\right)=E_f\left(\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta} \frac{\partial \mathcal{L}_N(\theta)}{\partial \theta'}\Bigg|_{\theta_0}\right)$$
+- Esta relación se conoce como la **igualdad de la matriz de información** e implica que podemos obtener la matriz de información a partir del score
+
+---
+
+# Igualdad de la matriz de información
+
+- Recordemos que habíamos definido cuando hablamos de estimadores M, de forma general:
+
+  - $A_0=p\lim \partial^2Q_N(\theta)/\partial\theta\partial\theta'|_{\theta_0}$
+  
+  - $B_0=p\lim\left(N\frac{\partial Q_N(\theta)}{\partial \theta}\frac{\partial Q_N{\theta}}{\partial \theta'}|_{\theta_0}\right)$
+  
+  
+--
+
+- La igualdad de la matriz de información también implica que $-A_0=B_0$
+
+
+- Por lo tanto, la varianza asintótica se simplifica a:
+
+$$A_0^{-1}B_0A_0^{-1}=-A_0^{-1}=B_0^{-1}$$
+
+---
+
+# Distribución del estimador de MV
+
+
+- **Distribución del estimador de MV** (Proposición 5.5 en CT)
+
+- Supingamos:
+
+  1. El pgd es la densidad condicional $f(y_i|x_i,\theta)$ usada para definir la función de verosimilitud
+  
+  1. La función de densidad $f(\cdot)$ satisface $f(y,\theta^{(1)})=f(y,\theta^{(2)})$ si y solo si $\theta^{(1)}=\theta^{(2)}$
+  
+  1. La matriz $A_0=p\lim\frac{1}{N}\frac{\partial^2\mathcal{L}_N(\theta)}{\partial \theta \partial\theta'}\Bigg|_{\theta_0}=0$ existe y es no singular
+  
+  1. El orden de la diferenciación e integración de la función de log verosimilitud puede ser invertido
+  
+- Entonces el estimador de MV, definido como la solución a las condiciones de primer orden, es consistente para $\theta_0$ y
+
+$$\sqrt{N}(\hat{\theta}_{MV}-\theta_0)\xrightarrow{d}\mathcal{N}(0,-A_0^{-1})$$
+---
+
+# Distribución del estimador de MV
+
+- La condición clave es 1., es decir, que el modelo está correctamente especificado
+
+- La condición 2. es técnica e implica identificación
+
+- La condición 3. es parecida a lo que asumiamos en MCO para poder aplicar una LGN al promedio $N^{-1}X'X$
+
+- La mayoría de nuestras aplicaciones satisfacen el supuesto 4. Este supuesto excluye a las distribuciones cuyos rangos depende de $\theta$, como la uniforme
+
+
+---
+
+# Próxima sesión
+
+- Terminaré la discusión de MV
+
+- Hablaré sobre mínimos cuadrados no lineales
+
+- Hablaré sobre pruebas de hipótesis en general
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**

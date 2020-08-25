@@ -3,6 +3,9 @@
 
 
 [Sesión 2](https://rojasirvin.github.io/ECNII2020/sesiones/s2/sesion2.html#1). Revisión de regresión lineal y teoría asintótica
+
+[Sesión 3](https://rojasirvin.github.io/ECNII2020/sesiones/s3/sesion3.html#1). Estimadores M
+
 <!---
 
 commented
