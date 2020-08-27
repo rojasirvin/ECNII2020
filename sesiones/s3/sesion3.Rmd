@@ -474,7 +474,7 @@ class: inverse, middle, center
 
 # Estimador de mínimos cuadrados no lineales
 
-- La generalización de los métodos de estimación de mínimos cuadrados es el caso en que $E(y|x)=q(x,\beta)$
+- La generalización de los métodos de estimación de mínimos cuadrados es el caso en que $E(y|x)=g(x,\beta)$
 
 - El estimador de MCNL $\hat{\beta}_{MCNL}$ minimiza la suma de residuales cuadráticos $\sum_i (y_i-g(x_i,\beta))^2$, o maximiza:
 
@@ -554,7 +554,7 @@ donde $D=\frac{\partial \mathbf{g}}{\partial \beta'}\Big|_{\beta_0}$ es una matr
 
 # Caso homocedástico
 
-- Un caso especial es cuando $\Omega_0=\sigma_0^2U$, por lo que $B_0$ se simplifica a $B_0=\sigma_0^2A_0$ y la varianza del estimador de MCNL se simplifica a:
+- Un caso especial es cuando $\Omega_0=\sigma_0^2I$, por lo que $B_0$ se simplifica a $B_0=\sigma_0^2A_0$ y la varianza del estimador de MCNL se simplifica a:
 
 $$V(\hat{\beta}_{MCNL})=\sigma_0^2A_0^{-1}$$
 ---

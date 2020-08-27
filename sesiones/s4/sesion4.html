@@ -57,7 +57,7 @@ class: inverse, middle, center
 
 - `\(h\)` es el número de hipótesis a probar (en este caso 2)
 
-- `\(R\)` es una matriz de $h \times K $
+- `\(R\)` es una matriz de `\(h\)` x `\(K\)`
 
 - Tenemos una hipótesis nula y una alternativa:
 
@@ -154,7 +154,7 @@ $$
 
 con `\(\hat{h}=h(\hat{\theta})\)` y con `\(\hat{R}=\frac{\partial h(\hat{\theta})}{\partial \theta'}\Bigg|_{\hat{\theta}}\)`
 
-- `\(W_{NL}\)` se distribuye asintóticamente como `\(chi^2(h)\)` bajo la `\(H0\)`
+- `\(W_{NL}\)` se distribuye asintóticamente como `\(\chi^2(h)\)` bajo la `\(H0\)`
 
 - Rechazamos `\(H0\)` en favor de `\(Ha\)` a un nivel de significancia `\(\alpha\)` si `\(W_{NL}&gt;\chi^2_{\alpha}(h)\)`
 
@@ -194,7 +194,7 @@ con `\(C_0=V(\hat{\theta})\)`
 
 - Entonces 
 
-`$$N(\hat{\theta})'\left(R_0C_0R_0'\right)^{-1}h(\hat{\theta}) \xrightarrow{d}\chi^2(h)$$`
+`$$h(\hat{\theta})'\left(R_0C_0R_0'\right)^{-1}h(\hat{\theta}) \xrightarrow{d}\chi^2(h)$$`
 - El estadístico `\(W_{NL}\)` se obtiene reemplazando `\(R_0\)` y `\(C_0\)` por estimadores consistentes
 
 ---
@@ -227,10 +227,13 @@ class: inverse, middle, center
 
 - Hablaré sobre los tests de verosimilitud
 
-- Comenzaré con los modelos de conteo
+- Comenzaré con los modelos de variable categórica
 
-  CT Capítulo 20
+  - CT Capítulo 16
 
+- El jueves comenzamos con conteo
+
+  - CT capítulo 20
 ---
 
 class: center, middle
