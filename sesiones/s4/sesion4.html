@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Pruebas de hipótesis</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.3/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs\cide.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\stackpath.bootstrapcdn.com\bootstrap\4.3.1\css\bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\use.fontawesome.com\releases\v5.7.2\css\all.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\cdn.rawgit.com\jpswalsh\academicons\master\css\academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: title-slide
+
+
+
+.title[
+# Sesión 4. Pruebas de hipótesis
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas &lt;br&gt; División de Economía
+]
+
+---
+# Agenda
+  
+1. Final
+---
+
+class: inverse, middle, center
+
+# Test de Wald
+
+---
+
+# Test de Wald
+
+- Es uno de los más usados en pruebas de hipótesis en econometría
+
+- En Econometría I seguramente vieron la versión lineal de este test (quizás sin el nombre) cuando querían probar restricciones lineales en un modelo lineal
+
+--
+
+- En un modelo lineal con `\(y=X'\beta+u\)` y con `\(K=4\)`, queremos probar la hipótesis de que `\(\beta_1=1\)` y `\(\beta_2-\beta_3=2\)`
+
+- `\(h\)` es el número de hipótesis a probar (en este caso 2)
+
+- `\(R\)` es una matriz de $h \times K $
+
+- Tenemos una hipótesis nula y una alternativa:
+
+$$
+`\begin{aligned}
+H_0: R\beta_0-r=0 \\
+H_a: R\beta_0-r\neq 0
+\end{aligned}`
+$$
+---
+
+# Test de Wald
+
+- En este caso, la matriz `\(R\)` tiene la forma:
+
+$$
+R=
+`\begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; -1 &amp;  0 \\
+\end{pmatrix}`
+$$
+- Mientras que `\(r=\begin{pmatrix} 1 \\ 2 \\ \end{pmatrix}\)`
+
+--
+
+- El test de Wald de `\(R\beta_0-r=0\)` se basa en qué tan cercano a cero es el análogo muestral `\(R\hat{\beta}-r=0\)`, donde `\(\hat{\beta}\)` es el estimador de MCO
+
+--
+
+- Supongamos que `\(u\sim\mathcal{N}(0,\sigma^2I)\)`, por lo que `\(\hat{\beta}\sim\mathcal{N}(\beta_0,\sigma^2_0(X'X)^{-1})\)`
+
+- Entonces, `\(R\hat{\beta}-r\sim\mathcal{N}(0,\sigma^2_0R(X'X)^{-1}R')\)`
+
+
+---
+
+# Test de Wald
+
+- Podemos entonces construir la forma cuadrática `\(W_1\)`:
+
+`$$W_1=(R\hat{\beta}-r)'\left(\sigma_o^2R(X'X)^{-1}R'\right)^{-1}(R\hat{\beta}-r)$$`
+- Que se puede mostrar que tiene una distribución `\(\chi^2(h)\)`
+
+--
+
+- En la práctica, no observamos `\(W_1\)`, así que usamos la versión con la varianza estimada:
+
+`$$W_2=(R\hat{\beta}-r)'\left(\hat{s}^2R(X'X)^{-1}R'\right)^{-1}(R\hat{\beta}-r)$$`
+- `\(W_2\)` tiene una distribución asintítica `\(\chi^2(h)\)` bajo la `\(H0\)`
+
+
+- Podemos calcular `\(W_2\)` y la probabilidad de que dicho valor ocurra en una distribución `\(\chi^2(h)\)`
+
+- Si la probabilidad es menor al nivel de significancia elegido (típicamente 5% en economía), se rechaza la `\(H0\)`
+
+--
+
+- Problema: test muy restrictivo pues depende del supueto de homocedasticidad
+
+---
+
+class: inverse, middle, center
+
+
+# Hipótesis no lineales
+
+---
+
+# Hipótesis no lineales
+
+- Consideremos `\(h\)` restricciones, posiblemente no lineales en los parámetros
+
+- El vector de parámetros es de dimensión `\(q\times 1\)` con `\(h\leq q\)`
+
+--
+
+- Queremos probar:
+
+$$
+`\begin{aligned}
+H_0: h(\theta_0)=0 \\
+H_a: h(\theta_0)\neq 0
+\end{aligned}`
+$$
+
+---
+
+# Test de Wald no lineal
+
+- El estadístico de Wald es:
+
+`$$W_{NL}=\hat{h}'(\hat{R}\hat{V}(\hat{\theta})\hat{R}')\hat{h}$$`
+
+con `\(\hat{h}=h(\hat{\theta})\)` y con `\(\hat{R}=\frac{\partial h(\hat{\theta})}{\partial \theta'}\Bigg|_{\hat{\theta}}\)`
+
+- `\(W_{NL}\)` se distribuye asintóticamente como `\(chi^2(h)\)` bajo la `\(H0\)`
+
+- Rechazamos `\(H0\)` en favor de `\(Ha\)` a un nivel de significancia `\(\alpha\)` si `\(W_{NL}&gt;\chi^2_{\alpha}(h)\)`
+
+- O, equivalentemente, rechazamos `\(H0\)` a un nivel `\(\alpha\)` si el valor `\(p\)`, es decir `\(P(\chi^2(h)&gt;W)\)` es menor que `\(\alpha\)`
+
+---
+
+# Derivación del estadístico de Wald no lineal
+
+
+- Consideremos la restricción `\(h(\hat{\theta})\)`
+
+- Una expansión de Taylor alrededor de `\(\theta_0\)` resulta en:
+
+`$$h(\hat{\theta})=h(\theta_0)+\frac{\partial h(\theta)}{\partial \theta'}\Bigg|_{\theta^+}(\hat{\theta}-\theta_0)$$`
+- Como ya hemos hecho antes, podemos reescalar y resolver:
+
+`$$\sqrt{N}(h(\hat{\theta})-h(\theta_0))=R(\theta^+)\sqrt{N}(\hat{\theta}-\theta_0)$$`
+donde, en adelante, `\(R(\theta)=\frac{\partial h(\theta)}{\partial \theta}\)`
+
+---
+
+# Derivación del estadístico de Wald no lineal
+
+- Si podemos aplicar una LGN y un TLC, sabemos la distribución límite del lado izquierdo:
+
+
+`$$\sqrt{N}(h(\hat{\theta})-h(\theta_0))=\xrightarrow{d}\mathcal{N}(0,R_0C_0R_0')$$`
+con `\(C_0=V(\hat{\theta})\)`
+
+- Y bajo `\(H0\)`:
+
+`$$\sqrt{N}h(\hat{\theta})=\xrightarrow{d}\mathcal{N}(0,R_0C_0R_0')$$`
+--
+
+- Recordemos que si `\(z\sim\mathcal{N}(0,\Omega)\)`, entonces `\(z'\Omega^-1z\sim\chi^2(dim(\Omega))\)`
+
+- Entonces 
+
+`$$N(\hat{\theta})'\left(R_0C_0R_0'\right)^{-1}h(\hat{\theta}) \xrightarrow{d}\chi^2(h)$$`
+- El estadístico `\(W_{NL}\)` se obtiene reemplazando `\(R_0\)` y `\(C_0\)` por estimadores consistentes
+
+---
+
+class: inverse, middle, center
+
+
+# Usos del test de Wald
+
+---
+
+# Test de significancia
+
+- Un test de significancia se usa para probar si `\(\theta_j\)` es distinto de cero
+
+- Entonces `\(h(\theta)=\theta_j\)`
+
+- El vector `\(r(\theta)=\frac{\partial h}{\partial \theta'}\)` es un vector de ceros, excepto en la `\(j\)`ésima entrada que toma el valor de 1
+
+--
+
+- En este caso, el estadístico de Wald queda como:
+
+`$$W_z=\frac{\hat{\theta}}{se(\hat{\theta}_j)}$$`
+- Un objeto familiar para ustedes, comúnmente llamdo estadístico `\(t\)`, aunque estrictamente, se distribuye asintóticamente como una normal (de hecho, normal estándar, de ahí su nombre `\(z\)`)
+
+---
+
+# Próxima sesión
+
+- Hablaré sobre los tests de verosimilitud
+
+- Comenzaré con los modelos de conteo
+
+  CT Capítulo 20
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": null,
+"scroll": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

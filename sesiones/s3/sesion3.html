@@ -120,7 +120,7 @@ class: inverse, middle, center
 `$$\frac{1}{N}\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta }=\frac{1}{N}\sum_i\frac{\partial \ln f(y_i|x_i,\theta)}{\partial \theta}=0$$`
 - El adjetivo de **condicional** se debe a que el estimador se bajas en la densidad de `\(y\)` dado `\(x\)`, pero comúnmente se emplea solo el término de estimador de máxima verosimilitud
 
-- Al vector gradiente de primeras derivadas parciales `\(\frac{\mathcal{L}_N(\theta)}{\partial \theta}\)` se le conoce como **vector score**
+- Al vector gradiente de primeras derivadas parciales `\(s(\theta)=\frac{\mathcal{L}_N(\theta)}{\partial \theta}\)` se le conoce como **vector score**
 
 - Al score evaluado en `\(\theta_0\)` se le conoce como **score eficiente**
 
@@ -230,6 +230,9 @@ con `\(A_0=p\lim \partial^2Q_N(\theta)/\partial\theta\partial\theta'|_{\theta_0}
 - Noten que el resultado de la distribución del estimador M asume que ya se ha mostrado la consistencia
 
 - La distribución es un resultado directo de aplicar el límite normal del producto
+---
+
+
 
 
 ---
@@ -319,6 +322,13 @@ con `\(y=0,1,2,\ldots\)`
 
 1. Con un vector score con esperanza cero, se cumple que: `$$-E_f\left(\frac{\partial^2\ln f(y|x,\theta)}{\partial \theta \partial \theta'}\right)=E_f\left(\frac{\partial \ln f(y|x,\theta)}{\partial \theta} \frac{\partial \ln f(y|x,\theta)}{\partial \theta'}\right)$$`
 
+
+--
+
+- Es relativamente fácil mostrar las condiciones de regularidad, por eso dejé este paso para la tarea
+
+
+
 ---
 
 # Igualdad de la matriz de información
@@ -335,7 +345,7 @@ con `\(y=0,1,2,\ldots\)`
 
 - En nuestro problema de MV, la igualdad de la matriz de información implica y la segunda condición de regularidad implican:
 
- `$$-E_f\left(\frac{\partial^2\mathcal{L}_N(\theta))}{\partial \theta \partial \theta'}\Bigg|_{\theta_0}\right)=E_f\left(\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta} \frac{\partial \mathcal{L}_N(\theta)}{\partial \theta'}\Bigg|_{\theta_0}\right)$$`
+ `$$\mathcal{I}=E_f\left(\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta} \frac{\partial \mathcal{L}_N(\theta)}{\partial \theta'}\Bigg|_{\theta_0}\right)=-E_f\left(\frac{\partial^2\mathcal{L}_N(\theta))}{\partial \theta \partial \theta'}\Bigg|_{\theta_0}\right)$$`
 - Esta relación se conoce como la **igualdad de la matriz de información** e implica que podemos obtener la matriz de información a partir del score
 
 ---
@@ -344,9 +354,9 @@ con `\(y=0,1,2,\ldots\)`
 
 - Recordemos que habíamos definido cuando hablamos de estimadores M, de forma general:
 
-  - `\(A_0=p\lim \partial^2Q_N(\theta)/\partial\theta\partial\theta'|_{\theta_0}\)`
+  - `\(A_0=p\lim \left(\frac{\partial^2Q_N(\theta)}{\partial\theta\partial\theta'} \Bigg|_{\theta_0}\right)\)`
   
-  - `\(B_0=p\lim\left(N\frac{\partial Q_N(\theta)}{\partial \theta}\frac{\partial Q_N{\theta}}{\partial \theta'}|_{\theta_0}\right)\)`
+  - `\(B_0=p\lim\left(N\frac{\partial Q_N(\theta)}{\partial \theta}\frac{\partial Q_N{\theta}}{\partial \theta'}\Bigg|_{\theta_0} \right)\)`
   
   
 --
@@ -365,7 +375,7 @@ con `\(y=0,1,2,\ldots\)`
 
 - **Distribución del estimador de MV** (Proposición 5.5 en CT)
 
-- Supingamos:
+- Supongamos:
 
   1. El pgd es la densidad condicional `\(f(y_i|x_i,\theta)\)` usada para definir la función de verosimilitud
   
@@ -382,13 +392,188 @@ con `\(y=0,1,2,\ldots\)`
 
 # Distribución del estimador de MV
 
-- La condición clave es 1., es decir, que el modelo está correctamente especificado
+- La condición clave es 1, es decir, que el modelo está correctamente especificado
 
-- La condición 2. es técnica e implica identificación
+- La condición 2 es técnica e implica identificación
 
-- La condición 3. es parecida a lo que asumiamos en MCO para poder aplicar una LGN al promedio `\(N^{-1}X'X\)`
+- La condición 3 es parecida a lo que asumiamos en MCO para poder aplicar una LGN al promedio `\(N^{-1}X'X\)`
 
 - La mayoría de nuestras aplicaciones satisfacen el supuesto 4. Este supuesto excluye a las distribuciones cuyos rangos depende de `\(\theta\)`, como la uniforme
+
+
+---
+
+# Distribución asintótica de estimadores M
+
+- Estos resultados implican que la distribución asintótica del estimador de MV es:
+
+`$$\hat{\theta}_{MV}\stackrel{a}{\sim}\mathcal{N}\left(\theta,-\left( E\left(\frac{\partial^2\mathcal{L}_N(\theta)}{\partial\theta\partial\theta'}\right)\right)^{-1}\right)$$`
+--
+
+- La varianza del estimador de MV es la **cota inferior de Cramer-Rao**, o la cota inferior de la varianza de los estimadores insesgados en muestras pequeñas
+
+- Para muestras grandes,es la cota para la matriz de varianzas de estimadores consistentes asintóticamente normales
+
+- En pocas palabras, el estimador de MV tiene la propiedad de tener la menor varianza de entre los estimadores consistentes
+
+- El supuesto clave para lograr esto es la correcta especificación del modelo
+
+---
+
+#Estimación de la matriz de varianzas de MV
+
+- El resultado de la igualdad de la matriz de información simplifica la estimación de la matriz de varianzas del estimador de máxima verosimilitud
+
+- Asintóticamente, la matriz `\(A_0^{-1}B_0=A_0^{-1}\)`, `\(-A_0^{-1}\)` y `\(B_0^{-1}\)` son equivalentes
+
+--
+
+- Dos matrices de varianza empleadas, y que son asintóticamente equivalentes son:
+
+  - El estimador hessiano: `\(\hat{A}_H=\frac{\partial^2\mathcal{L}_N(\theta)}{\partial\theta\partial\theta'}\Bigg|_{\hat{\theta}}=H(\theta)\big|_{\hat{\theta}}\)`
+
+  - El estimador de producto exterior del score o BHHH (Bernd, Hall, Hall &amp; Hausman, 1974): `\(\hat{A}_{BHHH}=\frac{1}{N}\sum_i\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta}\big|_{\hat{\theta}}\frac{\partial \mathcal{L}_N(\theta)}{\partial \theta'}\big|_{\hat{\theta}}=\frac{1}{N}\sum_i s_i(\hat{\theta})s_i(\hat{\theta})'\)`
+
+---
+
+# Ejemplo: retomamos nuestro ejemplo Poisson
+
+
+- En nuestro ejemplo poisson, el score es: 
+`$$s_i(\beta)=(y_i-exp(x_i'\beta))x_i$$`
+- Por lo que la segunda derivada es:
+
+`$$\frac{\partial s_i(\beta)}{\partial \beta \partial \beta}=-exp(x_i'\beta)x_ix_i'$$`
+--
+
+- Por tanto, un estimador de la varianza del estimador de MV será:
+
+`$$\hat{V}(\hat{\beta})=\left(\sum_iexp(x_i'\hat{\beta})x_ix_i'\right)^{-1}$$`
+
+---
+
+class: inverse, middle, center
+
+# Mínimos cuadrados no lineales
+
+---
+
+# Estimador de mínimos cuadrados no lineales
+
+- La generalización de los métodos de estimación de mínimos cuadrados es el caso en que `\(E(y|x)=q(x,\beta)\)`
+
+- El estimador de MCNL `\(\hat{\beta}_{MCNL}\)` minimiza la suma de residuales cuadráticos `\(\sum_i (y_i-g(x_i,\beta))^2\)`, o maximiza:
+
+`$$Q_N(\beta)=-\frac{1}{2N} \sum_i (y_i-g(x_i,\beta))^2$$`
+
+- Las condiciones de primer orden son:
+`$$\frac{\partial Q_N(\beta)}{\partial \beta}=\frac{1}{N}\sum_i\frac{\partial g_i(x_i,\beta)}{\partial \beta}(y_i-g_i(x_i,\beta))=0$$`
+
+- Las condiciones de primer orden impican que el residual `\((y_i-g_i(x_i,\beta))\)` es ortogonal a `\(\frac{\partial g_i(x_i,\beta)}{\partial \beta}\)` (en el caso lineal, los residuales son ortogonales a las `\(x\)`)
+
+- De nuevo, no existe una solución cerrada para `\(\hat{\beta}_{MCNL}\)` y se debe calcular usando métodos iterativos
+
+
+---
+
+# Distribución del estmador de MCNL
+
+- Seguimos un procedimiento similar al usado en el caso de MV
+
+- Realizamos una expansión de Taylor a las condiciones de primer orden alrededor de `\(\beta_0\)` y ordenamos términos para obtener:
+
+`$$\sqrt{N}(\hat{\beta}_{MCNL}-\beta_0)=-\left(-\frac{1}{N}\sum_i\frac{\partial g_i}{\partial \beta} \frac{\partial g_i}{\partial \beta'}+\sum_i\frac{1}{N}\frac{\partial^2g_i}{\partial \beta\partial\beta'}(y_i-g_i)\Bigg|_{\beta^+}\right)^{-1}\left(\frac{1}{\sqrt{N}}\sum_i\frac{\partial g_i}{\partial \beta}u_i\Bigg|_{\beta_{0}}\right)$$`
+- Recordemos que `\(\beta^+\)` es un valor entre `\(\hat{\beta}_{MCNL}\)` y `\(\beta_0\)`
+
+--
+
+- Noten que dado que `\(E(u|x)=0\)`, el término `\(\sum_i\frac{1}{N}\frac{\partial^2g_i}{\partial \beta\partial\beta'}(y_i-g_i)=0\)`, entonces nos concentramos en:
+
+`$$\sqrt{N}(\hat{\beta}_{MCNL}-\beta_0)=\left(\frac{1}{N}\sum_i\frac{\partial g_i}{\partial \beta} \frac{\partial g_i}{\partial \beta'}\Bigg|_{\beta^{+}}\right)^{-1}\left(\frac{1}{\sqrt{N}}\sum_i\frac{\partial g_i}{\partial \beta}u_i\Bigg|_{\beta_{0}}\right)$$`
+
+---
+
+# Distribución del estmador de MCNL
+
+- **Distribución del estimador de MCNL** (Proposición 5.6 en CT)
+
+- Supongamos que:
+
+  1. El modelo es `\(y_i=g(x_i,\beta)+u_i\)`
+  1. En el pgd, `\(E(u_i|x_i)=0\)` y `\(E(uu'|X)=\Omega_0\)`, con `\(\Omega_{0,ij}=\sigma_{ij}\)`
+  1. La función `\(g(\cdot)\)` satisface `\(g(x,\beta^{(1)}=g(x,\beta^{(2)})\)` si y solo si `\(\beta^{(1)}=\beta^{(2)}\)`
+  1. La matriz `\(A_0\)` existe y es positiva definida
+  1. `\(N^{-1/2}\frac{\partial g_i}{\partial \beta} u_i|_{\beta0}\xrightarrow{d} \mathcal{N}(0,B_0)\)`
+
+--
+
+- Entonces el estimador de MCNL, definido como una solución de las condiciones de primer orden es consistente para `\(\beta_0\)` y
+
+`$$\sqrt{N}(\hat{\beta}_{MCNL}-\beta_0)\xrightarrow{d}\mathcal{N}(0,A_0^{-1}B_0A_0^{-1})$$`
+- Donde `\(A_0=p\lim \frac{1}{N}\frac{\partial g_i}{\partial \beta}\frac{\partial g_i}{\partial \beta'}\Big|_{\beta_0}\)` y `\(B_0=p\lim\frac{1}{N}\sum_i\sum_j\sigma_{ij} \frac{\partial g_i}{\partial \beta} \frac{\partial g_j}{\partial \beta'}\Big|_{\beta_0}\)`
+
+---
+
+# Distribución del estmador de MCNL
+
+- De nuevo, la condición 1 indica que el modelo está bien especificado
+
+- La condición 3 es la cuestión técnica que *identifica* el parámetro en los datos
+
+- La condición 4 nos permite aplicar una LGN al primer término
+
+- La condición 5 permite usar un TLC 
+
+--
+
+- Noten que las matrices `\(A_0\)` y `\(B_0\)` son casi idénticas al caso de MCO, excepto que `\(x_i\)` es sustituida aquí por `\(\frac{\partial g_i}{\partial \beta}\Big|_{\beta_0}\)`
+
+--
+
+- La distribución asintótica del estimador de MCNL es:
+
+`$$\hat{\beta}_{MCNL}\stackrel{a}{\sim}\mathcal{N}\left(\beta,(D'D)^{-1}D'\Omega_0 D(D'D)^{-1}\right)$$`
+donde `\(D=\frac{\partial \mathbf{g}}{\partial \beta'}\Big|_{\beta_0}\)` es una matriz de derivadas cuya `\(i\)`ésima fila es `\(\partial g_i/\partial\beta'\big|_{\beta_0}\)`
+
+
+---
+
+# Caso homocedástico
+
+- Un caso especial es cuando `\(\Omega_0=\sigma_0^2U\)`, por lo que `\(B_0\)` se simplifica a `\(B_0=\sigma_0^2A_0\)` y la varianza del estimador de MCNL se simplifica a:
+
+`$$V(\hat{\beta}_{MCNL})=\sigma_0^2A_0^{-1}$$`
+---
+
+# Estimación de la matriz de varianzas de MCNL
+
+- Consideremos el caso más general con posible heterocedasticidad de forma desconocida, por lo que nuestra tarea es estimar `\(A_0^{-1}B_0A_0^{-1}\)`
+
+- Para `\(A_0\)`, un estimador consistente es:
+
+`$$\hat{A}=\frac{1}{N}\sum_i\frac{\partial g_i}{\partial \beta}\Bigg|_{\hat{\beta}}\frac{\partial g_i}{\partial \beta}\Bigg|_{\hat{\beta'}}$$`
+--
+
+- Bajo independencia, `\(B_0\)` se simplifica a `\(B_0=p\lim\frac{1}{N}\sum_i\sigma_{i}^2 \frac{\partial g_i}{\partial \beta} \frac{\partial g_i}{\partial \beta'}\Big|_{\beta_0}\)`
+
+- COmo en el caso de MCO, White (1980) porpone un estimador para `\(B_0\)` (más no para `\(\sigma_i^2\)`):
+
+`$$\hat{B}_0=\frac{1}{N}\sum_i\hat{u}_i^2\frac{\partial g_i}{\partial \beta} \frac{\partial g_i}{\partial \beta'}\Bigg|_{\hat{\beta}}=\frac{1}{N}\frac{\partial \mathbf{g}'}{\partial \beta}\Bigg|_{\hat{\beta}}\hat{\Omega}\frac{\partial \mathbf{g}}{\partial \beta}\Bigg|_{\hat{\beta}}$$`
+con `\(\hat{u}_i=y_i-g(x_i,\hat{\beta})\)`
+
+---
+
+# Estimación de la matriz de varianzas de MCNL
+
+- El estimador de la varianza asintótica consistente bajo heterocedasticidad del estimador de MVNL es:
+
+`$$\hat{V}(\hat{\beta}_{MCNL})=(\hat{D}'\hat{D})^{-1}\hat{D}'\hat{\Omega}\hat{D}(\hat{D}'\hat{D})^{-1}$$`
+con `\(\hat{D}=\frac{\partial \mathbf{g}}{\partial \beta'}\Big|_{\hat{\beta}}\)`
+
+
+---
+
+class: inverse, middle, center
 
 
 ---

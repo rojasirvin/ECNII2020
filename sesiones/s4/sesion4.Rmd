@@ -1,0 +1,258 @@
+---
+title: "Pruebas de hipótesis"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "27 de agosto de 2020"
+mathspec: true
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+library(tidyverse)
+library(magick)
+library(reticulate)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+```
+
+.title[
+# Sesión 4. Pruebas de hipótesis
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+# Agenda
+  
+1. Final
+---
+
+class: inverse, middle, center
+
+# Test de Wald
+
+---
+
+# Test de Wald
+
+- Es uno de los más usados en pruebas de hipótesis en econometría
+
+- En Econometría I seguramente vieron la versión lineal de este test (quizás sin el nombre) cuando querían probar restricciones lineales en un modelo lineal
+
+--
+
+- En un modelo lineal con $y=X'\beta+u$ y con $K=4$, queremos probar la hipótesis de que $\beta_1=1$ y $\beta_2-\beta_3=2$
+
+- $h$ es el número de hipótesis a probar (en este caso 2)
+
+- $R$ es una matriz de $h \times K $
+
+- Tenemos una hipótesis nula y una alternativa:
+
+$$
+\begin{aligned}
+H_0: R\beta_0-r=0 \\
+H_a: R\beta_0-r\neq 0
+\end{aligned}
+$$
+---
+
+# Test de Wald
+
+- En este caso, la matriz $R$ tiene la forma:
+
+$$
+R=
+\begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 1 & -1 &  0 \\
+\end{pmatrix}
+$$
+- Mientras que $r=\begin{pmatrix} 1 \\ 2 \\ \end{pmatrix}$
+
+--
+
+- El test de Wald de $R\beta_0-r=0$ se basa en qué tan cercano a cero es el análogo muestral $R\hat{\beta}-r=0$, donde $\hat{\beta}$ es el estimador de MCO
+
+--
+
+- Supongamos que $u\sim\mathcal{N}(0,\sigma^2I)$, por lo que $\hat{\beta}\sim\mathcal{N}(\beta_0,\sigma^2_0(X'X)^{-1})$
+
+- Entonces, $R\hat{\beta}-r\sim\mathcal{N}(0,\sigma^2_0R(X'X)^{-1}R')$
+
+
+---
+
+# Test de Wald
+
+- Podemos entonces construir la forma cuadrática $W_1$:
+
+$$W_1=(R\hat{\beta}-r)'\left(\sigma_o^2R(X'X)^{-1}R'\right)^{-1}(R\hat{\beta}-r)$$
+- Que se puede mostrar que tiene una distribución $\chi^2(h)$
+
+--
+
+- En la práctica, no observamos $W_1$, así que usamos la versión con la varianza estimada:
+
+$$W_2=(R\hat{\beta}-r)'\left(\hat{s}^2R(X'X)^{-1}R'\right)^{-1}(R\hat{\beta}-r)$$
+- $W_2$ tiene una distribución asintítica $\chi^2(h)$ bajo la $H0$
+
+
+- Podemos calcular $W_2$ y la probabilidad de que dicho valor ocurra en una distribución $\chi^2(h)$
+
+- Si la probabilidad es menor al nivel de significancia elegido (típicamente 5% en economía), se rechaza la $H0$
+
+--
+
+- Problema: test muy restrictivo pues depende del supueto de homocedasticidad
+
+---
+
+class: inverse, middle, center
+
+
+# Hipótesis no lineales
+
+---
+
+# Hipótesis no lineales
+
+- Consideremos $h$ restricciones, posiblemente no lineales en los parámetros
+
+- El vector de parámetros es de dimensión $q\times 1$ con $h\leq q$
+
+--
+
+- Queremos probar:
+
+$$
+\begin{aligned}
+H_0: h(\theta_0)=0 \\
+H_a: h(\theta_0)\neq 0
+\end{aligned}
+$$
+
+---
+
+# Test de Wald no lineal
+
+- El estadístico de Wald es:
+
+$$W_{NL}=\hat{h}'(\hat{R}\hat{V}(\hat{\theta})\hat{R}')\hat{h}$$
+
+con $\hat{h}=h(\hat{\theta})$ y con $\hat{R}=\frac{\partial h(\hat{\theta})}{\partial \theta'}\Bigg|_{\hat{\theta}}$
+
+- $W_{NL}$ se distribuye asintóticamente como $chi^2(h)$ bajo la $H0$
+
+- Rechazamos $H0$ en favor de $Ha$ a un nivel de significancia $\alpha$ si $W_{NL}>\chi^2_{\alpha}(h)$
+
+- O, equivalentemente, rechazamos $H0$ a un nivel $\alpha$ si el valor $p$, es decir $P(\chi^2(h)>W)$ es menor que $\alpha$
+
+---
+
+# Derivación del estadístico de Wald no lineal
+
+
+- Consideremos la restricción $h(\hat{\theta})$
+
+- Una expansión de Taylor alrededor de $\theta_0$ resulta en:
+
+$$h(\hat{\theta})=h(\theta_0)+\frac{\partial h(\theta)}{\partial \theta'}\Bigg|_{\theta^+}(\hat{\theta}-\theta_0)$$
+- Como ya hemos hecho antes, podemos reescalar y resolver:
+
+$$\sqrt{N}(h(\hat{\theta})-h(\theta_0))=R(\theta^+)\sqrt{N}(\hat{\theta}-\theta_0)$$
+donde, en adelante, $R(\theta)=\frac{\partial h(\theta)}{\partial \theta}$
+
+---
+
+# Derivación del estadístico de Wald no lineal
+
+- Si podemos aplicar una LGN y un TLC, sabemos la distribución límite del lado izquierdo:
+
+
+$$\sqrt{N}(h(\hat{\theta})-h(\theta_0))=\xrightarrow{d}\mathcal{N}(0,R_0C_0R_0')$$
+con $C_0=V(\hat{\theta})$
+
+- Y bajo $H0$:
+
+$$\sqrt{N}h(\hat{\theta})=\xrightarrow{d}\mathcal{N}(0,R_0C_0R_0')$$
+--
+
+- Recordemos que si $z\sim\mathcal{N}(0,\Omega)$, entonces $z'\Omega^-1z\sim\chi^2(dim(\Omega))$
+
+- Entonces 
+
+$$N(\hat{\theta})'\left(R_0C_0R_0'\right)^{-1}h(\hat{\theta}) \xrightarrow{d}\chi^2(h)$$
+- El estadístico $W_{NL}$ se obtiene reemplazando $R_0$ y $C_0$ por estimadores consistentes
+
+---
+
+class: inverse, middle, center
+
+
+# Usos del test de Wald
+
+---
+
+# Test de significancia
+
+- Un test de significancia se usa para probar si $\theta_j$ es distinto de cero
+
+- Entonces $h(\theta)=\theta_j$
+
+- El vector $r(\theta)=\frac{\partial h}{\partial \theta'}$ es un vector de ceros, excepto en la $j$ésima entrada que toma el valor de 1
+
+--
+
+- En este caso, el estadístico de Wald queda como:
+
+$$W_z=\frac{\hat{\theta}}{se(\hat{\theta}_j)}$$
+- Un objeto familiar para ustedes, comúnmente llamdo estadístico $t$, aunque estrictamente, se distribuye asintóticamente como una normal (de hecho, normal estándar, de ahí su nombre $z$)
+
+---
+
+# Próxima sesión
+
+- Hablaré sobre los tests de verosimilitud
+
+- Comenzaré con los modelos de conteo
+
+  CT Capítulo 20
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
