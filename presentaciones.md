@@ -18,7 +18,7 @@
 | 14 | Mocetti | MC2E2M | 29 de septiembre | César Ángeles |
 | 15 | Hirvonen & Hoddinott | Poisson + VI | 29 de septiembre | Daniel Hernández | 
 | 16 | Li & Maddala | Bootstrap | 20 de octubre | Eduardo García |
-| 17 | PENDIENTE | Panel | 22 de octubre | |
+| 17 | PENDIENTE | Panel | 22 de octubre | Miguel Manrique |
 | 18 | Kagin & Coautores | Panel | 27 de octubre | Nevid Torres |
 | 19 | Bwalya | Panel | 27 de octubre | Ricardo Solís |
 | 20 | Castillo & coautores | Panel Poisson | 27 de octubre | Rafael Martínez |
