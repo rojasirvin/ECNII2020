@@ -4,7 +4,7 @@
 | ---  | --- | --- | --- | --- |
 | 1  | Ávila y Pérez | Binaria | 3 de septiembre | Ricardo Solís |
 | 2  | Kveder & Flahaux | Multinomial | 8 de septiembre | Diana Castañeda | 
-| 3  | Conigliani & coautores | Ordenados | 8 de septiembre | |
+| 3  | Conigliani & coautores | Ordenados | 8 de septiembre | Daniel Mendoza |
 | 4  | White & Buckley | Poisson | 8 de septiembre | Eduardo García |
 | 5 | Young & coautores | Inflado en cero   | 8 de septiembre | Rafael Martínez |
 | 6 | Antón & Bustillo | Negativo binomial | 8 de septiembre | Miguel Manrique |
