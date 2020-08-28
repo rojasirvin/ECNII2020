@@ -14,6 +14,7 @@
   | Campos & Nuñez | IV | 24 de septiembre | Luis Enrique Ramos |
   | Hackett & Marquez | IV | 29 de septiembre | Thania Hernández |
   | Mocetti | MC2E2M | 29 de septiembre | César Ángeles |
+  | Hirvonen & Hoddinott | Poisson + VI | 29 de septiembre | Daniel Hernández | 
   | Li & Maddala | Bootstrap | 20 de octubre | Eduardo García |
   | Castillo & coautores | Panel Poisson | 27 de octubre | Rafael Martínez |
   | PENDIENTE | Panel + VI | 27 de ocubre | César Ángeles | 
@@ -23,4 +24,5 @@
   | PENDIENTE | LATE | 12 de noviembre | Diana Castañeda |
   | Li & Zhu | Espacial | 26 de noviembre | Federico Daverio |
   | Carrel & Coautores | Pares | 26 de noviembre | Alonso Pizarro |
+  | Peri & Sparber | Shift-share | 26 de noviembre | Daniel Hernández |
   
