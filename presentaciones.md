@@ -13,7 +13,7 @@
 | 9 | Colchero & coautores | Dos partes | 17 de septiembre | Karla Amaro |
 | 10 | Circella & coautores | Ordenado + selección   | 17 de septiembre | Federico Daverio |
 | 11 | Campos & Nuñez | IV | 24 de septiembre | Luis Enrique Ramos |
-| 12 | López-Feldman | IV | 29 de septiembre   | |
+| 12 | López-Feldman | IV | 29 de septiembre   | Nevid Torres |
 | 13 | Hackett & Marquez | IV | 29 de septiembre | Thania Hernández |
 | 14 | Mocetti | MC2E2M | 29 de septiembre | César Ángeles |
 | 15 | Hirvonen & Hoddinott | Poisson + VI | 29 de septiembre | Daniel Hernández | 
