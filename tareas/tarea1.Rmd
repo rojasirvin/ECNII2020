@@ -156,7 +156,7 @@ e.	[1 puntos] Estime nuevamente el modelo, pero ahora, especifique que la altern
 
 ## Pregunta 9
 
-Use la base de datos **phd_articulos.csv**, la cual contiene información sobre el número de artículos publicados en los últimos tres años del doctorado para una muestra de entonces estudiantes. Nuestra variable de interés será entonces **art**.
+Use la base de datos *phd_articulos.csv*, la cual contiene información sobre el número de artículos publicados en los últimos tres años del doctorado para una muestra de entonces estudiantes. Nuestra variable de interés será entonces **art**.
 
 a.	[1 punto] ¿Hay evidencia de sobredispersión en la variable **art**?
 
