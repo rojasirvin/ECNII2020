@@ -1,0 +1,625 @@
+---
+title: "Variable dependiente categórica"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "1 de septimebre de 2020"
+mathspec: true
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+library(tidyverse)
+library(magick)
+library(reticulate)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+```
+
+.title[
+# Sesión 5. Variable dependiente categórica
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+# Agenda
+  
+1. Final
+
+
+---
+
+# Introducción
+
+- Frecuentemente nos encontramos con problemas donde la variable dependiente es categórica
+
+  - Probabilidad de comprar o no comporar un producto
+  
+  - Probabilidad de escoger el producto $j$ de entre $J$ posibles alternativas
+  
+  - Probabilidad de tener una tarjeta $k$ de entre las varias tarjetas $K$ que tiene una jerarquía
+  
+--
+
+- MCO es inconsistente
+
+- La correcta implementación de modelos de variable categórica se realiza por MV
+
+- Afortunadamente ya sabemos mucho de MV
+
+---
+
+class: inverse, middle, center
+
+# Variable dependiente binaria
+
+---
+
+# Variable dependiente binaria
+
+- $y_i$ toma el valor de 1 si el evento se realiza y 0 si no
+
+- Los datos siguen una distribución Bernoulli con probabilidad que varía entre individuos: $p\equivp_i$
+
+- Especificamos una forma funcional para la probabilidad y se estima por MV
+
+---
+
+# Modelo general
+
+- La variable dependiente:
+$$
+y_i=
+\begin{cases}
+1 \quad\text{con probabilidad }p \\
+0 \quad\text{con probabilidad }1-p
+\end{cases}
+$$
+- Parametrizamos $p_i$ con un vector de características $x_i$ y un vector de parámetros $\beta$:
+
+$$p_i=F(y_i=1|x_i)=F(x_i'\beta)$$
+- A $x_i'\beta$ se le conoce como *índice*, por lo que este modelo es también un modelo de un índice único
+
+--
+
+- $F$ es una función de distribución acumulada (cdf)
+
+- Un modelo de probabilidad lineal simplemente especifica $p_i=x_i'\beta$
+
+---
+
+# Probit y logit
+
+- Un modelo probit especifica $F\cdot$ como una normal estándar con cdf dada por:
+
+$$\Phi(x'\beta)=\int_{-\infty}^{\infty}\phi(z)dz$$
+
+--
+
+- Un modelo logit especifica a $F\cdot$ como una función logística:
+
+$$\Lambda(x'\beta)=\frac{exp\{x'\beta\}}{1+exp\{x'\beta\}}$$
+---
+
+# Efectos marginales
+
+- En un modelo lineal, $\beta_j$ tiene la interpretación directa del efecto de un cambio marginal en $x_j$ sobre $y$
+
+- En cambio, en los modelos de probabilidad no lineal estamos interesaods en:
+
+$$\frac{\partial P(y_i=1)|x_i)}{\partial x_{ij}}=F'(x_i'\beta)\beta_j$$
+
+- Como $F(\cdot)$ es no lineal, los efectos marginales difieren del punto de evaluación, es decir, de $x_i'\beta$
+
+--
+
+- En el caso probit:
+
+$$\frac{\partial P(y_i=1)|x_i)}{\partial x_{ij}}=\phi(x'\beta)\beta_j$$
+
+--
+
+- En el caso logit:
+
+$$\frac{\partial P(y_i=1)|x_i)}{\partial x_{ij}}=\Lambda(x'\beta)(1-\Lambda(x'\beta))\beta_j$$
+---
+
+# Efectos marginales
+
+- Dos efectos marginales que podemos calcular:
+
+1. Promedio de efectos marginales:
+
+$$\frac{1}{N}\sum_i F'(x_i'\hat{\beta})\hat{\beta}_j$$
+
+1. Efecto marginal evaluacdo en la media de $x$:
+
+$$F'(\bar{x}'\hat{\beta})\hat{\beta}_j$$
+--
+
+- Noten que el cociente de efectos marginales es igual al cociente de los coeficientes estimados:
+
+$$\frac{\frac{\partial P(y_i=1)|x_i)}{\partial x_{ij}}}{\frac{\partial P(y_i=1)|x_i)}{\partial x_{ik}}}=\frac{\hat{\beta}_j}{\hat{\beta}_k}$$
+
+---
+
+# Estimación
+
+- Tenemos a la mano datos $(y_i,x_i)$ de $N$ individuos
+
+- La función de masa de probabilidad para $y_i$ es:
+
+$$f(y_i|x_i)=p_i^{y_i}(1-p_i)^{1-y_i},\quad\quad y_i={0,1}$$
+- Recordemos que $p_i=F(x_i'\beta)$
+
+---
+
+# Estimación
+
+- La log densidad será:
+
+$$\ln f(y_i)=y_i\ln p_i + (1-y_i)\ln(1-p_i)$$
+--
+
+- Por independencia sobre $i$, la función de log verosimilitud es:
+
+$$\mathcal{L}(\beta)=\sum_i\{\ln f(y_i)=y_i\ln p_i + (1-y_i)\ln(1-p_i)\}$$
+--
+
+- Sustituyendo $F$ en vez de $p_i$:
+
+
+$$\mathcal{L}(\beta)=\sum_i\{\ln f(y_i)=y_i\ln F(x_i'\beta) + (1-y_i)\ln(1-F(x_i'\beta))\}$$
+---
+
+# Estimación
+
+- La condición de primer orden implica que $\hat{\beta}_{MV}$ resuleve:
+
+$$\sum_i \left(\frac{y_i-F(x_i'\beta)}{F(x_i'\beta)(1-F(x_i'\beta))}F'(x_i'\beta)x_i\right)=0$$
+
+---
+
+class: inverse, middle, center
+
+# Cuasi máxima verosimilitud
+
+---
+# Cuasi máxima verosimilitud
+
+- Hagamos aquí una breve desviación a un tema un general de MV y luego veremos cómo empata con la discusión sobre los modelos de probabilidad no lineal
+
+--
+
+- Un estimador $\hat{\theta}_{CMV}$ es aquel estimador que maximiza una función de log verosimilitud que está mal especificada
+
+- Generalmente, si la densidad está mal especificada, el estimador de MV será inconsistente
+
+- En casos especiales, el estimador de CMV es aún consistente
+
+---
+
+# Familia lineal exponencial
+
+- Una densidad de la familia lineal exponencial puede ser expresada como
+$$f(y|\mu)=\exp\{a(\mu)+b(y)+c(\mu)y\}$$
+- Diferentes formas funcionales para $a$, $b$ y $c$ dan lugar a distintas densidades
+
+- Algunas densidades comúnmente usadas que son de la familia lineal exponencial incluyen la normal (con varianza conocida), la Bernoulli, la exponencial y la Poisson (ver Tabla 5.4 en CT)
+
+---
+
+# Familia lineal exponencial
+
+- Supongamos que parametrizamos la media como $\mu=g(x,\beta)$
+
+- La función de log verosimilitud con una densidad de la familia lineal exponencial será:
+
+$$\mathcal{L}_N(\beta)=\sum_i\left(a(g(x_i,\beta++b(y_i)+c(g(x_i,\beta))y_i\right)$$
+
+--
+
+- Las condiciones de primer orden serán
+
+$$\frac{\partial \mathcal{L}_N(\beta)}{\partial \beta}=\sum_i\frac{y_i-g(x_i\beta)}{(c'(g(x_i'\beta)))^{-1}}\frac{\partial g(x_i,\beta)}{\partial\beta}=0$$
+- El estimador de CMV resuelve estas condiciones, pero no es necesario asumir que la densidad está correctamente bien especificada
+
+- Gouriéroux, Monfort y Trognon (1984) probaron que el estimador de CMV es consistente si $E(y|x)=g(x,\beta_0)$, es decir, si la media condicional de $y$ dado $x$ está bien especificada
+
+---
+
+# Familia lineal exponencial
+
+- Aun cuando la media condicional esté bien especificada, en la práctica se debe usar una matriz de varianzas de sándwich $A_0^{-1}B_0A_0^{-1}$, a menos de que la varianza condicional también esté bien especificada
+
+- En el caso Bernoulli, la varianza condicional está bien especificada, por lo que basta usar 
+$-A_0^{-1}$
+
+--
+
+- Hasta aquí el fin de esta nota
+
+---
+
+class: inverse, middle, center
+
+# De regreso a variable dependiente binaria
+
+---
+
+# Consistencia
+
+- Notemos que para datos Bernoulli se cumple que:
+
+$$E(y)=1\times + 0 \times (1-p)=p$$
+- Es decir, $E(y_i|x_i)=F(x_i'\beta)$, por lo que el lado derecho de las condiciones de primer orden tiene valor esperado de cero
+
+- Es decir, el estimador de MV es consistente si la media condicional está bien especificada
+
+--
+
+- Esto ya lo sabíamos porque la Bernoulli es de la familia lineal exponencial
+
+---
+
+# Distribución asintótica
+
+- Si la densidad está **bien especificada**, la teoría que vimos sobre MV indica que el estimador tendrá una distribución asintótica como sigue:
+$$\hat{\beta}_{MV}\stackrel{a}{\sim}\mathcal{N}\left(\beta, \left(-E\left(\frac{\partial^2\mathcal{L}}{\partial\beta\partial\beta'}\right)\right)^{-1}\right)$$
+
+- Tomando la derivada a las condiciones de primer orden y calculando el negativo del valor esperado obtenemos:
+
+$$\hat{V}(\hat{\beta}_{MV})=\left(\sum_i\frac{1}{F(x_i'\hat{\beta})(1-F(x_i'\hat{\beta}))}F'(x_i'\hat{\beta})^2x_ix_i'\right)^{-1}$$
+--
+
+- Por nuestra discusión de la familia lineal exponencial sabemos que solo necesitamos correcta especificación de la media condicional para tener consistencia
+
+- Pero que se recomienda usar una matriz de sándwich para estimar la varianza del estimador de MV
+
+---
+
+# Distribución asintótica
+
+- En el caso Bernoulli, se puede mostrar que $A=-B$, por lo que el sándwich resulta $A^{-1}BA^{-1}=-A^{-1}$
+
+- Solo en el caso Bernoulli, no hay ninguna ventaja al usar una matriz de varianzas robusta cuando los datos son independientes sobre $i$
+
+- Veremos más adelante que cuando hay errores agrupados sí usaremos una matriz robusta
+
+---
+
+# Particularidades del modelo logit
+
+- Una medida comúnmente usada es la razón de momios u *odds ratio*, también llamado riesgo relativo: $\frac{p}{1-p}$
+
+- El riesgo relativo es la probabilidad de que suceda $y=1$ relativa a la probabilidad de que $y=0$
+
+- En el caso del logit, el riesgo relativo es:
+
+$$\frac{p}{1-p}=exp\{x'\beta\}$$
+
+- Y el log del riesgo relativo es simplemente:
+
+$$\ln\left(\frac{p}{1-p}\right)=x'\beta$$
+
+- Es decir, el log del riesgo relativo o el log de la razón de momios es lineal en $x$
+
+---
+
+# Particularidades del modelo logit
+
+- Noten que expresar las probabilidades como riesgo relativo tiene una interpretación usada comúnmente en bioestadística
+
+- Si $\frac{p}{1-p}=exp\{x'\beta\}$ y $x_j$ cambia en una unidad, entonces el lado derecho se vuelve $exp\{x'\beta\+\beta_j}=exp\{x'\beta\}exp\{\beta_j\}$
+
+- Es decir, el riesgo relativo se ha incrementado $exp\{\beta_j\}$ veces
+
+- Supongamos que $\hat{\beta}_j=0.05$, entonces $exp\{0.05\}\approx 1.05$
+
+--
+
+- Es decir, el riesgo relativo se incrementa en aproximadamente 5%
+
+---
+
+# ¿Probit o logit?
+
+- Empíricamente suelen desempeñarse de forma muy similar
+
+- COmo nos interesan los efectos marginales, la diferencia entre los modelos usados suele ser mínima
+
+- El modelo logit es frecuentemente usado en bioestadística por su interpretación en términos de riesgo relativo
+
+- El probit se puede motivar por un modelo de variable latente normal, que se liga directamente al model Tobit (que veremos más adelante)
+
+
+
+---
+
+# Test de Wald
+
+- Es uno de los más usados en pruebas de hipótesis en econometría
+
+- En Econometría I seguramente vieron la versión lineal de este test (quizás sin el nombre) cuando querían probar restricciones lineales en un modelo lineal
+
+--
+
+- En un modelo lineal con $y=X'\beta+u$ y con $K=4$, queremos probar la hipótesis de que $\beta_1=1$ y $\beta_2-\beta_3=2$
+
+- $h$ es el número de hipótesis a probar (en este caso 2)
+
+- $R$ es una matriz de $h$ x $K$
+
+- Tenemos una hipótesis nula y una alternativa:
+
+$$
+\begin{aligned}
+H_0: R\beta_0-r=0 \\
+H_a: R\beta_0-r\neq 0
+\end{aligned}
+$$
+---
+
+# Test de Wald
+
+- En este caso, la matriz $R$ tiene la forma:
+
+$$
+R=
+\begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 1 & -1 &  0 \\
+\end{pmatrix}
+$$
+- Mientras que $r=\begin{pmatrix} 1 \\ 2 \\ \end{pmatrix}$
+
+--
+
+- El test de Wald de $R\beta_0-r=0$ se basa en qué tan cercano a cero es el análogo muestral $R\hat{\beta}-r=0$, donde $\hat{\beta}$ es el estimador de MCO
+
+--
+
+- Supongamos que $u\sim\mathcal{N}(0,\sigma^2I)$, por lo que $\hat{\beta}\sim\mathcal{N}(\beta_0,\sigma^2_0(X'X)^{-1})$
+
+- Entonces, $R\hat{\beta}-r\sim\mathcal{N}(0,\sigma^2_0R(X'X)^{-1}R')$
+
+
+---
+
+# Test de Wald
+
+- Podemos entonces construir la forma cuadrática $W_1$:
+
+$$W_1=(R\hat{\beta}-r)'\left(\sigma_o^2R(X'X)^{-1}R'\right)^{-1}(R\hat{\beta}-r)$$
+- Que se puede mostrar que tiene una distribución $\chi^2(h)$
+
+--
+
+- En la práctica, no observamos $W_1$, así que usamos la versión con la varianza estimada:
+
+$$W_2=(R\hat{\beta}-r)'\left(\hat{s}^2R(X'X)^{-1}R'\right)^{-1}(R\hat{\beta}-r)$$
+- $W_2$ tiene una distribución asintítica $\chi^2(h)$ bajo la $H0$
+
+
+- Podemos calcular $W_2$ y la probabilidad de que dicho valor ocurra en una distribución $\chi^2(h)$
+
+- Si la probabilidad es menor al nivel de significancia elegido (típicamente 5% en economía), se rechaza la $H0$
+
+--
+
+- Problema: test muy restrictivo pues depende del supueto de homocedasticidad
+
+---
+
+class: inverse, middle, center
+
+
+# Hipótesis no lineales
+
+---
+
+# Hipótesis no lineales
+
+- Consideremos $h$ restricciones, posiblemente no lineales en los parámetros
+
+- El vector de parámetros es de dimensión $q\times 1$ con $h\leq q$
+
+--
+
+- Queremos probar:
+
+$$
+\begin{aligned}
+H_0: h(\theta_0)=0 \\
+H_a: h(\theta_0)\neq 0
+\end{aligned}
+$$
+
+---
+
+# Test de Wald no lineal
+
+- El estadístico de Wald es:
+
+$$W_{NL}=\hat{h}'(\hat{R}\hat{V}(\hat{\theta})\hat{R}')\hat{h}$$
+
+con $\hat{h}=h(\hat{\theta})$ y con $\hat{R}=\frac{\partial h(\hat{\theta})}{\partial \theta'}\Bigg|_{\hat{\theta}}$
+
+- $W_{NL}$ se distribuye asintóticamente como $\chi^2(h)$ bajo la $H0$
+
+- Rechazamos $H0$ en favor de $Ha$ a un nivel de significancia $\alpha$ si $W_{NL}>\chi^2_{\alpha}(h)$
+
+- O, equivalentemente, rechazamos $H0$ a un nivel $\alpha$ si el valor $p$, es decir $P(\chi^2(h)>W)$ es menor que $\alpha$
+
+---
+
+# Derivación del estadístico de Wald no lineal
+
+
+- Consideremos la restricción $h(\hat{\theta})$
+
+- Una expansión de Taylor alrededor de $\theta_0$ resulta en:
+
+$$h(\hat{\theta})=h(\theta_0)+\frac{\partial h(\theta)}{\partial \theta'}\Bigg|_{\theta^+}(\hat{\theta}-\theta_0)$$
+- Como ya hemos hecho antes, podemos reescalar y resolver:
+
+$$\sqrt{N}(h(\hat{\theta})-h(\theta_0))=R(\theta^+)\sqrt{N}(\hat{\theta}-\theta_0)$$
+donde, en adelante, $R(\theta)=\frac{\partial h(\theta)}{\partial \theta}$
+
+---
+
+# Derivación del estadístico de Wald no lineal
+
+- Si podemos aplicar una LGN y un TLC, sabemos la distribución límite del lado izquierdo:
+
+
+$$\sqrt{N}(h(\hat{\theta})-h(\theta_0))=\xrightarrow{d}\mathcal{N}(0,R_0C_0R_0')$$
+con $C_0=V(\hat{\theta})$
+
+- Y bajo $H0$:
+
+$$\sqrt{N}h(\hat{\theta})=\xrightarrow{d}\mathcal{N}(0,R_0C_0R_0')$$
+--
+
+- Recordemos que si $z\sim\mathcal{N}(0,\Omega)$, entonces $z'\Omega^-1z\sim\chi^2(dim(\Omega))$
+
+- Entonces 
+
+$$h(\hat{\theta})'\left(R_0C_0R_0'\right)^{-1}h(\hat{\theta}) \xrightarrow{d}\chi^2(h)$$
+- El estadístico $W_{NL}$ se obtiene reemplazando $R_0$ y $C_0$ por estimadores consistentes
+
+---
+
+class: inverse, middle, center
+
+
+# Usos del test de Wald
+
+---
+
+# Test de significancia
+
+- Un test de significancia se usa para probar si $\theta_j$ es distinto de cero
+
+- Entonces $h(\theta)=\theta_j$
+
+- El vector $r(\theta)=\frac{\partial h}{\partial \theta'}$ es un vector de ceros, excepto en la $j$ésima entrada que toma el valor de 1
+
+--
+
+- En este caso, el estadístico de Wald queda como:
+
+$$W_z=\frac{\hat{\theta}}{se(\hat{\theta}_j)}$$
+- Un objeto familiar para ustedes, comúnmente llamdo estadístico $t$, aunque estrictamente, se distribuye asintóticamente como una normal (de hecho, normal estándar, de ahí su nombre $z$)
+
+---
+
+class: inverse, middle, center
+
+# Tests basados en la verosimilitud
+
+---
+
+# Tests basados en la verosimilitud
+
+- Se asumen que la función de verosimilitud es conocida
+
+- Queremos probar la hipótesis $h(\theta_0)=0$
+
+- Para el test de razón de verosimilitud (LR) y para el test de multiplicador de Lagrange (LM), se requiere llevar a cabo la estimación con las restricciones:
+  
+  - $\hat{\theta}_u$: estimador no restringido
+  - $\tilde{\theta}_r$: estimador restringido
+  
+--
+
+- El estimador restringido $\tilde{\theta}_r$ maximiza el lagrangiano $\mathcal{L}(\theta)-\lambda'h(\theta)$, donde $\lambda$ es un vector de multiplicadores de Lagrange de dimension $h\times 1$
+
+---
+
+# Ejemplo: test de exclusión
+
+- Supongamos $\theta=(\theta_1',\theta_2')'$ y queremos probar la hipótesis de exclusión de $h(\theta)=\theta_2=0$
+
+- Entonces, $\tilde{\theta}_r=(\tilde{\theta}_{1r}',0')$
+
+- $\tilde{\theta}_{1r}$ se obtiene maximizando con respecto a $\theta_1$ la log verosimilitud restringida $\mathcal{L}(\theta_1,0)$
+
+---
+
+# Test de razón de verosimilitud (LR)
+
+- La intuición es que si la $H_0$ es verdadera, los máximos de la verosimilitud restringida y de la no restringida deberían ser los mismos
+
+- Entonces, se usa una fución de la diferencia entre $\mathcal{L}(\tilde{\theta}_r)$ y $\mathcal{L}(\hat{theta}_u)$
+
+--
+
+- Definimos:
+
+$$LR=-2(mathcal{L}(\tilde{\theta}_r)-\mathcal{L}(\hat{theta}_u))$$
+
+- Se puede mostrar que bajo $H_0$, $LM\sim\chi^2(h)$
+
+---
+
+# Test de multiplicador de Lagrange
+
+- Sabemos que en el máximo, $\frac{\mathcal{L}(\theta)}{\partial \theta}\Bigg|_{\hat{\theta}_u}=0$
+
+- Si la $H0$ es verdadera, entonces esto debe suceder que $\frac{\mathcal{L}(\theta)}{\partial \theta}\Bigg|_{\tilde{\theta}_r}\approx 0$
+
+- Noten que esto implica diferencias en el score evaluado en distintos $\theta$, por lo que a este test también se le conoce como **test de scores**
+
+
+
+---
+
+# Próxima sesión
+
+- Hablaré sobre los tests de verosimilitud
+
+- Comenzaré con los modelos de variable categórica
+
+  - CT Capítulo 16
+
+- El jueves comenzamos con conteo
+
+  - CT capítulo 20
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**

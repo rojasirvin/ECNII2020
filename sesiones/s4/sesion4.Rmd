@@ -50,7 +50,13 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 ---
 # Agenda
   
-1. Final
+1. Estudiaremos los tests más usados para probar restricciones no lineales
+
+1. Elaboraremos brevemente sobre sus propiedades asintóticas
+
+1. Daremos algunos ejemplo de tests usados para probar algunas hipótesis con las que comúnmente nos topamos en el trabajo aplicado
+
+
 ---
 
 class: inverse, middle, center
@@ -299,8 +305,6 @@ $$LR=-2(mathcal{L}(\tilde{\theta}_r)-\mathcal{L}(\hat{theta}_u))$$
 ---
 
 # Próxima sesión
-
-- Hablaré sobre los tests de verosimilitud
 
 - Comenzaré con los modelos de variable categórica
 
