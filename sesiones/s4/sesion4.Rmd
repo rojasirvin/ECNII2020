@@ -237,6 +237,67 @@ $$W_z=\frac{\hat{\theta}}{se(\hat{\theta}_j)}$$
 
 ---
 
+class: inverse, middle, center
+
+# Tests basados en la verosimilitud
+
+---
+
+# Tests basados en la verosimilitud
+
+- Se asumen que la función de verosimilitud es conocida
+
+- Queremos probar la hipótesis $h(\theta_0)=0$
+
+- Para el test de razón de verosimilitud (LR) y para el test de multiplicador de Lagrange (LM), se requiere llevar a cabo la estimación con las restricciones:
+  
+  - $\hat{\theta}_u$: estimador no restringido
+  - $\tilde{\theta}_r$: estimador restringido
+  
+--
+
+- El estimador restringido $\tilde{\theta}_r$ maximiza el lagrangiano $\mathcal{L}(\theta)-\lambda'h(\theta)$, donde $\lambda$ es un vector de multiplicadores de Lagrange de dimension $h\times 1$
+
+---
+
+# Ejemplo: test de exclusión
+
+- Supongamos $\theta=(\theta_1',\theta_2')'$ y queremos probar la hipótesis de exclusión de $h(\theta)=\theta_2=0$
+
+- Entonces, $\tilde{\theta}_r=(\tilde{\theta}_{1r}',0')$
+
+- $\tilde{\theta}_{1r}$ se obtiene maximizando con respecto a $\theta_1$ la log verosimilitud restringida $\mathcal{L}(\theta_1,0)$
+
+---
+
+# Test de razón de verosimilitud (LR)
+
+- La intuición es que si la $H_0$ es verdadera, los máximos de la verosimilitud restringida y de la no restringida deberían ser los mismos
+
+- Entonces, se usa una fución de la diferencia entre $\mathcal{L}(\tilde{\theta}_r)$ y $\mathcal{L}(\hat{theta}_u)$
+
+--
+
+- Definimos:
+
+$$LR=-2(mathcal{L}(\tilde{\theta}_r)-\mathcal{L}(\hat{theta}_u))$$
+
+- Se puede mostrar que bajo $H_0$, $LM\sim\chi^2(h)$
+
+---
+
+# Test de multiplicador de Lagrange
+
+- Sabemos que en el máximo, $\frac{\mathcal{L}(\theta)}{\partial \theta}\Bigg|_{\hat{\theta}_u}=0$
+
+- Si la $H0$ es verdadera, entonces esto debe suceder que $\frac{\mathcal{L}(\theta)}{\partial \theta}\Bigg|_{\tilde{\theta}_r}\approx 0$
+
+- Noten que esto implica diferencias en el score evaluado en distintos $\theta$, por lo que a este test también se le conoce como **test de scores**
+
+
+
+---
+
 # Próxima sesión
 
 - Hablaré sobre los tests de verosimilitud

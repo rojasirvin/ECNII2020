@@ -1,0 +1,171 @@
+---
+title: |
+  | CIDE
+  | Maestría en Economía
+  | Econometría II
+
+subtitle: "Tarea 1"
+author: "Profesor: Irvin Rojas"
+date: "Fecha de entrega: 15 de septiembre a las 11:00."
+output:
+  html_document:
+  toc: true
+---
+  
+## Instrucciones
+  
+La tarea debe entregarse de manera individual, pero se recomienda ampliamente colaborar en grupos de estudio. Las secciones teóricas deben estar desarrolladas en un procesador de textos y enviadas en formato .docx o .pdf. Las secciones prácticas deberán contener archivos de código replicable y archivos de salida en R (o similares, en caso de usar otro software) para considerarse completas. Las tareas deben entregarse antes de la fecha límite a través de Teams. Puede crear una carpeta comprimida que contenga todos sus archivos y subir esta carpeta en Teams. Recuerde que en Teams debe asegurarse de que los archivos se han subido correctamente.
+
+## Pregunta 1
+
+Suponga que está interesado en una variable aleatoria que tiene una distribución Poisson con parámetro $\lambda$. En particular:
+$$P(X=x)=\frac{\lambda^x e^{-\lambda}}{x!}$$
+Suponga que tiene una muestra de n independientes e idénticamente distribuidas.
+
+a. [2 puntos] Plantee la función de log verosimilitud del problema.
+
+a. [3 puntos] Obtenga las condiciones de primer orden y resuelva para $\lambda$.
+
+a. [2 puntos] ¿Cuál es la media y la varianza del estimador de máxima verosimilitud que ha encontrado?
+
+a. [1 punto] Suponga que se las $x_i$ son tales que se puede aplicar un teorema de límite central a la media muestral. Entonces, se puede hacer la siguiente afirmación sobre el parámetro poblacional $\lambda$:
+$$P\left(-1.96\leq\left(\frac{\lambda-a}{b}\right)\leq 1.96\right)=0.95$$
+
+## Pregunta 2 (Wooldridge, 2002)
+
+Suponga que $y_i|\mathbf{x}_i\sim\mathcal{N}(m(\mathbf{x}_i,\mathbf{\beta}_0),\sigma_0^2)$, donde $m(\mathbf{x},\mathbf{\beta})$ es una función del vector de variables explicativas $\mathbf{x}$ y del vector de parámetros $\mathbf{\beta}$ de dimensión $(k\times 1)$. Entonces, $E(y_i|\mathbf{x}_i)=m(\mathbf{x}_i,\mathbf{\beta}_0)$ y $V(y_i|\mathbf{x}_i)=\sigma^2_0$.
+
+a. [2 puntos] Escriba la función de log verosimilitud condicional para la observación $i$. Muestre que el estimador de máxima verosimilitud $\hat{\mathbf{\beta}}$ resuelve el problema de minimización $\min_\mathbf{\beta}\sum_i(y_i-m(\mathbf{x}_i,\mathbf{\beta}))^2$.
+
+a. [2 puntos] Sea $\mathbf{\theta}\equiv(\mathbf{\beta}'\;\sigma^2)'$ un vector de parámetros de dimensión $(k+1)\times 1$. Encuentre el vector score para la observación $i$. Muestre que $E(\mathbf{s}_i(\mathbf{\theta}_0)|\mathbf{x}_i)=\mathbf{0}$.
+
+a. [2 puntos] Use las condiciones de primer orden, encuentre $\hat{\sigma}^2$ en términos de $\hat{\mathbf{\beta}}$.
+
+a. [4 puntos] Encuentre la matriz hesiana de la función de verosimilitud con respecto a $\mathbf{\theta}$.
+
+a. [3 puntos] Muestre que $-E(\mathbf{H}_i(\mathbf{\theta}_0)|\mathbf{x}_i)=E(\mathbf{s}_i(\mathbf{\theta}_0)\mathbf{s}_i(\mathbf{\theta}_0)'|\mathbf{x}_i)$.
+
+a. [2 puntos] Encuentre la varianza asintótica estimada de $\hat{\mathbf{\beta}}$ y explique cómo obtendría los errores estándar.
+
+
+
+## Pregunta 3
+
+Suponga una variable aleatoria $X_i$ con distribución desconocida. Sin embargo, sí conocemos que $E(X)=\mu=54$ y que $\sqrt{V(X)}=\sigma=6$. Suponga que se recolecta una muestra de 50 observaciones.
+
+a. [1 punto] ¿Cuál es la distribución asintótica de la media muestral $\bar{X}$?
+
+a. [2 punto] ¿Cuál es la probabilidad de que $X>60$?
+
+a. [1 punto]¿Cuál es la probabilidad de que una observación elegida al azar sea tal que $X_i<50$?
+
+a. [1 punto] Provea un intervalo de confianza de 90% para la media muestral.
+
+## Pregunta 4
+
+Sea $x_1$ un vector de variables continuas, $x_2$ una variable continua y $d_1$ una variable dicotómica. Considere el siguiente modelo probit:
+$$P(y=1│x_1,x_2 )=\Phi(x_1'\alpha+\beta x_2+\gamma x_2^2 )$$
+
+a. [2 punto] Provea una expresión para el efecto marginal de $x_2$ en la probabilidad. ¿Cómo estimaría este efecto marginal?
+
+a. [2 punto] Considere ahora el modelo:
+$$P(y=1│x_1  ,x_2 ,d_1)=\Phi(x_1 '\delta+\pi x_2+\rho d_1+\nu x_2 d_1 )$$
+Provea la nueva expresión para el efecto marginal de $x_2$
+
+a. [2 punto] En el modelo de la parte b., ¿cómo evaluaría el efecto de un cambio en $d_1$ en la probabilidad? Provea una expresión para este efecto.
+
+## Pregunta 5
+
+Considere el modelo Poisson visto en clase y un vector de variables explicativas $x$, todas continuas, usadas para parametrizar la media.
+
+a. [1 puntos] ¿Cuál es el efecto de un cambio en el $j$ésimo regresor sobre $E(y│x)$?
+
+a. [2 puntos] Usando esta expresión, muestre que si el $j$ésimo regresor es $\beta_j$, entonces $100 \beta_j$ es la semielasticidad de $E(y│x)$ con respecto a $x_j$. Nota: Este punto es muy útil para la interpretación de los coeficientes de un modelo Poisson.
+
+a. [2 puntos] ¿Cómo se interpreta $\beta_j$ si reemplazamos $x_j$ por $\log(x_j)$)?
+
+## Pregunta 6 (Cameron & Trivedi, 2005)
+
+En esta pregunta comparará el estimador de MCO, de MV y de MCNL. Antes de comenzar, recuerde fijar una semilla en R (o el software que utilice) para poder replicar sus cálculos. Se recomienda repasar la sección 5.9 en CT.
+
+Cameron y Trivedi proveen pistas para replicar esta tabla [aquí](http://cameron.econ.ucdavis.edu/mmabook/mma05p1mle.do) y [aquí](http://cameron.econ.ucdavis.edu/mmabook/mma05p2nls.do), aunque ellos trabajan en Stata. La idea es entender la *anatomía* de los distintos estimadores estudiados en clase.
+
+a. [2 puntos] Genere una muestra de 10,000 observaciones llamadas $x$ tales que $x\sim\mathcal{N}(1,1)$. Posteriormente, genere $\lambda=exp(\beta_1+\beta_2x)$, donde $(\beta_1\;\beta_2)=(2\;-1)$. Note que $1/\lambda$ es conocida como la tasa en la distribución exponencial. En R, *rexp* requiere especificar como parámetro a la tasa en lugar de $\lambda$.
+
+a. [2 puntos] Reporte una tabla con la media, la desviación estándar, el mínimo y el máximo de $x$, $\lambda$ y $y$.
+
+a. [2 puntos] Reporte una gráfica donde muestre la relación entre $x$ y $\lambda$ en el plano $(x,\lambda)$. Realice otra gráfica similar, ahora para $(x,1/\lambda)$.
+
+a. [2 puntos] Estime por MCO una regresión entre $y$ y $x$. Deberá obtener coeficientes parecidos a los de la primera columna de la Tabla 5.7 en CT.
+
+a. [1 punto] ¿Por qué difieren los coeficientes que obtuvo y los que se presentan en la Tabla 5.7 de CT?
+
+a. [2 puntos] Obtenga los errores robustos. En R, una librería que será muy útil es *sandwich*.
+
+a. [1 punto] ¿El estimador de MCO es consistente? ¿Por qué?
+
+a. [2 puntos] Plantee la función de log verosimilitud.
+
+a. [4 puntos] Obtenga el estimador de máxima verosimilitud de $\beta_1$ y $\beta_2$ obteniendo la solución al negativo del problema de log verosimilitud. En R, puede emplear, por ejemplo *nlm*.
+
+a. [3 puntos] Usando la matriz hesiana obtenida en la solución del problema de optimización, encuentre los errores estándar robustos de los coeficientes estimados.
+
+a. [4 puntos] El modelo antes descrito puede expresarse como una regresión no lineal de la forma $y=exp(-x'\beta)+u$. Encuentre la solución para $\beta_1$ y $\beta_2$. Reporte los errores estándar no robustos. ¿Son consistentes estos errores? ¿Por qué?
+
+a. [3 puntos] Ahora implementará la matriz de varianzas y covarianzas robusta en la ecuación 5.81 de CT. Dé una expresión para $\hat{D}$ en este problema.
+
+a. [3 puntos] Calcule el error estándar robusto definido como en la ecuación 5.81. En este caso $\hat{\Omega}=Diad(\hat{u}_i^2)$.
+
+a. [3 puntos] Calcule una versión alternativa de errores estándar (entre corchetes en Tabla 5.7), esta vez con $\hat{\Omega}=Diag((exp(-x_i'\beta))^2)$.
+
+a. [1 puntos] En este experimento, ¿qué estimador tiene las mejores propiedades?
+
+## Pregunta 7
+
+Use la base *grogger.csv* para esta pregunta. Esta base contiene información sobre arrestos y características socioeconómicas de individuos arrestados.
+a.	[1 punto] Estime un modelo de probabilidad lineal que relacione **arr86** (haber si arrestado al menos una vez en 1986) con **pcnv**, **avgsen**, **tottime**, **ptime86**, **inc86**, **black**, **hispan** y **born60**. Reporte los errores que asumen homocedasticidad y los errores robustos a heteroscedasticidad.
+
+a.	[2 punto] ¿Cuál es el efecto en la probabilidad de arresto si **pcnv** pasa de 0.25 a 0.75?
+
+a.	[2 punto] Realice una prueba de significancia conjunta de **avgsen** y **tottime**. ¿Qué concluye?
+
+a.	[2 punto] Estime un modelo probit relacionando las mismas variables. ¿Cuál es el efecto en la probabilidad de arresto cuando **pcnv** pasa de 0.25 a 0.75 para los valores promedio de **avgsen**, **tottime**, **inc86** y **ptime86** y cuando los individuos son de raza negra, no hispánicos y nacidos en 1960 (**born60** igual a 1). ¿Cómo se comparan estos resultados con lo que encontró con el modelo de probabilidad lineal?
+
+## Pregunta 8
+
+Ahora estimará un modelo multinomial empleando la misma base *motral2012.csv*. El propósito será estudiar los factores relevantes para predecir la forma de ahorro que tienen las personas. Considere lo siguiente sobre las opciones de ahorro de los entrevistados, contenida en la variable **p14**:
+  - **p14** igual a 1 significa cuentas de ahorro bancarias
+  - **p14** igual a 2 significa cuenta de inversión bancaria
+  - **p14** igual a 3 significa inversiones en bienes raíces
+  - **p14** igual a 4 significa caja de ahorro en su trabajo
+  - **p14** igual a 5 significa caja de ahorro con sus amigos
+  - **p14** igual a 6 significa tandas
+  - **p14** igual a 7 significa que ahorra en su casa o alcancías
+  - **p14** igual a 8 significa otro lugar
+  
+a.	[1 punto] Genere una variable categórica llamada **ahorro** que sea igual a 1 cuando **p14** sea igual a 1 o 2, igual a 2 cuando **p14** sea igual a 7, e igual a 3 cuando **p14** sea igual a 3, 4, 5, 6 u 8. Haga que esa variable sea missing cuando **p14** sea missing. Se sugiere que posteriormente etiquete los valores de ahorro de forma que el valor 1 tenga la etiqueta “Banco”, el valor 2 tenga la etiqueta “Casa” y el valor 3 tenga la etiqueta “Otro”.
+
+a.	[2 puntos] Estime un modelo logit multinomial (regresores invariantes a la alternativa) con la opción de ahorro como variable dependiente y con la edad (**eda**) y la condición como jefe de hogar (**jefe_hog**) como variables independientes. ¿Qué puede decir sobre el coeficiente de edad en la alternativa “Casa”?
+
+c.	[2 puntos] Calcule los efectos marginales sobre la probabilidad de ahorrar en el banco. Al considerar el cambio de no ser jefe de hogar a serlo, ¿de qué tamaño es el efecto predicho en la probabilidad de ahorrar en el banco?
+
+d.	[4 puntos] Calcule los cocientes de riesgo relativo (relative risk ratios, RRR). ¿Qué significa el hecho de que el RRR de jefe de hogar sea mayor que 1 en la alternativa “Otro”?
+
+e.	[1 puntos] Estime nuevamente el modelo, pero ahora, especifique que la alternativa “Casa” sea la alternativa base. ¿Cómo es el coeficiente de la edad en la alternativa “Banco”? ¿Es esto congruente con lo que noto en la parte d. de este problema?
+
+
+## Pregunta 9
+
+Use la base de datos **phd_articulos.csv**, la cual contiene información sobre el número de artículos publicados en los últimos tres años del doctorado para una muestra de entonces estudiantes. Nuestra variable de interés será entonces **art**.
+
+a.	[1 punto] ¿Hay evidencia de sobredispersión en la variable **art**?
+
+b.	[2 puntos] Independientemente de si hay sobredispersión o no, estime un modelo Poisson que incluya variables dicotómicas para estudiantes mujeres y para estudiantes casadas o casados, la cantidad de hijos mejores de cinco años, el ranking de prestigio del doctorado (**phd**) y el número de artículos publicados por su mentor. Interprete los coeficientes estimados.
+
+a.	[2 puntos] Obtenga la razón de tasas de incidencia (IRR) para los coeficientes e interprete los resultados.
+
+a.	[1 punto] Considere ahora que las mujeres han tenido carreras profesionales más cortas que los hombres, es decir, han estado menos expuestas a la ocurrencia de los eventos “publicar”. Incorpore esto al análisis y reinterprete los resultados. Pista: explore la opción *offeset* en R.
+
+a.	[2 puntos] Emplee ahora un modelo negativo binomial con sobredispersión constante para estimar la relación entre el número de artículos publicados y las variables explicativas antes enumeradas. Interprete el coeficiente asociado al número de hijos y a la variable dicotómica para estudiantes mujeres.
+
+a. [2 puntos] Emplee ahora un modelo negativo binomial con sobredispersión cuadrática en la media para estimar la relación entre el número de artículos publicados y las variables explicativas antes enumeradas. Interprete el coeficiente asociado al número de hijos y a la variable dicotómica para estudiantes mujeres. ¿Qué puede decir sobre la significancia del $\alpha$ estimado?

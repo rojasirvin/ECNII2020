@@ -13,7 +13,7 @@ Plataforma de enseñanza: Microsoft Teams.
 
 Horario de laboratorio: lunes (7:30 a 9:00).
 
-Horario de oficina: lunes de 12:00 a 13:00, martes de 13:00 a 14:00 y jueves de 17:00 a 18:00 por Microsoft Teams.
+Horario de oficina: lunes y miércoles de 17:00 a 18:00 por Microsoft Teams.
 
 [Programa del curso](https://github.com/rojasirvin/ECNII/blob/master/programa.md).
 
@@ -24,3 +24,5 @@ Horario de oficina: lunes de 12:00 a 13:00, martes de 13:00 a 14:00 y jueves de 
 [Sesiones](https://github.com/rojasirvin/ECNII/blob/master/sesiones.md).
 
 [Presentaciones](https://github.com/rojasirvin/ECNII/blob/master/presentaciones.md).
+
+[Tareas](https://github.com/rojasirvin/ECNII/blob/master/tareas.md).
