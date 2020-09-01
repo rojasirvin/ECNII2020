@@ -194,8 +194,9 @@ con `\(C_0=V(\hat{\theta})\)`
 - Y bajo `\(H0\)`:
 
 `$$\sqrt{N}h(\hat{\theta})=\xrightarrow{d}\mathcal{N}(0,R_0C_0R_0')$$`
---
+---
 
+# Derivación del estadístico de Wald no lineal
 - Recordemos que si `\(z\sim\mathcal{N}(0,\Omega)\)`, entonces `\(z'\Omega^-1z\sim\chi^2(dim(\Omega))\)`
 
 - Entonces 
@@ -229,6 +230,108 @@ class: inverse, middle, center
 
 ---
 
+# Restricciones de exclusión
+
+- Queremos probar que los últimos `\(h\)` componentes de `\(\theta\)` son 0
+
+- Partimos `\(\theta\)` como `\(\theta(\theta_1'\;\theta_2')'\)`
+
+- La restricción es: `\(h(\theta)=\theta_2=0\)`
+
+- En este caso, el estadístico de Wald es:
+
+`$$W=\hat{\theta}_2^2(N^{-1}\hat{C}_{22})^{-1}\hat{theta}_2$$`
+
+donde `\(N^{-1}\hat{C}_{22}=\hat{V}(\hat{\beta}_2)\)`
+
+- `\(W\)` se distribuye `\(\chi^2(h)\)` bajo la `\(H_0\)`
+
+- Este test es la generalización de la prueba `\(F\)` que ustedes han usado ya
+
+---
+
+# Tests de restricciones no lineales
+
+- Consideren que queremos probar la `\(H_0\)` de que `\(\theta_1=\frac{1}{\theta_2}\)`, entonces:
+
+`$$H_0:\;h(\theta)=\frac{\theta_1}{\theta_2}-1=0$$`
+--
+
+- En este caso, `\(R(\theta)=\left(\frac{\partial h(\theta)}{\partial \theta_1}\;\frac{\partial h(\theta)}{\partial \theta_2}\; 0\right)=\left(\frac{1}{\hat{\theta}_2}\;-\frac{\hat{\theta}_1}{\hat{\theta}_2^2}\; 0\right)\)`
+
+- Noten que en este caso solo hay una hipótesis, por lo que `\(W\)` es un escalar:
+
+$$
+W=
+N\left(\frac{\theta_1}{\theta_2}-1\right)^2\left(\left(\frac{1}{\hat{\theta}_2}\;-\frac{\hat{\theta}_1}{\hat{\theta}_2^2}\; 0\right)
+`\begin{pmatrix}
+\hat{c}_1^1 &amp; \hat{c}_1^2 &amp; \cdots  \\
+\hat{c}_2^1 &amp; \hat{c}_2^2 &amp; \cdots  \\
+\vdots &amp; \vdots &amp; \ddots \\
+\end{pmatrix}`
+\left(\frac{1}{\hat{\theta}_2}\;-\frac{\hat{\theta}_1}{\hat{\theta}_2^2}\; 0\right)'\right)^{-1}
+$$
+- `\(W\)` se distribuye asintóticamente `\(\chi^2(1)\)` (por lo que `\(\sqrt{W}\)` es `\(\mathcal{N}(0,1)\)`)
+
+---
+
+class: inverse, middle, center
+
+# Método delta
+
+---
+
+# Método delta
+
+- El método que usamos para derivar el test de Wald se usando aproximaciones de Taylor se conoce como **método delta** pues involucra las derivadas de `\(h(\theta)\)`
+
+- Este método es más general y puede ser utilizado para obtener la distribución de una combinación no lineal de parámetros y hacer inferencia
+
+- Por ejemplo, quisiéramos obtener `\(\frac{\hat{\theta}_1}{\hat{\theta}_2}\)` y dar un intervalo de confianza para este cociente
+
+---
+
+# Método delta
+
+- Supongamos que `\(\hat{\gamma}=h(\theta)\)`
+
+- Y que sabemos que `\(\sqrt{N}(\hat{\theta}-\theta_0)\xrightarrow{d}\mathcal{N}(0,C_0)\)`
+
+--
+
+- El método delta implica hacer la expansión de Taylor alrededor de `\(\theta_0\)` y resolver, para obtener:
+
+`$$\sqrt{N}(\hat{\gamma}-\gamma_0)\xrightarrow{d}\mathcal{N}(0,R_0C_0R_0')$$`
+- Y podemos estimar la variance de `\(\hat{\gamma}\)` como `\(\hat{V}(\hat{\gamma})=\hat{R}N^{-1}\hat{C}\hat{R}\)`
+
+--
+
+- Podemos entonces estimar el error estándar `\(\hat{\gamma}\)`: `$$se(\hat{\gamma})=\sqrt{\hat{r}N^{-1}\hat{C}\hat{r}'}$$`
+
+
+donde `\(r(\theta)=\partial\gamma/\partial\theta'=\partial h(\theta)/\partial\theta'\)`
+
+
+---
+
+# Ejemplo: exponencial
+
+- Supongamos que estimamos `\(\beta\)` de un modelo no lineal tal que podemos también estimar consistentemente la varianza de `\(\sqrt{N}(\hat{\beta}-\beta_0)\)` como `\(\hat{C}\)`
+
+- Supongamos que por alguna razón nos interesa conocer `\(\exp\{\beta\}=h(\beta)\)`
+
+- En este caso `\(\partial h /\partial \beta=\exp\{\beta\}\)`
+
+--
+
+- Entonces, el error estándar será:
+
+`$$se(\exp\{\hat{\beta}\})=\sqrt{N^{-1}\exp\{\hat{\beta}\}^2\hat{V}(\hat{\beta})}=\exp\{\hat{\beta}\}se(\hat{\beta})$$`
+
+
+
+---
+
 class: inverse, middle, center
 
 # Tests basados en la verosimilitud
@@ -237,7 +340,7 @@ class: inverse, middle, center
 
 # Tests basados en la verosimilitud
 
-- Se asumen que la función de verosimilitud es conocida
+- Se asume que la función de verosimilitud es conocida
 
 - Queremos probar la hipótesis `\(h(\theta_0)=0\)`
 
@@ -266,15 +369,17 @@ class: inverse, middle, center
 
 - La intuición es que si la `\(H_0\)` es verdadera, los máximos de la verosimilitud restringida y de la no restringida deberían ser los mismos
 
-- Entonces, se usa una fución de la diferencia entre `\(\mathcal{L}(\tilde{\theta}_r)\)` y `\(\mathcal{L}(\hat{theta}_u)\)`
+- Entonces, se usa una función de la diferencia entre `\(\mathcal{L}(\tilde{\theta}_r)\)` y `\(\mathcal{L}(\hat{\theta}_u)\)`
 
 --
 
 - Definimos:
 
-`$$LR=-2(mathcal{L}(\tilde{\theta}_r)-\mathcal{L}(\hat{theta}_u))$$`
+`$$LR=-2(\mathcal{L}(\tilde{\theta}_r)-\mathcal{L}(\hat{\theta}_u))$$`
 
-- Se puede mostrar que bajo `\(H_0\)`, `\(LM\sim\chi^2(h)\)`
+- Se puede mostrar que bajo `\(H_0\)`
+`$$LM\sim\chi^2(h)$$`
+
 
 ---
 
@@ -282,7 +387,7 @@ class: inverse, middle, center
 
 - Sabemos que en el máximo, `\(\frac{\mathcal{L}(\theta)}{\partial \theta}\Bigg|_{\hat{\theta}_u}=0\)`
 
-- Si la `\(H0\)` es verdadera, entonces esto debe suceder que `\(\frac{\mathcal{L}(\theta)}{\partial \theta}\Bigg|_{\tilde{\theta}_r}\approx 0\)`
+- Si la `\(H_0\)` es verdadera, entonces debe suceder que `\(\frac{\mathcal{L}(\theta)}{\partial \theta}\Bigg|_{\tilde{\theta}_r}\approx 0\)`
 
 - Noten que esto implica diferencias en el score evaluado en distintos `\(\theta\)`, por lo que a este test también se le conoce como **test de scores**
 
