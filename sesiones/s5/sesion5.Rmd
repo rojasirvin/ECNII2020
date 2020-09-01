@@ -85,7 +85,7 @@ class: inverse, middle, center
 
 - $y_i$ toma el valor de 1 si el evento se realiza y 0 si no
 
-- Los datos siguen una distribución Bernoulli con probabilidad que varía entre individuos: $p\equivp_i$
+- Los datos siguen una distribución Bernoulli con probabilidad que varía entre individuos: $p\equiv p_i$
 
 - Especificamos una forma funcional para la probabilidad y se estima por MV
 
