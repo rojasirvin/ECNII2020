@@ -266,7 +266,7 @@ donde $N^{-1}\hat{C}_{22}=\hat{V}(\hat{\beta}_2)$
 
 # Tests de restricciones no lineales
 
-- Consideren que queremos probar la $H_0$ de que $\theta_1=\frac{1}{\theta_2}$, entonces:
+- Consideren que queremos probar la $H_0$ de que $\theta_1 =\theta_2}$, entonces:
 
 $$H_0:\;h(\theta)=\frac{\theta_1}{\theta_2}-1=0$$
 --
