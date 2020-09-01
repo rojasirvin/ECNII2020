@@ -378,7 +378,7 @@ class: inverse, middle, center
 `$$LR=-2(\mathcal{L}(\tilde{\theta}_r)-\mathcal{L}(\hat{\theta}_u))$$`
 
 - Se puede mostrar que bajo `\(H_0\)`
-`$$LM\sim\chi^2(h)$$`
+`$$LR\sim\chi^2(h)$$`
 
 
 ---
@@ -392,6 +392,14 @@ class: inverse, middle, center
 - Noten que esto implica diferencias en el score evaluado en distintos `\(\theta\)`, por lo que a este test también se le conoce como **test de scores**
 
 
+--
+
+- El test se define como
+
+`$$LM=N^{-1}\frac{\partial \mathcal{L}}{\partial\theta'}\Bigg|_{\tilde{\theta}_r}\tilde{A}^{-1}\frac{\partial \mathcal{L}}{\partial\theta'}\Bigg|_{\tilde{\theta}_r}$$`
+- De nuevo, este test tiene una distribución asintótica `\(\chi^2(h)\)`
+
+- Para su implementación se obtiene una expresión para el score y se evalúa en `\(\tilde{\theta}_r\)`, de ahí que algunos consideren más apropiado el nombre de test de score
 
 ---
 
