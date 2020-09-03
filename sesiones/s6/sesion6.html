@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Modelos multinomiales</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.3/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs\cide.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\stackpath.bootstrapcdn.com\bootstrap\4.3.1\css\bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\use.fontawesome.com\releases\v5.7.2\css\all.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\cdn.rawgit.com\jpswalsh\academicons\master\css\academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: title-slide
+
+
+
+.title[
+# Sesión 6. Modelos multinomiales
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas &lt;br&gt; División de Economía
+]
+
+---
+# Agenda
+  
+1. Estudiaremos la generalización de los modelos de variable categórica a cuando las opciones son más de dos
+
+1. Mostraremos las propiedades asintóticas de los estimadores de MV para este tipo de modelos
+
+
+---
+
+class: inverse, middle, center
+
+# Modelos multinomiales
+
+---
+
+# Modelos multinomiales
+
+- Pensemos en un caso más general donde `\(y\)` toma el valor de `\(j\)` si la `\(j\)`ésima alternativa se escoge:
+
+`$$p_j=P(y=j)\quad j=1,\ldots,m$$`
+
+- Esto se puede ver como un problema de `\(m\)` decisiones binarias:
+
+$$
+y_i=
+`\begin{cases}
+1 \quad\text{si }y=j \\
+0 \quad\text{si }y\neq j \\
+\end{cases}`
+$$
+
+--
+
+- La densidad multinomial para un individuo es
+
+`$$f(y)=p_1^{y_1}\times\ldots\times p_m^{y_m}=\prod_j p_j^{y_j}$$`
+
+donde `\(p_{ij}=P(y_i=j)=F_j(X_i,\beta)\)`
+
+---
+
+# Verosimilitud
+
+- Para una muestra de `\(N\)` observaciones independientes, la log verosimilitud es:
+
+`$$\mathcal{L}_n=\sum_i\sum_j y_{ij}\ln(p_{ij})$$`
+
+con `\(p_{ij}=F_j(x_i,\beta)\)`
+
+--
+
+- Las condiciones de primer orden están dadas por:
+
+`$$\frac{\partial \mathcal{L}}{\partial\beta}=\sum_i\sum_j\frac{y_{ij}}{p_{ij}}\frac{\partial p_{ij}}{\partial\beta}=0$$`
+---
+
+# Distribución asintótica
+
+- Noten que la distribución es necesariamente multinomial, por lo que `\(E(y_{ij})=p_{ij}\)` y el estimador de MV será consistente
+
+--
+
+- Además, de forma análoga al modelo de probabilidad no lineal, la correcta especificación garantiza que la distribución asintótica esté dada por:
+
+`$$\hat{\beta}\stackrel{a}{\sim}\mathcal{N}\left(\beta_0, \left(\sum_i\sum_j\frac{1}{p_{ij}}\frac{\partial p_{ij}}{\partial\beta}\frac{\partial p_{ij}}{\partial\beta'}-\frac{\partial^2p_{ij}}{\partial\beta\partial\beta'}\Bigg|_{\beta_0} \right)^{-1}\right)$$`
+--
+
+- De nuevo, con observaciones independientes sobre `\(i\)`, no es necesario implementar una matriz de sándwich
+
+---
+
+# Regresores variantes entre alternativas
+
+- Podemos pensar la forma en que las `\(X\)` entran en el modelo en dos extremos
+
+- Pensemos en que cada alternativa tiene sus propias características
+
+`$$x_i=[x_{i1}'\;x_{i2}'\;\ldots\;x_{i1}']'$$`
+- Por tanto, la probabilidad de escoger la alternativa `\(j\)` es:
+
+`$$p_{ij}=F_{ij}(x_i,\beta)=F_j(x_{i1}'\beta,\ldots,x_{im}\beta)$$`
+
+- Cuando esto sucede, las `\(\beta\)`s son constantes entre alternativas
+
+- El modelo más común para este tipo de problemas es el **logit condicional**
+
+---
+
+# Regresores invariantes entre alternativas
+
+- Por ejemplo, las características socioeconómicas de los consumidores que eligen entre varios tipos de cerveza
+
+`$$F_j(x_i,\beta)=F_j(x_i'\beta,\ldots x_i'\beta_m)$$`
+
+- En este caso, los parámetros son distintos para cada alternativa:
+
+`$$\beta=[\beta_1'\;\beta_2'\;\ldots\;\beta_m']$$`
+
+- Se realiza una normalización `\(\beta_1=0\)`
+
+---
+
+class: inverse, middle, center
+
+# Logit multinomial
+
+---
+
+# Logit multinomial
+
+- Es el modelo más popular para estudiar procesos multinomiales
+
+- Se especializa a dos modelos específicos dependiendo de cómo son los regresores:
+
+  - Logit condicional: regresores variantes entre alternativas
+  
+  - Logit multinomial: regresores invariantes entre alternativas
+
+
+--
+
+- En la práctica, podemos tener regresores de ambos tipos
+
+  - Logit mixto
+  
+
+
+---
+
+# Ejemplo: pesca 
+
+
+| | `\(y = 1\)`|  `\(y = 2\)`| `\(y = 3\)` | `\(y = 4\)` | Todos `\(y\)` |
+|---- |:---: |:---: |:---: | :---:|:---: |
+|Var. explicativa   | Playa | Puerto | Privado | Barco | 
+|Ingreso (mUSD) |4.052| 3.387 | 4.654 | 3.881 | 4.099 | 
+|Precio playa | 36 | 31 | 138 | 121 | 103 |
+|Precio puerto ($)  | 36 | 31  | 138  | 121 | 103| 
+|Precio privado ($) | 98  | 82 | 42 | 45 | 55|
+|Precio barco ($) | 125|  110| 71| 75|  84 |
+|Tasa de pesca playa | 0.28 | 0.26 | 0.21 | 0.25  | 0.24 |
+|Tasa de pesca puerto | 0.22  | 0.20 | 0.13 | 0.16 | 0.16 |
+|Tasa de pesca privado  |0.16 | 0.15 | 0.18 | 0.18 | 0.17 |
+|Tasa de pesca barco | 0.52 | 0.50 | 0.65  | 0.69 | 0.63 |
+|Probabilidad | 0.113 | 0.151 | 0.354 | 0.38 | 1.000 |
+|N | 134| 178| 418| 452| 1182|
+
+---
+
+# Ejemplo: pesca 
+
+- El precio de cada tipo y la tasa de pesca varían entre alternativas
+
+- Parece haber una relación inversa entre el precio y la decisión
+
+- La relación no es tan clara en cuanto a la tasa
+
+
+--
+
+- Además parece que la gente con mayor ingreso se mueve progresivamente hacia la derecha en la tabla anterior
+
+---
+
+# Logit condicional
+
+- Supongamos que los regresores varían entre alternativas:
+
+`$$p_{ij}=\frac{exp(x_{ij}'\beta)}{\sum_{l=1}^m exp(x_{il}'\beta)},\quad j=1\ldots,m$$`
+- Esta expresión nos da la probabilidad de que el `\(i\)`ésimo individuo escoja la alternativa `\(j\)`
+
+- Las probabilidades están entre 0 y 1 y suman 1
+
+- En el **caso** del logit condicional, el signo del coeficiente `\(\beta\)` es directamente interpretable
+
+---
+
+# Logit condicional en el problema de pesca
+
+- En el caso del ejemplo de pesca, el logit condicional quedaría así:
+
+`$$p_{ij}=\frac{\beta_P P_{ij}+\beta_C C_{ij}}{\sum_{k=1}^4 exp(\beta_P P_{ik}+\beta_C C_{ik})},\quad j=1\ldots,4$$`
+- Lo que estimamos es el efecto en la probabilidad de escoger una alternativa cuando cambia el precio o cuando cambia la tasa de pesca
+
+- En el caso del logit condicional, estaremos seguros que un aumento en el precio disminuye la probabilidad de elegir un modo de pesca
+
+- Y lo contrario se concluye para la tasa de pesca
+
+---
+
+# Ejemplo: resultados del modelo de pesca 
+
+| Regresor |  Tipo|  Coeficiente |  LC|  LMN |  Mixto | 
+| ----- |  | :-----: | :-----: |  :-----: |  :-----:|  :-----: | 
+ | Precio (P) |  Variante |  `\(\beta_P\)` |  −0.021 |  –| −0.025 | 
+ | Tasa de pesca (C) |  Variante |  `\(\beta_C\)` |  0.953 |  –| 0.358 | 
+ | Constante  | Invariante  | `\(\alpha_1\)` : Playa  | –| 0.0 |  0.0 | 
+ |  | | `\(\alpha_2\)` : Puerto |  – |0.814 |  0.778 | 
+ |  | | `\(\alpha_3\)` : Privado |  –| 0.739 |  0.527 | 
+ |  | | `\(\alpha_4\)`: Barco  | – |1.341  | 1.694 | 
+ | Ingreso (I) |  Invariant|  `\(\beta_{I1}\)` : Beach  | –| 0.0  | 0.0 | 
+ |  | | `\(\beta_{I2}\)` : Pier  | –  | −0.143 |  −0.128 | 
+ |  | | `\(\beta_{I3}\)` : Private  | –  | 0.092 |  0.089 | 
+ |  | | `\(\beta_{I4}\)` : Charter |– | −0.032  | −0.033 | 
+
+
+---
+
+# Logit multinomial
+
+- La probablidad está dada por:
+
+`$$p_{ij}=\frac{exp(x_{i}'\beta_j)}{\sum_{l=1}^m exp(x_{i}'\beta_l)},\quad j=1\ldots,m$$`
+
+- Se impone la restricción de un `\(\beta_0\)`
+
+
+- La interpretación de los parámetros es más complicada
+
+- Un coeficiente estimado positivo no se traduce directamente como un incremento en la probabilidad de escoger una alternativa
+
+- La interpretación de los coeficientes se da con respecto a la categoría base
+
+---
+
+# Logit multinomial en el problema de pesca
+
+- El ingreso no varía entre alternativas
+
+- En este caso el modelo logit multinomial queda como:
+
+`$$p_{ij}=\frac{exp(\alpha_j+\beta_{Ij}I_i)}{\sum_{k=1}^4exp(\alpha_k+\beta_{Ik}I_i)},\quad j=1\ldots,4$$`
+
+- Aquí normalizamos `\(\alpha_1=\beta_{I1}=0\)`
+
+- En este caso, no podemos decir que un incremento en un regresor se traduzca en un incremento en la probabilidad de escoger cierta alternativa
+
+- La interpretación en este modelo se da con respecto a la cateogría omitida, en este caso playa
+
+---
+
+class: inverse, middle, center
+
+# Modelo mixto
+
+
+---
+
+# Modelo mixto
+
+- Permite incorporar regresores variantes e invariantes entre alternativas
+
+- La idea es escribir el modelo como un logit condicional, haciendo uso de variables dummy
+
+---
+
+# Próxima sesión
+
+- Terminaré de hablar sobre el modelo multinomial
+
+- Comenzaremos con conteo
+
+  - CT capítulo 20
+  
+- Pequeños cambios al [calendario](https://github.com/rojasirvin/ECNII2020/blob/master/ECNII_calendario_otono_2020.pdf)
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": null,
+"scroll": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

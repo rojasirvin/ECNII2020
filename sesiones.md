@@ -8,8 +8,9 @@
 
 [Sesión 4](https://rojasirvin.github.io/ECNII2020/sesiones/s4/sesion4.html#1). Pruebas de hipótesis
 
-[Sesión 5](https://rojasirvin.github.io/ECNII2020/sesiones/s5/sesion5.html#1). Variable dependiente categórica
+[Sesión 5](https://rojasirvin.github.io/ECNII2020/sesiones/s5/sesion5.html#1). Variable dependiente binaria
 
+[Sesión 6](https://rojasirvin.github.io/ECNII2020/sesiones/s6/sesion6.html#1). Modelos multinomiales
 
 <!---
 

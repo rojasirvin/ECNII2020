@@ -1,5 +1,5 @@
 ---
-title: "Variable dependiente categórica"
+title: "Variable dependiente binaria"
 author: "Irvin Rojas"
 institute: "CIDE"
 date: "1 de septimebre de 2020"
@@ -34,7 +34,7 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 ```
 
 .title[
-# Sesión 5. Variable dependiente categórica
+# Sesión 5. Variable dependiente binaria
 ]
 .subtitle[
 ## Econometría II
@@ -50,8 +50,11 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 ---
 # Agenda
   
-1. Final
+1. Estudiaremos las propiedades generales teóricas de estimadores en modelos cuando la variable dependiente es binaria
 
+1. Mostraremos algunos resultados generales de las densidades de la familia lineal exponencial
+
+1. Mostraremos las propiedades asintóticas de los estimadores de MV para este tipo de modelos
 
 ---
 
@@ -189,13 +192,13 @@ $$\ln f(y_i)=y_i\ln p_i + (1-y_i)\ln(1-p_i)$$
 
 - Por independencia sobre $i$, la función de log verosimilitud es:
 
-$$\mathcal{L}(\beta)=\sum_i\{\ln f(y_i)=y_i\ln p_i + (1-y_i)\ln(1-p_i)\}$$
+$$\mathcal{L}(\beta)=\sum_i\{y_i\ln p_i + (1-y_i)\ln(1-p_i)\}$$
 --
 
 - Sustituyendo $F$ en vez de $p_i$:
 
 
-$$\mathcal{L}(\beta)=\sum_i\{\ln f(y_i)=y_i\ln F(x_i'\beta) + (1-y_i)\ln(1-F(x_i'\beta))\}$$
+$$\mathcal{L}(\beta)=\sum_i\{y_i\ln F(x_i'\beta) + (1-y_i)\ln(1-F(x_i'\beta))\}$$
 ---
 
 # Estimación
@@ -241,7 +244,7 @@ $$f(y|\mu)=\exp\{a(\mu)+b(y)+c(\mu)y\}$$
 
 - La función de log verosimilitud con una densidad de la familia lineal exponencial será:
 
-$$\mathcal{L}_N(\beta)=\sum_i\left(a(g(x_i,\beta++b(y_i)+c(g(x_i,\beta))y_i\right)$$
+$$\mathcal{L}_N(\beta)=\sum_i\left(a(g(x_i,\beta)+b(y_i)+c(g(x_i,\beta))y_i\right)$$
 
 --
 
@@ -277,7 +280,7 @@ class: inverse, middle, center
 
 - Notemos que para datos Bernoulli se cumple que:
 
-$$E(y)=1\times + 0 \times (1-p)=p$$
+$$E(y)=1\times p+ 0 \times (1-p)=p$$
 - Es decir, $E(y_i|x_i)=F(x_i'\beta)$, por lo que el lado derecho de las condiciones de primer orden tiene valor esperado de cero
 
 - Es decir, el estimador de MV es consistente si la media condicional está bien especificada
@@ -336,7 +339,7 @@ $$\ln\left(\frac{p}{1-p}\right)=x'\beta$$
 
 - Noten que expresar las probabilidades como riesgo relativo tiene una interpretación usada comúnmente en bioestadística
 
-- Si $\frac{p}{1-p}=exp\{x'\beta\}$ y $x_j$ cambia en una unidad, entonces el lado derecho se vuelve $exp\{x'\beta\+\beta_j}=exp\{x'\beta\}exp\{\beta_j\}$
+- Si $\frac{p}{1-p}=exp\{x'\beta\}$ y $x_j$ cambia en una unidad, entonces el lado derecho se vuelve $exp\{x'\beta+\beta_j\}=exp\{x'\beta\} exp\{\beta_j\}$
 
 - Es decir, el riesgo relativo se ha incrementado $exp\{\beta_j\}$ veces
 
@@ -358,69 +361,6 @@ $$\ln\left(\frac{p}{1-p}\right)=x'\beta$$
 
 - El probit se puede motivar por un modelo de variable latente normal, que se liga directamente al model Tobit (que veremos más adelante)
 
-
-
----
-
-class: inverse, middle, center
-
-# Modelos multinomiales
-
----
-
-# Modelos multinomiales
-
-- Pensemos en un caso más general donde $y$ toma el valor de $j$ si la $j$ésima alternativa se escoge:
-
-$$p_j=P(y=j)\quad j=1,\ldots,m$$
-
-- Esto se puede ver como un problema de $m$ decisiones binarias:
-
-$$
-y_i=
-\begin{cases}
-1 \quad\text{si }y=j \\
-0 \quad\text{si }y\neq j \\
-\end{cases}
-$$
-
---
-
-- La densidad multinomial para un individuo es
-
-$$f(y)=p_1^{y_1}\times\ldots\times p_m^{y_m}=\prod_j p_j^{y_j}$$
-
-donde $p_{ij}=P(y_i=j)=F_j(X_i,\beta)$
-
----
-
-# Verosimilitud
-
-- Para una muestra de $N$ observaciones independientes, la log verosimilitud es:
-
-$$\mathcal{L}_n=\sum_i\sum_j y_{ij}\ln(p_{ij})$$
-
-con $p_{ij}=F_j(x_i,\beta)$
-
---
-
-- Las condiciones de primer orden están dadas por:
-
-$$\frac{\partial \mathcal{L}{\partial\beta}}=\sum_i\sum_j\frac{y_{ij}}{p_{ij}}\frac{\partial p_{ij}}{\partial\beta}=0$$
----
-
-# Distribución asintótica
-
-- Noten que la distribución es necesariamente multinomial, por lo que $E(y_{ij})=p_{ij}$ y el estimador de MV será consistente
-
---
-
-- Además, de forma análoga al modelo de probabilidad no lineal, la correcta especificación garantiza que la distribución asintótica esté dada por:
-
-$$\hat{\beta}\stackrel{a}{\sim}\mathcal{N}\left(\beta_0, \left(\sum_i\sum_j\frac{1}{p_{ij}}\frac{\partial p_{ij}}{\partial\beta}\frac{\partial p_{ij}}{\partial\beta'}-\frac{\partial^2p_{ij}}{\partial\beta\partial\beta'}\Bigg|_{\beta_0} \right)^{-1}\right)$$
---
-
-- De nuevo, con observaciones independientes sobre $i$, no es necesario implementar una matriz de sándwich
 ---
 
 # Próxima sesión
@@ -429,11 +369,10 @@ $$\hat{\beta}\stackrel{a}{\sim}\mathcal{N}\left(\beta_0, \left(\sum_i\sum_j\frac
 
   - Avila-Foucat, V. S., & Pérez-Campuzano, E. (2015). Municipality socioeconomic characteristics and the probability of occurrence of Wildlife Management Units in Mexico. *Environmental Science & Policy*, 45, 146-153.
 
-- Terminaré de exponer particularidades de multinomiales
+- Veremos modelos multinomiales
 
-- Comenzaremos con conteo
+  - CT Capítulo 15
 
-  - CT capítulo 20
 ---
 
 class: center, middle
