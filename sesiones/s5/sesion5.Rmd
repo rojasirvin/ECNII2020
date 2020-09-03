@@ -361,6 +361,16 @@ $$\ln\left(\frac{p}{1-p}\right)=x'\beta$$
 
 - El probit se puede motivar por un modelo de variable latente normal, que se liga directamente al model Tobit (que veremos más adelante)
 
+
+---
+
+# Ventajas del uso de modelos de probabilidad no lineal
+
+Tabla 14.1 CT
+```{r, out.width="50%",fig.cap='Fuente: Cameron y Trivedi (2005)',fig.align='center'}
+knitr::include_graphics("figures/CT_pnl.png")
+```
+
 ---
 
 # Próxima sesión

@@ -114,7 +114,7 @@ a. [4 puntos] El modelo antes descrito puede expresarse como una regresión no l
 
 a. [3 puntos] Ahora implementará la matriz de varianzas y covarianzas robusta en la ecuación 5.81 de CT. Dé una expresión para $\hat{D}$ en este problema.
 
-a. [3 puntos] Calcule el error estándar robusto definido como en la ecuación 5.81. En este caso $\hat{\Omega}=Diad(\hat{u}_i^2)$.
+a. [3 puntos] Calcule el error estándar robusto definido como en la ecuación 5.81. En este caso $\hat{\Omega}=Diag(\hat{u}_i^2)$.
 
 a. [3 puntos] Calcule una versión alternativa de errores estándar (entre corchetes en Tabla 5.7), esta vez con $\hat{\Omega}=Diag((exp(-x_i'\beta))^2)$.
 
