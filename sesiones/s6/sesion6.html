@@ -383,7 +383,7 @@ donde `\(d_{ijk}=1\)` si `\(j=k\)`
 - Estamos interesados en el cambio en la probabilidad de que la opción `\(j\)` sea escogida cuando `\(x_{i}\)` cambia marginalmente:
 
 `$$\frac{\partial p_{ij}}{\partial x_{i}}=p_{ij}(\beta_j-\bar{\beta}_i)$$`
-donde `\(\bar\{beta}_i\)`=\sum_l p_{il}\beta_l$ es el promedio de los `\(\beta_l\)` ponderado por las probabilidades
+donde `\(\bar{\beta}_i=\sum_l p_{il}\beta_l\)` es el promedio de los `\(\beta_l\)` ponderado por las probabilidades
 
 - Claramente, el signo de `\(\beta_j\)` no determina el signo del efecto marginal
 
@@ -444,8 +444,6 @@ class: inverse, center, middle
   - *nnet*
   
   - *mlogit*
-  
-  - *MCMCpack*
   
   - *sandwich*
 ---
