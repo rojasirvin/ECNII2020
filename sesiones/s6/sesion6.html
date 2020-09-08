@@ -19,6 +19,16 @@ class: title-slide
 
 
 
+&lt;style type="text/css"&gt;
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+&lt;/style&gt;
+
+
 .title[
 # Sesión 6. Modelos multinomiales
 ]
@@ -136,17 +146,43 @@ con `\(p_{ij}=F_j(x_i,\beta)\)`
 
 ---
 
-class: inverse, middle, center
+# Distinción entre tipo de modelos
 
-# Logit multinomial
+- La distinción es importante para la implementación de los modelos
+
+- La mayoría de los paquetes estadísticos requieren arreglar los datos de formas distintas dependiendo de qué modelo vaya a estimarse
 
 ---
 
-# Logit multinomial
+# Regresores variantes e invariantes entre alternativas
 
-- Es el modelo más popular para estudiar procesos multinomiales
+- En la práctica, ambos tipos de regresores pueden estar disponibles y ser de interés
 
-- Se especializa a dos modelos específicos dependiendo de cómo son los regresores:
+- Se recomienda entonces escribir el modelo como de **alternativas variantes** (por ejemplo, condicional logit)
+
+- Siempre es posible escribir el modelo de **alternativas invariantes** como uno de **alternativas variantes**
+
+--
+
+- Tomemos el vector `\(x_i\)` y definamos `\(x_{ij}\)` un vector de `\(Km\times 1\)` de ceros excepto en el `\(j\)`ésimo bloque, que será `\(x_i\)`
+
+- Y definamos `\(\beta=[0'\;\beta_1'\;\ldots \beta_m']'\)`
+
+- Así, `\(x_i'\beta=x_{ij}'\beta\)`
+
+- Los regresores se incluyen como interacciones con variables dummy para cada alternativa
+
+---
+
+class: inverse, middle, center
+
+# Tipos de modelos multinomiales
+
+---
+
+# Tipos de modelos multinomiales
+
+- En el curso, tendremos la siguiente convención de nombres:
 
   - Logit condicional: regresores variantes entre alternativas
   
@@ -155,7 +191,7 @@ class: inverse, middle, center
 
 --
 
-- En la práctica, podemos tener regresores de ambos tipos
+- En la práctica, podemos tener regresores de ambos tipos:
 
   - Logit mixto
   
@@ -250,7 +286,6 @@ class: inverse, middle, center
 
 - Se impone la restricción de un `\(\beta_0\)`
 
-
 - La interpretación de los parámetros es más complicada
 
 - Un coeficiente estimado positivo no se traduce directamente como un incremento en la probabilidad de escoger una alternativa
@@ -275,18 +310,226 @@ class: inverse, middle, center
 
 ---
 
-class: inverse, middle, center
-
-# Modelo mixto
-
-
----
-
 # Modelo mixto
 
 - Permite incorporar regresores variantes e invariantes entre alternativas
 
-- La idea es escribir el modelo como un logit condicional, haciendo uso de variables dummy
+- Se especifica:
+
+`$$p_{ij}=\frac{exp(x_{ji}'\beta+w_i'\gamma_j)}{\sum_{l=1}^m exp(x_{il}'\beta+w_i'\gamma_l)},\quad j=1\ldots,m$$`
+
+donde `\(x_{ij}\)` son características que varían entre alternativas mientras que las `\(w_i\)` no varían entre alternativas
+
+---
+
+# Modelo mixto en el problema de pesca
+
+- En nuestro ejemplo de pesca:
+
+`$$p_{ij}=\frac{exp(\beta_P P_{ij}+\beta_C C_{ij}+\alpha_j+\beta_{Ij}I_i)}{\sum_{k=1}^4exp(\beta_p P_{ik}+\beta_C C_{ik}+\alpha_k+\beta_{Ik}I_i)},\quad j=1\ldots,4$$`
+- Una forma de implementar el modelo es con variables dummy para convertirlo en un logit condicional:
+
+`$$p_{ij}=\frac{exp(\beta_P P_{ij}+\beta_C C_{ij}+\sum_{l=1}^4(\alpha_jd_{ijl}+\beta_{Il}I_{ijl}))}{\sum_{k=1}^4exp(\beta_p P_{ik}+\beta_C C_{ik}+\sum_{l=1}^4(\alpha_ld_{ijl}+\beta_{Il}I_{ijl}))},\quad j=1\ldots,4$$`
+- `\(d_{ijl}\)` es igual a 1 si `\(j=l\)` y 0 en otro caso
+
+- `\(d_{ijl}I_i=dI_{ijl}\)` toma el valor del ingreso si `\(j=l\)`
+
+- Es correr la regresión sobre `\(P_{ij}\)`, `\(C_{ij}\)`, `\(d_{ij2}\)`, `\(d_{ij3}\)`, `\(d_{ij4}\)`, `\(dI_{ij2}\)`, `\(dI_{ij3}\)` y `\(dI_{ij4}\)`
+
+---
+
+# Ejemplo: resultados del modelo de pesca 
+
+| Regresor |  Tipo|  Coeficiente |  LC|  LMN |  Mixto | 
+| ----- |  | :-----: | :-----: |  :-----: |  :-----:|  :-----: | 
+ | Precio (P) |  Variante |  `\(\beta_P\)` |  −0.021 |  –| −0.025 | 
+ | Tasa de pesca (C) |  Variante |  `\(\beta_C\)` |  0.953 |  –| 0.358 | 
+ | Constante  | Invariante  | `\(\alpha_1\)` : Playa  | –| 0.0 |  0.0 | 
+ |  | | `\(\alpha_2\)` : Puerto |  – |0.814 |  0.778 | 
+ |  | | `\(\alpha_3\)` : Privado |  –| 0.739 |  0.527 | 
+ |  | | `\(\alpha_4\)`: Barco  | – |1.341  | 1.694 | 
+ | Ingreso (I) |  Invariant|  `\(\beta_{I1}\)` : Beach  | –| 0.0  | 0.0 | 
+ |  | | `\(\beta_{I2}\)` : Pier  | –  | −0.143 |  −0.128 | 
+ |  | | `\(\beta_{I3}\)` : Private  | –  | 0.092 |  0.089 | 
+ |  | | `\(\beta_{I4}\)` : Charter |– | −0.032  | −0.033 | 
+
+---
+
+class: inverse, center, middle
+
+# Interpretación de parámetros
+
+---
+
+# Efectos marginales en el logit condicional
+
+- Estamos interesados en el cambio en la probabilidad de que la opción `\(j\)` sea escogida cuando `\(x_{ik}\)` cambia marginalmente:
+
+`$$\frac{\partial p_{ij}}{\partial x_{ik}}=p_{ij}(d_{ijk}-p_{ik})\beta$$`
+donde `\(d_{ijk}=1\)` si `\(j=k\)`
+
+--
+
+- Noten que en este caso el signo del coeficiente sí nos dice la dirección del efecto marginal
+
+- Si `\(\beta\)` es positivo, un incremento en el componente correspondiente del regresor `\(k\)` incrementa la probabilidad de que la opción `\(k\)` se escogida, y reduce la probabilidad de las otras opciones
+
+- Por ejemplo, el coeficiente sobre el precio estimado en la columna CL de la Tabla 15.2 en CT es negativo, por lo que el efecto marginal de un cambio en el precio de, digamos pesacar desde la playa, también lo será
+
+---
+
+# Efectos marginales en el logit multinomial
+
+- Estamos interesados en el cambio en la probabilidad de que la opción `\(j\)` sea escogida cuando `\(x_{i}\)` cambia marginalmente:
+
+`$$\frac{\partial p_{ij}}{\partial x_{i}}=p_{ij}(\beta_j-\bar{\beta}_i)$$`
+donde `\(\bar\{beta}_i\)`=\sum_l p_{il}\beta_l$ es el promedio de los `\(\beta_l\)` ponderado por las probabilidades
+
+- Claramente, el signo de `\(\beta_j\)` no determina el signo del efecto marginal
+
+- Una práctica común es estimar es el promedio de efectos marginales:
+
+`$$\frac{1}{N}\sum_i\frac{\partial p_{ij}}{\partial x_{i}}=\frac{1}{N}\sum_ip_{ij}(\beta_j-\bar{\beta}_i)$$`
+
+---
+# Riesgo relativo en el logit multinomial
+
+
+- En el caso del logit multinomial, consideremos la probabilidad de escoger `\(j\)`, dado que se `\(j\)` o `\(k\)` se observan
+
+- Esto se puede escribir como
+
+$$
+`\begin{aligned}
+P(y=j|y=\{j,k\})&amp;=\frac{p_j}{p_j+p_k} \\
+&amp;=\frac{exp(x'\beta_j)}{exp(x'\beta_j)+exp(x'\beta_k)} \\
+&amp;=\frac{exp(x'(\beta_j-\beta_k))}{1+exp(x'(\beta_j-\beta_k))}
+\end{aligned}`
+$$
+- Recordemos que en este modelo se normaliza una cateogoría, digamos `\(\beta_1=0\)`
+
+- Entonces, podemos comparar la alternativa `\(j\)` con la 1
+
+$$
+`\begin{aligned}
+P(y=j|y=\{j,1\})=\frac{exp(x'\beta_j)}{1+exp(x'\beta_j)}
+\end{aligned}`
+$$
+
+---
+# Riesgo relativo en el logit multinomial
+
+- Es decir, podemos interpretar los coeficientes como el riesgo relativo con respecto a la categoría base:
+
+$$
+\frac{P(y_i=j)}{P(y_i=1)}=exp(x_i'\beta_j)
+$$
+- Visto de otra manera, `\(exp(\beta_{jr})\)` es el cambio proporcional en el riesgo relativo cuando `\(x_{ir}\)` cambia en una unidad
+
+- La categoría omitida puede ser escogida a conveniencia, prefiriendo la que permita una mejor interpretación
+
+
+---
+
+class: inverse, center, middle
+
+# De nuevo los datos de juguete de pesca
+
+---
+
+# En R
+
+- Asegúrense de tener instalados los siguientes paquetes:
+
+  - *nnet*
+  
+  - *mlogit*
+  
+  - *MCMCpack*
+  
+  - *sandwich*
+---
+
+# Ejemplo: logit multinomial
+
+.pull-left[
+- Datos de Herriges &amp; Kling (1999) usados y provistos por Cameron &amp; Trivedi (2005)
+
+- Los datos tienen el forma apropiado para el multinomial logit
+
+
+```r
+data_fishing&lt;-read_csv(
+  "./fishing_data.csv",
+  locale = locale(encoding = "latin1")) %&gt;% 
+  clean_names() %&gt;% 
+  mutate(income=income/1000)
+
+mmultilogit_1 &lt;- multinom(
+  mode ~ income,
+  data = data_fishing)
+```
+]
+
+.pull-right[
+
+```r
+summary(mmultilogit_1)$coefficients
+```
+
+```
+##   (Intercept)      income
+## 2   0.8141701 -0.14340453
+## 3   0.7389569  0.09190030
+## 4   1.3413284 -0.03164588
+```
+
+```r
+summary(mmultilogit_1)$standard.errors
+```
+
+```
+##   (Intercept)     income
+## 2   0.2286325 0.05328822
+## 3   0.1967314 0.04066362
+## 4   0.1945173 0.04184622
+```
+- Si queremos los valores `\(p\)`
+
+```r
+z &lt;- summary(mmultilogit_1)$coefficients/summary(mmultilogit_1)$standard.errors
+
+pv &lt;- (1 - pnorm(abs(z)))*2 
+pv
+```
+
+```
+##    (Intercept)      income
+## 2 3.693842e-04 0.007121444
+## 3 1.725328e-04 0.023820471
+## 4 5.360823e-12 0.449503854
+```
+]
+
+---
+
+# Nota cultural
+
+- El paquete usado para estimar los logit multinomial es *nnet*, que es una abreviatura para *neural networks*
+
+- Las *redes neuronales*, una aplicación en constante desarrollo del *aprendizaje automatizado* pueden emplearse, entre muchas otras cosas, para problemas de clasificación
+
+- [Acá](https://towardsdatascience.com/classification-using-neural-networks-b8e98f3a904f) pueden ver un post al respecto
+
+--
+
+- En cierto sentido, nuestros modelos multinomiales son problemas de clasificación
+
+---
+
+# Ejemplo: logit condicional
+
+- Lo verán en el laboratorio
 
 ---
 

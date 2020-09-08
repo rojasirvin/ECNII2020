@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Modelos de conteo</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.3/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs\cide.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\stackpath.bootstrapcdn.com\bootstrap\4.3.1\css\bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\use.fontawesome.com\releases\v5.7.2\css\all.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\cdn.rawgit.com\jpswalsh\academicons\master\css\academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: title-slide
+
+
+
+&lt;style type="text/css"&gt;
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+&lt;/style&gt;
+
+
+.title[
+# Sesión 7. Modelos de conteo
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas &lt;br&gt; División de Economía
+]
+
+---
+# Agenda
+  
+1. Final
+
+---
+
+class: inverse, middle, center
+
+# Modelos de conteo
+
+---
+
+# Modelos de conteo
+
+- Datos de conteo naturales en muchas aplicaciones:
+
+  - Número de hijos
+  
+  - Accidentes en un año
+  
+  - Visitas a museos o al médico
+
+- Datos `\(y_i=0,1,2,\ldots\)`
+
+
+---
+
+# Modelo Poisson
+
+- Densidad: `\(P(Y=y)=\frac{exp(-\mu)\mu^y}{y!}\)`
+
+- `\(\mu\)` es un único parámetro de intesidad
+
+- Propiedad de equidispersión: `\(E(Y)=V(Y)=\mu\)`
+
+--
+
+- Parametrizamos la media: `\(\mu_i=exp(x_i'\beta)\)`
+
+- Noten que el modelo es por construcción heterocedástico
+
+---
+
+# Función de verosimilitud
+
+- La log verosimilitud es:
+
+`$$\mathcal{L}(\beta)=\sum_i(y_ix_i'\beta-exp(x_i'\beta)-\ln(yi!)$$`
+- Las condiciones de primer orden son:
+
+`$$\sum_i(y_i-exp(x_i'\beta))x_i=0$$`
+que no tienen solución cerrada, por lo que `\(\hat{\beta}_{MV}\)` se obtiene por métodos númericos
+
+
+---
+
+# Estimación
+
+- Recuerden que la densidad Poisson es de la familia lineal exponencial
+
+- Por tanto, podemos garantizar que el estimador de MV será consistente aún si la densidad está mal planteada
+
+- El estimador de CMV Poisson será consistente si la media condicional está bien especificada
+
+--
+
+- Contrario a lo que sucedia con los modelos binomiales, aquí sí hace diferencia el uso de una matriz de varianzas de sándwich
+
+
+---
+
+# Distribución asintótica
+
+- Cuando se asume que la densidad está bien especificada, el estimador de MV tiene la distribución asintótica:
+`$$\hat{\beta}_{MV}\stackrel{a}{\sim}\mathcal{N}\left(\beta,\left(\sum_i \mu_i x_ix_i' \right)^{-1}\right)$$`
+- Si queremos relajar el supuesto de densidad bien especificada y suponer solo que la media está bien especificada, usamos una matriz de varianzas robusta:
+
+
+`$$\hat{\beta}_{CMV}\stackrel{a}{\sim}\mathcal{N}\left(\beta,\left(\sum_i \mu_i x_ix_i' \right)^{-1}\left(\sum_iw_ix_ix_i'\right)\left(\sum_i \mu_i x_ix_i' \right)^{-1}\right)$$`
+con `\(w_i=V(y_i|x_i)\)`
+
+---
+
+# Interpretación de coeficientes
+
+- Noten que con la parametrización de la media podemos obtener el efecto de un cambio marginal en el `\(j\)`ésimo regresor sobre el valor esperado del conteo
+`$$\frac{\partial E(y|x)}{\partial x_i}=\beta_jexp(x'\beta)$$`
+- Como lo mostrarán en la tarea, si `\(x_j\)` está medida en logaritmos, `\(\beta_j\)` es una elasticidad
+
+- Una medida de respuesta primedio usualmente reportada es `\(\frac{1}{N}\frac{\partial E(y_i|x_i)}{\partial x_{ij}}=\frac{1}{N}\hat{\beta}_j\sum_i exp(x_i'\hat{\beta})\)`
+
+- Noten también que el cociente de efectos es igual al cociente de coeficientes
+
+---
+
+# Deficiencias
+
+- Es un modelo con un solo parámetro, es decir, todos los momentos son funciones de `\(\mu\)`
+
+- Frecuentemente nos encontramos con situaciones donde hay exceso de ceros, lo cual puede no ser consistente con una densidad Poisson
+
+- Frecuentemente tenemos datos con sobredispersión, es decir, en la práctica la varianza excede por mucho a la media
+
+
+
+---
+
+class: inverse, middle, center
+
+# Modelo negativo binomial
+
+---
+
+# Modelo negativo binomial
+
+- Este modelo nos permite arreglar algunas de las deficiencias del modelo Poisson
+
+- Este es un caso de lo que se conoce como *modelo continuo mixto*
+
+- Supongamos que `\(y\)` se distribuye Poisson con parámetro `\(\lambda\)`
+`$$f(y|\lambda)=\frac{exp(-\lambda)\lambda^y}{y!}$$`
+--
+
+- Supongamos que `\(\lambda\)` es aleatorio, específicamente `\(\lambda=\mu\nu\)`, donde `\(\mu\)` es una función de `\(x\)`, como `\(exp(x'\beta)\)`
+
+- Supongamos que `\(\nu\)` es iid con densidad `\(g(\nu|\alpha)\)`, donde `\(g(\cdot)\)` se conoce como *función mezcladora*
+
+- Podemos ver el modelo negativo binomial como un modelo con heterogeneidad dada por `\(\nu\)`
+
+---
+
+# Densidad gamma
+
+- Supongamos que:
+
+  1. `\(f(y|\lambda)\)` es la densidad Poisson
+  
+  1. `\(g(v)=\frac{v^{\delta-1}exp(-v\delta)\delta^{\delta}}{\Gamma(\delta)}\)`, con `\(v&gt;0\)` y `\(\delta&gt;0\)` es la densidad gamma con `\(E(v)=1\)` y `\(V(v)=1/\delta\)`
+  
+- Entonces `\(h(y|\mu,\delta)\)` es la función de densidad mezclada negativa binomial
+
+`$$h(y|\mu,\delta)=\frac{\Gamma(\alpha^{-1}+y)}{\Gamma(\alpha^{-1})\Gamma(y+1)}\left(\frac{\alpha^{-1}}{\alpha^{-1}+\mu}\right)^{\alpha-1}\left(\frac{\mu}{\mu+\alpha^{-1}}\right)^y$$`
+con `\(\alpha=1/\delta\)` y siendo `\(\Gamma(\cdot)\)` la integral gamma
+
+--
+
+- Casos especiales:
+
+  - Si `\(\alpha\to 0\)` la densidad se colapsa a la Poisson
+  
+  - Si `\(\alpha \to 1\)` la densidad se colapsa a la geométrica
+
+
+
+---
+
+# Momentos
+
+- Con una distribución negativa binomial:
+
+  - `\(E(y|\mu,\alpha)=\mu\)`
+  
+  - `\(V(y|\mu,\alpha)=\mu\underbrace{(1+\alpha\mu)}_{dispersión}\)`
+
+
+---
+
+# Modelo negativo binomial 2 (NB2)
+
+- Para la implementación de este modelo, se parametriza `\(\mu_i=exp(x_i'\beta)\)`
+
+- `\(\alpha\)` es un parámetro a ser estimado
+
+- Con estas condiciones, la varianza es cuadrática en la media: `\(\mu+\alpha\mu^2\)`
+
+--
+
+- Es el modelo más comúnmente usado
+
+
+
+---
+
+# Próxima sesión
+
+- Terminaré de hablar sobre el modelo multinomial
+
+- Comenzaremos con conteo
+
+  - CT capítulo 20
+  
+- Pequeños cambios al [calendario](https://github.com/rojasirvin/ECNII2020/blob/master/ECNII_calendario_otono_2020.pdf)
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": null,
+"scroll": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

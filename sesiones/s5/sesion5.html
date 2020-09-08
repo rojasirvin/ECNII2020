@@ -7,6 +7,8 @@
     <script src="libs/header-attrs-2.3/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
     <link rel="stylesheet" href="libs\cide.css" type="text/css" />
     <link rel="stylesheet" href="https:\\stackpath.bootstrapcdn.com\bootstrap\4.3.1\css\bootstrap-grid.min.css" type="text/css" />
     <link rel="stylesheet" href="https:\\use.fontawesome.com\releases\v5.7.2\css\all.css" type="text/css" />
@@ -18,6 +20,15 @@
 class: title-slide
 
 
+
+&lt;style type="text/css"&gt;
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+&lt;/style&gt;
 
 .title[
 # Sesión 5. Variable dependiente binaria
@@ -358,6 +369,233 @@ Tabla 14.1 CT
 &lt;p class="caption"&gt;Fuente: Cameron y Trivedi (2005)&lt;/p&gt;
 &lt;/div&gt;
 
+---
+
+class: inverse, center, middle
+
+# Ejemplo con los datos de juguete de pesca
+
+---
+
+# Ejemplo: probit y logit
+
+- Datos de Herriges &amp; Kling (1999) usados y provistos por Cameron &amp; Trivedi (2005)
+
+- Exploramos los datos:
+  - Las observaciones son clientes
+  
+  - *mode* indica la elección del lugar donde pescó
+  
+  - El ingreso de la persona es *income*
+  
+  - La tasa de pesca es *q*
+  
+  - El precio es *p*
+  
+
+```r
+data_fishing&lt;-read_csv("./fishing_data.csv",
+                       locale = locale(encoding = "latin1"))   %&gt;% 
+  clean_names() 
+```
+
+---
+# Ejemplo: probit y logit
+
+
+```r
+head(data_fishing, n=5)
+```
+
+```
+## # A tibble: 5 x 17
+##   client  mode price  crate dbeach dpier dprivate dcharter
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1      1     4 183.  0.539       0     0        0        1
+## 2      2     4  34.5 0.467       0     0        0        1
+## 3      3     3  24.3 0.241       0     0        1        0
+## 4      4     2  15.1 0.0789      0     1        0        0
+## 5      5     3  41.5 0.108       0     0        1        0
+## # ... with 9 more variables: pbeach &lt;dbl&gt;, ppier &lt;dbl&gt;,
+## #   pprivate &lt;dbl&gt;, pcharter &lt;dbl&gt;, qbeach &lt;dbl&gt;, qpier &lt;dbl&gt;,
+## #   qprivate &lt;dbl&gt;, qcharter &lt;dbl&gt;, income &lt;dbl&gt;
+```
+
+```r
+names(data_fishing)
+```
+
+```
+##  [1] "client"   "mode"     "price"    "crate"    "dbeach"  
+##  [6] "dpier"    "dprivate" "dcharter" "pbeach"   "ppier"   
+## [11] "pprivate" "pcharter" "qbeach"   "qpier"    "qprivate"
+## [16] "qcharter" "income"
+```
+
+---
+
+# Ejemplo: probit y logit
+
+- Modelo probit
+
+
+
+
+```r
+# Para logit y probit usaremos solo barco y puerto
+
+data_binary&lt;-data_fishing %&gt;% 
+  filter(mode==2 | mode==4) %&gt;% 
+  mutate(charter=ifelse(mode==4,1,0)) %&gt;% 
+  mutate(pratio=100*log(pcharter/ppier),
+         lnrelp=log(pcharter/ppier))
+
+mprobit &lt;- glm(charter ~ lnrelp, family = binomial(link = "probit"), 
+    data = data_binary)
+```
+
+
+
+```r
+#Pedimos los coeficientes
+summary(mprobit)$coef
+```
+
+```
+##              Estimate Std. Error   z value     Pr(&gt;|z|)
+## (Intercept)  1.194358 0.08814144  13.55048 7.871767e-42
+## lnrelp      -1.055513 0.07542127 -13.99490 1.674672e-44
+```
+---
+
+# Ejemplo: probit y logit
+
+- Modelo logit y de probabilidad lineal
+
+
+
+```r
+mlogit &lt;- glm(charter ~ lnrelp, family = binomial(link = "logit"), 
+    data = data_binary)
+
+mlineal &lt;- lm(charter ~ lnrelp, data=data_binary)
+```
+---
+
+# Ejemplo: probit y logit
+
+- Un paquete reciente que acabo de descubrir es *modelsummary*
+
+.pull-left[
+
+```r
+#Colección de modelos
+models&lt;-list('Logit'=mlogit, 'Probit'=mprobit, 'Lineal'=mlineal)
+
+#cm controlará los nombres de coeficientes
+cm &lt;- c( '(Intercept)' = 'Constante', 'lnrelp' = 'ln relp')
+
+#gm controlará las medidas de bondad de ajuste
+gm &lt;- modelsummary::gof_map
+gm$omit &lt;- TRUE
+gm &lt;- gm %&gt;% 
+  mutate(omit=ifelse(raw=="logLik",F,omit))
+```
+]
+
+.pull-right[
+
+```r
+# Usamos msummary
+
+msummary(models,
+         statistic='statistic',
+         coef_map = cm,
+         gof_map = gm)
+```
+
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Logit &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Probit &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Lineal &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Constante &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 2.053 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.194 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.784 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (12.154) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (13.550) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (58.214) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; ln relp &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -1.823 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -1.056 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.243 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (-12.607) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (-13.995) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (-23.284) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -206.827 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -204.411 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -195.167 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+---
+
+#Ejmeplo: probit y logit
+
+- Predicción
+
+.pull-left[
+
+```r
+#Predicciones con cada modelo
+
+plogit &lt;- mlogit %&gt;% predict(data=data_binary, type = "response")
+
+pprobit &lt;- mprobit %&gt;% predict(data=data_binary, type = "response")
+
+plineal &lt;- mlineal %&gt;% predict(data=data_binary, type = "response")
+
+data_binary&lt;-cbind(data_binary,plogit,pprobit,plineal)
+data_for_plot &lt;- melt(data_binary ,  id.vars = 'lnrelp', variable.name = 'Modelo',measure.vars = c("plogit","pprobit","plineal"), value.name = "prob")
+
+
+plot_probs &lt;- data_for_plot %&gt;% 
+  ggplot()+
+  geom_line(aes(x=lnrelp,y=prob, color=Modelo))
+```
+]
+
+
+
+.pull-right[
+
+```r
+#Pedimos la gráfica
+
+plot_probs
+```
+
+![](figures/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+]
 ---
 
 # Próxima sesión

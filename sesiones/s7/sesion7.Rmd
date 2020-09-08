@@ -1,0 +1,273 @@
+---
+title: "Modelos de conteo"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "8 de septimebre de 2020"
+mathspec: true
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+```
+
+
+.title[
+# Sesión 7. Modelos de conteo
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+# Agenda
+  
+1. Final
+
+---
+
+class: inverse, middle, center
+
+# Modelos de conteo
+
+---
+
+# Modelos de conteo
+
+- Datos de conteo naturales en muchas aplicaciones:
+
+  - Número de hijos
+  
+  - Accidentes en un año
+  
+  - Visitas a museos o al médico
+
+- Datos $y_i=0,1,2,\ldots$
+
+
+---
+
+# Modelo Poisson
+
+- Densidad: $P(Y=y)=\frac{exp(-\mu)\mu^y}{y!}$
+
+- $\mu$ es un único parámetro de intesidad
+
+- Propiedad de equidispersión: $E(Y)=V(Y)=\mu$
+
+--
+
+- Parametrizamos la media: $\mu_i=exp(x_i'\beta)$
+
+- Noten que el modelo es por construcción heterocedástico
+
+---
+
+# Función de verosimilitud
+
+- La log verosimilitud es:
+
+$$\mathcal{L}(\beta)=\sum_i(y_ix_i'\beta-exp(x_i'\beta)-\ln(yi!)$$
+- Las condiciones de primer orden son:
+
+$$\sum_i(y_i-exp(x_i'\beta))x_i=0$$
+que no tienen solución cerrada, por lo que $\hat{\beta}_{MV}$ se obtiene por métodos númericos
+
+
+---
+
+# Estimación
+
+- Recuerden que la densidad Poisson es de la familia lineal exponencial
+
+- Por tanto, podemos garantizar que el estimador de MV será consistente aún si la densidad está mal planteada
+
+- El estimador de CMV Poisson será consistente si la media condicional está bien especificada
+
+--
+
+- Contrario a lo que sucedia con los modelos binomiales, aquí sí hace diferencia el uso de una matriz de varianzas de sándwich
+
+
+---
+
+# Distribución asintótica
+
+- Cuando se asume que la densidad está bien especificada, el estimador de MV tiene la distribución asintótica:
+$$\hat{\beta}_{MV}\stackrel{a}{\sim}\mathcal{N}\left(\beta,\left(\sum_i \mu_i x_ix_i' \right)^{-1}\right)$$
+- Si queremos relajar el supuesto de densidad bien especificada y suponer solo que la media está bien especificada, usamos una matriz de varianzas robusta:
+
+
+$$\hat{\beta}_{CMV}\stackrel{a}{\sim}\mathcal{N}\left(\beta,\left(\sum_i \mu_i x_ix_i' \right)^{-1}\left(\sum_iw_ix_ix_i'\right)\left(\sum_i \mu_i x_ix_i' \right)^{-1}\right)$$
+con $w_i=V(y_i|x_i)$
+
+---
+
+# Interpretación de coeficientes
+
+- Noten que con la parametrización de la media podemos obtener el efecto de un cambio marginal en el $j$ésimo regresor sobre el valor esperado del conteo
+$$\frac{\partial E(y|x)}{\partial x_i}=\beta_jexp(x'\beta)$$
+- Como lo mostrarán en la tarea, si $x_j$ está medida en logaritmos, $\beta_j$ es una elasticidad
+
+- Una medida de respuesta primedio usualmente reportada es $\frac{1}{N}\frac{\partial E(y_i|x_i)}{\partial x_{ij}}=\frac{1}{N}\hat{\beta}_j\sum_i exp(x_i'\hat{\beta})$
+
+- Noten también que el cociente de efectos es igual al cociente de coeficientes
+
+---
+
+# Deficiencias
+
+- Es un modelo con un solo parámetro, es decir, todos los momentos son funciones de $\mu$
+
+- Frecuentemente nos encontramos con situaciones donde hay exceso de ceros, lo cual puede no ser consistente con una densidad Poisson
+
+- Frecuentemente tenemos datos con sobredispersión, es decir, en la práctica la varianza excede por mucho a la media
+
+
+
+---
+
+class: inverse, middle, center
+
+# Modelo negativo binomial
+
+---
+
+# Modelo negativo binomial
+
+- Este modelo nos permite arreglar algunas de las deficiencias del modelo Poisson
+
+- Este es un caso de lo que se conoce como *modelo continuo mixto*
+
+- Supongamos que $y$ se distribuye Poisson con parámetro $\lambda$
+$$f(y|\lambda)=\frac{exp(-\lambda)\lambda^y}{y!}$$
+--
+
+- Supongamos que $\lambda$ es aleatorio, específicamente $\lambda=\mu\nu$, donde $\mu$ es una función de $x$, como $exp(x'\beta)$
+
+- Supongamos que $\nu$ es iid con densidad $g(\nu|\alpha)$, donde $g(\cdot)$ se conoce como *función mezcladora*
+
+- Podemos ver el modelo negativo binomial como un modelo con heterogeneidad dada por $\nu$
+
+---
+
+# Densidad gamma
+
+- Supongamos que:
+
+  1. $f(y|\lambda)$ es la densidad Poisson
+  
+  1. $g(v)=\frac{v^{\delta-1}exp(-v\delta)\delta^{\delta}}{\Gamma(\delta)}$, con $v>0$ y $\delta>0$ es la densidad gamma con $E(v)=1$ y $V(v)=1/\delta$
+  
+- Entonces $h(y|\mu,\delta)$ es la función de densidad mezclada negativa binomial
+
+$$h(y|\mu,\delta)=\frac{\Gamma(\alpha^{-1}+y)}{\Gamma(\alpha^{-1})\Gamma(y+1)}\left(\frac{\alpha^{-1}}{\alpha^{-1}+\mu}\right)^{\alpha-1}\left(\frac{\mu}{\mu+\alpha^{-1}}\right)^y$$
+con $\alpha=1/\delta$ y siendo $\Gamma(\cdot)$ la integral gamma
+
+--
+
+- Casos especiales:
+
+  - Si $\alpha\to 0$ la densidad se colapsa a la Poisson
+  
+  - Si $\alpha \to 1$ la densidad se colapsa a la geométrica
+
+
+
+---
+
+# Momentos
+
+- Con una distribución negativa binomial:
+
+  - $E(y|\mu,\alpha)=\mu$
+  
+  - $V(y|\mu,\alpha)=\mu\underbrace{(1+\alpha\mu)}_{dispersión}$
+
+
+---
+
+# Modelo negativo binomial 2 (NB2)
+
+- Para la implementación de este modelo, se parametriza $\mu_i=exp(x_i'\beta)$
+
+- $\alpha$ es un parámetro a ser estimado
+
+- Con estas condiciones, la varianza es cuadrática en la media: $\mu+\alpha\mu^2$
+
+--
+
+- Es el modelo más comúnmente usado
+
+
+
+---
+
+# Próxima sesión
+
+- Terminaré de hablar sobre el modelo multinomial
+
+- Comenzaremos con conteo
+
+  - CT capítulo 20
+  
+- Pequeños cambios al [calendario](https://github.com/rojasirvin/ECNII2020/blob/master/ECNII_calendario_otono_2020.pdf)
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**

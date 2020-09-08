@@ -26,11 +26,29 @@ class: title-slide
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
 library(tidyverse)
 library(magick)
 library(reticulate)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
 
 xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
 ```
 
 .title[
@@ -371,6 +389,163 @@ Tabla 14.1 CT
 knitr::include_graphics("figures/CT_pnl.png")
 ```
 
+---
+
+class: inverse, center, middle
+
+# Ejemplo con los datos de juguete de pesca
+
+---
+
+# Ejemplo: probit y logit
+
+- Datos de Herriges & Kling (1999) usados y provistos por Cameron & Trivedi (2005)
+
+- Exploramos los datos:
+  - Las observaciones son clientes
+  
+  - *mode* indica la elección del lugar donde pescó
+  
+  - El ingreso de la persona es *income*
+  
+  - La tasa de pesca es *q*
+  
+  - El precio es *p*
+  
+```{r tidy=T, echo=TRUE, message=F, results='hide'}
+data_fishing<-read_csv("./fishing_data.csv",
+                       locale = locale(encoding = "latin1"))   %>% 
+  clean_names() 
+  
+
+```
+
+---
+# Ejemplo: probit y logit
+
+```{r tidy=T, echo=T, include=T}
+
+head(data_fishing, n=5)
+
+names(data_fishing)
+
+```
+
+---
+
+# Ejemplo: probit y logit
+
+- Modelo probit
+
+
+
+```{r tidy=T, echo=T, include=T, message=F}
+# Para logit y probit usaremos solo barco y puerto
+
+data_binary<-data_fishing %>% 
+  filter(mode==2 | mode==4) %>% 
+  mutate(charter=ifelse(mode==4,1,0)) %>% 
+  mutate(pratio=100*log(pcharter/ppier),
+         lnrelp=log(pcharter/ppier))
+
+mprobit <- glm(charter ~ lnrelp, family = binomial(link = "probit"), 
+    data = data_binary)
+
+```
+
+
+```{r tidy=T, echo=T, include=T, message=F}
+#Pedimos los coeficientes
+summary(mprobit)$coef
+
+
+```
+---
+
+# Ejemplo: probit y logit
+
+- Modelo logit y de probabilidad lineal
+
+
+```{r tidy=T, echo=T, include=T, message=F}
+mlogit <- glm(charter ~ lnrelp, family = binomial(link = "logit"), 
+    data = data_binary)
+
+mlineal <- lm(charter ~ lnrelp, data=data_binary)
+
+```
+---
+
+# Ejemplo: probit y logit
+
+- Un paquete reciente que acabo de descubrir es *modelsummary*
+
+.pull-left[
+```{r tidy=T, echo=T, include=T, message=F}
+#Colección de modelos
+models<-list('Logit'=mlogit, 'Probit'=mprobit, 'Lineal'=mlineal)
+
+#cm controlará los nombres de coeficientes
+cm <- c( '(Intercept)' = 'Constante', 'lnrelp' = 'ln relp')
+
+#gm controlará las medidas de bondad de ajuste
+gm <- modelsummary::gof_map
+gm$omit <- TRUE
+gm <- gm %>% 
+  mutate(omit=ifelse(raw=="logLik",F,omit))
+
+```
+]
+
+.pull-right[
+```{r tidy=T, echo=T, include=T, message=F}
+
+# Usamos msummary
+
+msummary(models,
+         statistic='statistic',
+         coef_map = cm,
+         gof_map = gm)
+
+```
+]
+---
+
+#Ejmeplo: probit y logit
+
+- Predicción
+
+.pull-left[
+```{r tidy=T, echo=T, include=T, message=F}
+
+#Predicciones con cada modelo
+
+plogit <- mlogit %>% predict(data=data_binary, type = "response")
+
+pprobit <- mprobit %>% predict(data=data_binary, type = "response")
+
+plineal <- mlineal %>% predict(data=data_binary, type = "response")
+
+data_binary<-cbind(data_binary,plogit,pprobit,plineal)
+data_for_plot <- melt(data_binary ,  id.vars = 'lnrelp', variable.name = 'Modelo',measure.vars = c("plogit","pprobit","plineal"), value.name = "prob")
+
+
+plot_probs <- data_for_plot %>% 
+  ggplot()+
+  geom_line(aes(x=lnrelp,y=prob, color=Modelo))
+
+```
+]
+
+
+
+.pull-right[
+```{r tidy=T, echo=T, include=T, message=F, fig.height=4}
+#Pedimos la gráfica
+
+plot_probs
+```
+]
 ---
 
 # Próxima sesión

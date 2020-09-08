@@ -12,6 +12,9 @@
 
 [Sesión 6](https://rojasirvin.github.io/ECNII2020/sesiones/s6/sesion6.html#1). Modelos multinomiales
 
+[Sesión 7](https://rojasirvin.github.io/ECNII2020/sesiones/s7/sesion7.html#1). Modelos de conteo
+
+
 <!---
 
 commented
