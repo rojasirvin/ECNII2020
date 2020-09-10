@@ -6,8 +6,8 @@
 | 2  | Kveder & Flahaux | Multinomial | 10 de septiembre | Diana Castañeda | 
 | 3  | Conigliani & coautores | Ordenados | 10 de septiembre | Daniel Mendoza |
 | 4  | White & Buckley | Poisson | 10 de septiembre | Eduardo García |
-| 5 | Young & coautores | Inflado en cero   | 10 de septiembre | Rafael Martínez |
-| 6 | Antón & Bustillo | Negativo binomial | 10 de septiembre | Miguel Manrique |
+| 5 | Antón & Bustillo | Negativo binomial | 15 de septiembre | Miguel Manrique |
+| 6 | Young & coautores | Inflado en cero   | 15 de septiembre | Rafael Martínez |
 | 7 | Zou & Luo | Tobit | 17 de septiembre  |  Alonso Pizarro |
 | 8 | Ruhose & coautores | Heckman | 17 de septiembre | Wilmer Ferrer | 
 | 9 | Colchero & coautores | Dos partes | 17 de septiembre | Karla Amaro |

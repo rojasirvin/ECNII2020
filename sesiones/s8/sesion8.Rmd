@@ -1,0 +1,135 @@
+---
+title: "Aplicaciones de modelos de variable dependiente categórica"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "10 de septimebre de 2020"
+mathspec: true
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+```
+
+
+.title[
+# Sesión 8. Aplicaciones de modelos de variable dependiente categórica
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+# Agenda
+  
+1. Hablaremos sobre tres ejemplos de investigación aplicada que nos permiten aterrizar los conceptos vistos en clase
+
+---
+
+class: inverse, middle, center
+
+# Modelos multinomiales
+
+---
+
+# Modelos multinomiales
+
+- Kveder, C. L. M., & Flahaux, M. L. (2013). Returning to Dakar: A mixed methods analysis of the role of migration experience for occupational status. *World Development*, 45, 223-238.
+  
+  
+---
+
+class: inverse, middle, center
+
+# Modelos con variable dependiente ordenada
+
+---
+
+# Modelos con variable dependiente ordenada
+
+- Conigliani, C., Manca, A., & Tancredi, A. (2015). Prediction of patient-reported outcome measures via multivariate ordered probit models. *Journal of the Royal Statistical Society*. Series A (Statistics in Society), 567-591.
+  
+---
+
+class: inverse, middle, center
+
+# Modelos de conteo
+
+---
+
+# Modelos de conteo
+
+- White, K., & Buckley, C. J. (2011). Exposure to international migration and its effect on childbearing in Turkey. International *Migration Review*, 45(1), 123-147.
+
+
+---
+
+# Próxima sesión
+
+- Hablaré sobre modelos de selección
+
+  - CT, Capítulo 16 (secciones 16.1 – 16.6)
+  
+- Dos presentaciones pendientes:
+
+  - **Negativo binomial**: Antón, J. I., & De Bustillo, R. M. (2010). Health care utilisation and immigration in Spain. *The European Journal of Health Economics*, 11(5), 487-498.
+ - **Inflado en cero**: Young, J. D., Anderson, N. M., Naughton, H. T., & Mullan, K. (2018). Economic and policy factors driving adoption of institutional woody biomass heating systems in the US. *Energy Economics*, 69, 456-470.
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**

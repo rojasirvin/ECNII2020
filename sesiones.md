@@ -14,6 +14,8 @@
 
 [Sesión 7](https://rojasirvin.github.io/ECNII2020/sesiones/s7/sesion7.html#1). Modelos de conteo
 
+[Sesión 8](https://rojasirvin.github.io/ECNII2020/sesiones/s8/sesion8.html#1). Aplicaciones de modelos de variable dependiente categórica
+
 
 <!---
 

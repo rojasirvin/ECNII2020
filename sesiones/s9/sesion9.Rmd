@@ -1,0 +1,198 @@
+---
+title: "Modelos de selección"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "15 de septimebre de 2020"
+mathspec: true
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+```
+
+
+.title[
+# Sesión 9. Modelos de selección
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+# Agenda
+  
+1. Hablaremos sobre tres ejemplos de investigación aplicada que nos permiten aterrizar los conceptos vistos en clase
+
+---
+
+class: inverse, middle, center
+
+# Censura y truncamiento
+
+---
+
+# Mecanismos de censura y truncamiento
+
+- Consideremos una variable latente $y^*$ que se observa de acuerdo a una regla de observación $g(\cdot)$
+
+- Lo que observamos es $y=g(y^*)$
+
+---
+
+# Censura
+
+- Siempre observamos $X$ pero no $y$:
+
+  - Censura por abajo: $y=\begin{cases}y^* \quad \text{si }y^*>L \\ L \quad \text{si }y^*\leq L \end{cases}$
+  
+  - Censura por arriba: $y=\begin{cases}y^* \quad \text{si }y^*<U \\ U \quad \text{si }y^*\geq L \end{cases}$
+  
+- El típico ejemplo de censura se encuentra en los datos *top coded*, como los de ingreso
+
+---
+
+# Truncamiento
+
+- Tanto $X$ como $y$ son no observados para ciertos valores de $y$
+
+  - Truncamiento por abajo: $y=y^*$ si $y^*>L$ y no osbervada si $y^*\leq L$
+  
+  - Truncamiento por abajo: $y=y^*$ si $y^*>U$ y no osbervada si $y^*\geq U$
+
+---
+
+# Función de verosimilitud censurada
+
+- La censura y el truncamiento cambian la función de verosimilitud de los datos observados
+
+
+- Verosimilitud censurada (usando censura por abajo)
+
+- Cuando $>L$, la densidad de $y$ es la misma que la de $y^*$, es decir, $f(y|x)=f^*(y|x)$
+
+- Cuando $y=L$, la densidad es discreta con masa igual a la probabilidad de que $y^*\leq L$
+
+- En resumen
+$$
+f(y|x)=
+\begin{cases}
+f^*(y|x) \quad\text{si } y>L \\
+F^*(L|x)\quad\text{si }y=L \\
+\end{cases}
+$$
+--
+
+- La densidad es un híbrido entre una función de masa de probabilidad (una densidad propiamente) y una función de densidad acumulada
+
+---
+
+# Función de verosimilitud censurada
+
+- Definamos
+
+$$
+d=
+\begin{cases}
+1\quad\text{si }y>L \\
+0\quad\text{si }y=L \\
+\end{cases}
+$$
+
+- Entonces la densidad condicional debido a la censura es:
+
+$$f(y|x)=f^*(y|x)^dF^*(L|x)^{1-d}$$
+
+--
+
+- Y la función de log verosimilitud será
+$$\mathcal{L}_N{\theta}=\sum_i\left(d_i\ln f^*(y_i|x_i,\theta) + (1-d_i)F^*(L_i|x_i,\theta)\right)$$
+
+- Noten que hemos dejado abierta la opción de que $L$ difiera entre individuos, es decir, que $L=L_i$
+
+- Si la densidad de $y^*$, $f^*(y^*|x,\theta)$, está bien especificada, $\theta_{MV}$ es consitente y asintóticamente normal
+
+---
+
+# Función de verosimilitud truncada
+
+- Consideremos el caso de truncamiento por abajo
+
+- Noten que la función de densidad de $y$ es:
+
+$$
+\begin{aligned}
+f(y)&=f^*(y|y>L) \\
+&=\frac{f^*(y)}{P(y|y>L)}\\
+&=\frac{f^*(y)}{1-F^*(L)}
+\end{aligned}
+$$
+--
+
+- Entonces, la log verosimilitud truncada es:
+
+$$\mathcal{L}_N{\theta}=\sum_i\left(\ln f^*(y_i|x_i,\theta)-\ln(1-F^*(L_i|x_i,\theta))\right)$$
+
+---
+
+# Próxima sesión
+
+- Al final
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
