@@ -164,7 +164,7 @@ b.	[2 puntos] Independientemente de si hay sobredispersión o no, estime un mode
 
 a.	[2 puntos] Obtenga la razón de tasas de incidencia (IRR) para los coeficientes e interprete los resultados.
 
-a.	[1 punto] Considere ahora que las mujeres han tenido carreras profesionales más cortas que los hombres, es decir, han estado menos expuestas a la ocurrencia de los eventos “publicar”. Incorpore esto al análisis y reinterprete los resultados. Pista: explore la opción *offeset* en R.
+a.	[1 punto] Considere ahora que las mujeres han tenido carreras profesionales más cortas que los hombres, es decir, han estado menos expuestas a la ocurrencia de los eventos “publicar”. Incorpore esto al análisis y reinterprete los resultados. Pista: explore la opción *offeset* en R. Note que la variable **profage** mide la duración efectiva de las carreras profesionales de cada individuo.
 
 a.	[2 puntos] Emplee ahora un modelo negativo binomial con sobredispersión constante para estimar la relación entre el número de artículos publicados y las variables explicativas antes enumeradas. Interprete el coeficiente asociado al número de hijos y a la variable dicotómica para estudiantes mujeres.
 
