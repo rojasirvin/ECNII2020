@@ -55,7 +55,7 @@ Suponga una variable aleatoria $X_i$ con distribución desconocida. Sin embargo,
 
 a. [1 punto] ¿Cuál es la distribución asintótica de la media muestral $\bar{X}$?
 
-a. [2 punto] ¿Cuál es la probabilidad de que $X>60$?
+a. [2 punto] ¿Cuál es la probabilidad de que $\bar{X}>60$?
 
 a. [1 punto]¿Cuál es la probabilidad de que una observación elegida al azar sea tal que $X_i<50$?
 
