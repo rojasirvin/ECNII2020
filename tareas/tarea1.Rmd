@@ -41,7 +41,7 @@ a. [2 puntos] Sea $\mathbf{\theta}\equiv(\mathbf{\beta}'\;\sigma^2)'$ un vector 
 
 a. [2 puntos] Use las condiciones de primer orden, encuentre $\hat{\sigma}^2$ en términos de $\hat{\mathbf{\beta}}$.
 
-a. [4 puntos] Encuentre la matriz hesiana de la función de verosimilitud con respecto a $\mathbf{\theta}$.
+a. [4 puntos] Encuentre la matriz hesiana de la función de log verosimilitud con respecto a $\mathbf{\theta}$.
 
 a. [3 puntos] Muestre que $-E(\mathbf{H}_i(\mathbf{\theta}_0)|\mathbf{x}_i)=E(\mathbf{s}_i(\mathbf{\theta}_0)\mathbf{s}_i(\mathbf{\theta}_0)'|\mathbf{x}_i)$.
 
