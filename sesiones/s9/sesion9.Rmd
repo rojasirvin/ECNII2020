@@ -182,9 +182,452 @@ $$\mathcal{L}_N{\theta}=\sum_i\left(\ln f^*(y_i|x_i,\theta)-\ln(1-F^*(L_i|x_i,\t
 
 ---
 
+class: inverse, middle, center
+
+# Modelo Tobit
+
+---
+
+# Modelo Tobit
+
+- Es una modelo simple y con supuestos muy fuertes sobre la estructura de la censura
+
+- Tobin (1958) lo planteó originalmente como una forma de modelar la compra de bienes durables (muchos hogares gastan 0 en bienes durables)
+
+--
+
+- Consideramos un proceso con errores normales
+$$
+\begin{aligned}
+&y^*=x'\beta+\varepsilon \\
+&\varepsilon\sim\mathcal{N}(0,\sigma^2)
+\end{aligned}
+$$
+- Supongamos que observamos $y$ de acuerdo a la siguiente regla:
+
+$$
+y=
+\begin{cases}
+y^*\quad\text{si }y^*>0 \\
+-\quad\text{si } y^*\leq 0\\
+\end{cases}
+$$
+---
+
+# Modelo Tobit
+
+- Con los errores normales, podemos definir la cdf como
+$$
+\begin{aligned}
+F^*(0)&=P(y^*\leq0) \\
+&=P(x'\beta+\varepsilon\leq 0) \\
+&=\Phi(-x'\beta/\sigma) \\
+&=1-\Phi(x'\beta/\sigma)
+\end{aligned}
+$$
+--
+
+- Esto nos permite definir la densidad censurada como
+$$
+f(y)=\left(\frac{1}{\sqrt{2\pi\sigma^2}}exp\left(-\frac{1}{2\sigma^2}(y-x'\beta)^2\right)\right)^d\left(1-\Phi\left(\frac{x'\beta}{\sigma}\right)\right)^{1-d}
+$$
+--
+
+- Y entonces la función de log verosimilitud será:
+$$
+\begin{aligned}
+\mathcal{L}_N(\beta,\sigma^2)&=\sum_i\left( d_i\left(-\frac{1}{2}\ln(\sigma^2)-\frac{1}{2}\ln(2\pi)-\frac{1}{2\sigma^2}(y_i-x'\beta)^2\right)+ \right. \\
+&\left. +(1-d_i)\ln\left(1-\Phi\left(\frac{x_i'\beta}{\sigma}\right)\right) \right)
+\end{aligned}
+$$
+
+---
+
+# Condiciones de primer orden
+
+$$\frac{\partial \mathcal{L}_N}{\partial \beta}=\sum_i\frac{1}{\sigma^2}\left(d_i(y_i-x_i'\beta)-(1-d_i)\frac{\sigma \phi_i}{1-\Phi_i}\right)x_i=0$$
+$$\frac{\partial \mathcal{L}_N}{\partial \sigma^2}=\sum_i\left(di\left(-\frac{1}{2\sigma^2}+\frac{(y_i-x_i'\beta)^2}{2\sigma^4}\right)+(1-d_i)\left(\frac{\phi_ix_i'\beta}{(1-\Phi_i)2\sigma ^3}\right)\right)=0$$
+--
+
+- La solución se obtiene numéricamente
+
+- $\hat{\theta}$ es consistente si la densidad está bien especificada
+
+- El estimador de MV es asintóticamente normal: $\theta\stackrel{a}{\sim}\mathcal{N}(\theta,V(\hat{\theta})$
+
+- Maddala (1983) y Amemiya (1985) proveen expresiones para la matriz de varianzas
+
+---
+
+# Nota sobre terminología
+
+- El modelo Tobit fue plantado inicialmente para un problema de censura en cero
+
+- Cuando nos refiramos al Tobit estaremos pensando en la estructura particular que tienen $y^*$ y $y$
+
+- Si en vez de censura, ocurriera truncamiento, la log verosimilitud sería
+$$\mathcal{L}_N(\beta,\sigma^2)=\sum_i \left(-\frac{1}{2}\ln(\sigma^2)-\frac{1}{2}\ln(2\pi)-\frac{1}{2\sigma^2}(y_i-x'\beta)^2-\ln\left(\Phi(x_i'\beta/\sigma)\right)\right)$$
+---
+
+# ¿Cuáles son las consecuencias de la censura y el truncamiento?
+
+- Para ver las consecuencias de ignorar el truncamiento o la censura, consideremos el modelo lineal de variable latente 
+
+$$E(y ^*|x)=x'\beta$$
+
+
+- Consideremos la medica condicional censurada en cero
+
+- Calculamos $E(y)$:
+$$
+\begin{aligned}
+E(y)&= P(d = 0)E(y|d = 0) + P(d = 1)  E(y|d = 1) \\
+&= 0 P(y∗ ≤ 0) + P(y∗> 0) E(y∗|y∗>0) \\
+&= P(y∗> 0)  E(y∗|y∗> 0)
+\end{aligned}
+$$
+--
+
+Por tanto:
+
+$$E(y|x)=P(\varepsilon>-x'\beta)(x'\beta+E(\varepsilon|\varepsilon>-x'\beta))$$
+---
+
+# ¿Cuáles son las consecuencias de la censura y el truncamiento?
+
+- Veamos ahora la media condicional truncada en cero
+
+$$
+\begin{aligned}
+E(y)&=E(y^*|y^*>0) \\
+&=E(x'\beta+\varepsilon|x'\beta+\varepsilon>0) \\
+&=E(x'\beta|x'\beta+\varepsilon>0)+E(\varepsilon|x'\beta+\varepsilon>0) \\
+\end{aligned}
+$$
+- Por tanto
+
+--
+
+$$E(y|x,y>0)=x'\beta+E(\varepsilon|\varepsilon>-x'\beta)$$
+--
+
+- Aunque la media condicional de $y^*$ es lineal, la media condicional de $y^*$ no lo es
+
+- El estimador de MCO es inconsistente en presencia de censura o truncamiento
+
+- Notemos que una pieza clave para entender estos valores esperados es $E(\varepsilon|\varepsilon>-x'\beta)>0$
+
+---
+
+# Momentos truncados de la distribución normal
+
+- Si $z\sim\mathcal{N}(0,1)$, la esperanza y varianza truncadas de la distribución truncada tienen las siguientes formas:
+
+1. $E(z|z>c)=\frac{\phi(c)}{1-\Phi(c)}$ y $E(z|z>-c)=\frac{\phi(c)}{\Phi(c)}$
+
+1. $E(z^2|z>c)=1+\frac{c\phi(c)}{1-\Phi(c)}$
+
+1. $V(z|z>c)=1+\frac{c\phi(c)}{1-\Phi(c)}-\frac{\phi(c)^2}{(1-\Phi(c))^2}$
+
+--
+
+- Comúnmente a $\lambda(z)=\frac{\phi(z)}{\Phi{z}}$ se le conoce como **inverso de la razón de Mills**
+
+
+---
+
+# Medias condicionales en el modelo Tobit
+
+.pull-left[
+- Podemos entonces obtener una expresión para $E(\varepsilon|\varepsilon>-x'\beta)$:
+
+$$
+\begin{aligned}
+E(\varepsilon|\varepsilon>-x'\beta)&=\sigma E\left(\varepsilon/\sigma|\varepsilon/\sigma>-x'\beta/\sigma\right) \\
+&=\sigma \left(\frac{\phi(-x'\beta/\sigma)}{1-\Phi(-x'\beta/\sigma)}\right) \\
+&=\sigma\frac{\phi(x'\beta/\sigma)}{\Phi(x'\beta/\sigma)}\\
+&=\sigma\lambda(x'\beta/\sigma)
+\end{aligned}
+$$
+- Finalmente, noten que:
+$$
+\begin{aligned}
+P(\varepsilon>-x'\beta)&=P(-\varepsilon<x'\beta) \\
+&=P(-\varepsilon/\sigma<x'\beta/\sigma)\\
+&=\Phi(x'\beta/\sigma)
+\end{aligned}
+$$
+]
+
+.pull-right[
+```{r, out.width="120%",fig.cap='Fuente: Cameron & Trivedi (2005)',fig.align='center'}
+knitr::include_graphics("figures/mills_ratio.png")
+```
+
+- Noten que $\lambda(z)$ es casi lineal en $c$ para valores de $c>0$
+]
+
+---
+
+# Media y varianza condicional
+
+- Los resultados anteriores nos permiten obtener expresiones para la media y varianza condicional de la distribución truncada **cuando $\varepsilon$ es normal**:
+
+.pull-left[
+- Truncada en cero
+$$
+\begin{aligned}
+&E(y|x,y>0)=x'\beta+\sigma\lambda(x'\beta/\sigma) \\
+&V(y|x,y>0)=\sigma^2(1-x'\beta\lambda(x'\beta/\sigma)-\lambda(x'\beta/\sigma)^2)
+\end{aligned}
+$$
+
+- Censurada en cero
+$$
+\begin{aligned}
+&E(y|x)=\Phi(x'\beta/\sigma)x'\beta+\sigma\phi(x'\beta/\sigma)\\
+&V(y|x)=\sigma^2\Phi(x'\beta/\sigma)\left((x'\beta)^2+x'\beta\lambda(x'\beta)+1- \\ -\Phi(x'\beta/\sigma)(x'\beta+\lambda(x'\beta/\sigma))\right)
+\end{aligned}
+$$
+
+]
+
+.pull-right[
+```{r, out.width="120%",fig.cap='Fuente: Cameron & Trivedi (2005)',fig.align='center'}
+knitr::include_graphics("figures/cond_means.png")
+```
+]
+
+---
+
+# Efectos marginales
+
+- Los resultados anteriores nos permiten derivar los efectos marginales para la variable latente $y^*$ y para la variable observada $y$
+
+- Efecto marginal en la variable latente: $\frac{\partial E(y^*)}{\partial x}=\beta$
+
+- Efecto marginal en la media truncada en cero: $\frac{\partial E(y,y>0|x)}{\partial x}=(1-x'\beta\lambda(x'\beta/\sigma)-\lambda(x'\beta/\sigma)^2)\beta$
+
+- Efecto marginal en la media censurada en cero:
+$\frac{\partial E(y|x)}{\partial x}=\Phi(x'\beta/\sigma)\beta$
+
+--
+
+- ¿cuál efecto nos interesa? Depende de la pregunta
+
+- A veces la censura o el truncamiento ocurren simplemente por una cuestión de recolección o codificación de datos, así que el objeto de interés sigue siendo $\frac{\partial E(y^*)}{\partial x}$
+
+- Otras veces, la variable censurada o truncada tiene una interpretación de comportamiento económico
+  
+  - Horas trabajadas deseadas $y^*$ vs horas trabajadas observadas $y$
+  
+---
+
+# Conclusión triste sobre el Tobit
+
+- Relativamente simple y con resultados que pueden obtenerse de forma directa
+
+--
+
+- Recae en una especificación altamente restrictiva de errores normales y homocedásticos
+
+- Poco usado en la práctica
+
+- Es útil porque nos permitió estudiar las consecuencias de la censura y el truncamiento en un contexto muy simplificado
+
+- Es de esperarse que estas consecuencias se sostengan y vuelvan incluso más complejo el análisis cuando $y^*$ y $y$ tienen estructuras más generales
+
+
+---
+
+class: inverse, middle, center
+
+# Modelos en dos partes
+
+---
+
+# Modelos en dos partes
+
+- Modelamos dos procesos diferentes:
+
+  - Participación: $d=\begin{cases} 1 \quad\text{si participa} \\ 0\quad\text{si no participa} \end{cases}$
+  
+  - Resultado: $y=\begin{cases} y \quad\text{si participa} \\ 0\quad\text{si no participa} \end{cases}$
+  
+--
+
+- El modelo en dos partes está dado por:
+
+$$
+f(y |x)=
+\begin{cases}
+P(d=0|x)\quad\text{si }y=0 \\
+P(d=1|x)f(y|d=1,x)\quad\text{si }y>0\\
+\end{cases}
+$$
+---
+
+# Ejemplo 1: modelo en dos partes Poisson
+
+- Se relajan los supuestos de que los ceros y los positivos son generados por el mismo proceso generador de datos
+
+- Los ceros se determinan por la densidad $f_i(\cdot)$, por lo que $P(y=0)=f_1(0)$
+
+- Los conteos positivos están dados por $f_2(y|y>0)=\frac{f_2(y)}{1-f_2(0)}$, que se multiplica por $P(y>0)=1-f_1(0)$ para asegurar que las probabilidades sumen 1
+
+--
+
+- En este caso, el modelo en dos partes es:
+
+$$
+\begin{aligned}
+g(y)=\begin{cases}
+f_1(0) \quad\text{si }y=0 \\
+\frac{(1-f_1(0))f_2(y)}{1-f_2(0)}\quad\text{si }y\geq 1 \\
+\end{cases}
+\end{aligned}
+$$
+- Una forma natural de especificar $f_2(\cdot)$ es con un proceso Poisson o negativo binomial
+
+- El modelo se estima por máxima verosimilitud
+
+---
+
+# Ejemplo 1: modelo en dos partes Poisson
+
+- Este modelo se puede pensar como
+
+  1. Lanzamos una moneda no balanceada y determinamos si $y=0$ o si $y>0$
+  
+  2. Si $y>0$, entonces el conte Poisson sea realiza
+  
+
+- No necesitamos generar una densidad mezclada pues la densidad que resulta es un producto del proceso binomial y de conteo, por lo que el log de este producto es una suma
+
+---
+
+class: inverse, middle, center
+
+
+# Modelos de muestras seleccionadas
+
+---
+
+# Modelos de muestras seleccionadas
+
+- Las muestras pueden estar seleccionadas
+
+  - Por el econometrista
+  
+  - Por que los agentes escogen participar
+  
+--
+
+- Ecuación de participación
+
+$$
+y_1=
+\begin{cases}
+1\quad\text{si } y_1^*>0\\
+0\quad\text{si } y_1^*\leq 0
+\end{cases}
+$$
+- Ecuación de resultados
+
+$$
+y_2=
+\begin{cases}
+y_2^*\quad\text{si } y_1^*>0\\
+NA \quad\text{si } y_1^*\leq 0
+\end{cases}
+$$
+- Por tanto
+
+$$
+\begin{aligned}
+y_1^*=x_1'\beta_1+\varepsilon_1 \\
+y_2^*=x_2'\beta_2+\varepsilon_2 \\
+\end{aligned}
+$$
+- En el caso en que $y_1^*=y_2^*$, el modelo se colapsa al Tobit
+
+
+---
+
+# Modelo de Heckman
+
+- No hay consenso de cómo llamarlo
+
+- El estimador que veremos fue desarrollado por Heckman
+
+- Algunos otros autores le llaman **Tobit de Tipo II** o **modelo con ecuación de selección**
+
+- Supuesto: errores con distribución conjunta normal
+
+$$
+\begin{pmatrix} \varepsilon_1 \\ \varepsilon_2 \end{pmatrix}\sim \mathcal{N}\left(A, B \right)
+$$
+- $A=\begin{pmatrix} 0 \\ 0  \end{pmatrix}$
+
+- $B=\begin{pmatrix} 1 & \sigma_{12} \\ \sigma_{21} & \sigma_2^2 \\ \end{pmatrix}$
+
+- $\sigma_1^2=1$ es una normalización
+
+
+---
+
+# Resultados de la distribución normal conjunta
+
+- Por nuestro supuesto de normalidad resulta que: $\varepsilon_2=\sigma_{12}\varepsilon_1 +\xi$
+
+- $\xi$ es independiente de $\varepsilon_1$
+
+--
+
+- **Media truncada**
+
+$$E(y_2|x,y_1^*>0)=x_2'\beta_2+E(\varepsilon_2|\varepsilon_1>-x_1'\beta_1)$$
+
+- Usando el resultado de la normalidad de los errores:
+
+$$
+\begin{aligned}
+E(y_2|x,y_1^*>0)&=x_2'\beta_2+E(\sigma_{12}\varepsilon_1+\xi|\varepsilon_1>-x_1'\beta_1) \\
+&=x_2'\beta_2+\sigma_{12}E(\varepsilon_1|\varepsilon>-x_1'\beta_1) \\
+&=x_2'\beta_2+\sigma_{12}\lambda(x_1'\beta_1)
+\end{aligned}
+$$
+- Similarmente
+$$V(y_2|x,y_1^*)=\sigma_2^2-\sigma_{12}^2\lambda(x_1'\beta_1)(x_1'\beta_1+\lambda(x_1'\beta_1))$$
+---
+
+# Resultados de la distribución normal conjunta
+
+- **Media censurada**
+
+- Cuando $y_2=0$ si $y_1^*<0$
+
+$$
+\begin{aligned}
+E(y_2|x)&=E_{y_{1}^{*}}(E(y_2|x,y_1^*)) \\
+&=P(y_1^*\leq 0 | x)\times 0+P(y_1^* > 0 | x)E(y_2^*|X,y_1^*>0) \\
+&=0+\Phi(x_1'\beta_1)(x_2'\beta_2+\sigma_{12}\lambda(x_1'\beta_1)) \\
+&=\Phi(x_1'\beta_1)x_2'\beta_2 + \sigma_{12}\phi(x_1'\beta_1)
+\end{aligned}
+$$
+
+
+---
 # Próxima sesión
 
-- Al final
+- Concluiré la discusión sobre el estimador de Heckman
+
+
+- Veremos dos ejemplos aplicados:
+
+  - **Tobit**: Zou, B., & Luo, B. (2019). Rural Household Energy Consumption Characteristics and Determinants in China. Energy.
+  - **Heckman**: Parey, M., Ruhose, J., Waldinger, F., & Netz, N. (2017). The selection of high-skilled emigrants. *Review of Economics and Statistics*, 99(5), 776-792.
+
 ---
 
 class: center, middle
