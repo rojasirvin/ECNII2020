@@ -508,10 +508,10 @@ $$
 
 class: inverse, middle, center
 
-
 # Modelos de muestras seleccionadas
 
 ---
+
 
 # Modelos de muestras seleccionadas
 
