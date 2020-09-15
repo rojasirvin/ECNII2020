@@ -46,7 +46,15 @@ class: title-slide
 ---
 # Agenda
   
-1. Hablaremos sobre tres ejemplos de investigación aplicada que nos permiten aterrizar los conceptos vistos en clase
+1. Introduciremos una primera forma de manejar la selección
+
+1. Estudiaremos la selección en los datos con dos posibles orígenes:
+
+  - Comportamiento 
+
+  - Codificación o
+  
+1. Podemos arreglarlo modelando explícitamente el proceso de selección
 
 ---
 
@@ -459,12 +467,11 @@ $$
 - En este caso, el modelo en dos partes es:
 
 $$
-`\begin{aligned}
-g(y)=\begin{cases}
+g(y)=
+`\begin{cases}
 f_1(0) \quad\text{si }y=0 \\
-\frac{(1-f_1(0))f_2(y)}{1-f_2(0)}\quad\text{si }y\geq 1 \\
+\frac{(1-f_1(0))f_2(y)}{1-f_2(0)}\quad\text{si }y\geq 1 
 \end{cases}`
-\end{aligned}`
 $$
 - Una forma natural de especificar `\(f_2(\cdot)\)` es con un proceso Poisson o negativo binomial
 
