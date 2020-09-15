@@ -16,6 +16,7 @@
 
 [Sesión 8](https://rojasirvin.github.io/ECNII2020/sesiones/s8/sesion8.html#1). Aplicaciones de modelos de variable dependiente categórica
 
+[Sesión 9](https://rojasirvin.github.io/ECNII2020/sesiones/s9/sesion9.html#1). Modelos de selección
 
 <!---
 
