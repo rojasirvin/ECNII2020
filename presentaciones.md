@@ -8,10 +8,10 @@
 | 4  | White & Buckley | Poisson | 10 de septiembre | Eduardo García |
 | 5 | Antón & Bustillo | Negativo binomial | 15 de septiembre | Miguel Manrique |
 | 6 | Young & coautores | Inflado en cero   | 15 de septiembre | Rafael Martínez |
-| 7 | Zou & Luo | Tobit | 17 de septiembre  |  Alonso Pizarro |
-| 8 | Ruhose & coautores | Heckman | 17 de septiembre | Wilmer Ferrer | 
-| 9 | Colchero & coautores | Dos partes | 17 de septiembre | Karla Amaro |
-| 10 | Circella & coautores | Ordenado + selección   | 17 de septiembre | Federico Daverio |
+| 7 | Zou & Luo | Tobit | 22 de septiembre  |  Alonso Pizarro |
+| 8 | Ruhose & coautores | Heckman | 22 de septiembre | Wilmer Ferrer | 
+| 9 | Colchero & coautores | Dos partes | 22 de septiembre | Karla Amaro |
+| 10 | Circella & coautores | Ordenado + selección   | 22 de septiembre | Federico Daverio |
 | 11 | Campos & Nuñez | IV | 24 de septiembre | Luis Enrique Ramos |
 | 12 | López-Feldman | IV | 29 de septiembre   | Nevid Torres |
 | 13 | Hackett & Marquez | IV | 29 de septiembre | Thania Hernández |
