@@ -2,7 +2,7 @@
 title: "Modelos de selección"
 author: "Irvin Rojas"
 institute: "CIDE"
-date: "15 de septimebre de 2020"
+date: "17 de septimebre de 2020"
 mathspec: true
 output:
   xaringan::moon_reader:
@@ -40,6 +40,7 @@ p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl,
        readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
 
 xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
 ```
 
 ```{css, echo = FALSE}
@@ -49,11 +50,12 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 .tiny .remark-code { /*Change made here*/
   font-size: 60% !important;
 }
+
 ```
 
 
 .title[
-# Sesión 9. Modelos de selección
+# Sesión 10. Modelos de selección
 ]
 .subtitle[
 ## Econometría II
@@ -75,9 +77,9 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
   - Comportamiento 
 
-  - Codificación o
+  - Tratamiento de los datos
   
-1. Podemos arreglarlo modelando explícitamente el proceso de selección
+1. Podemos arreglarlo modelando explícitamente el proceso de selección, pero haciendo supuestos distribucionales fuertes
 
 ---
 
@@ -445,7 +447,6 @@ $\frac{\partial E(y|x)}{\partial x}=\Phi(x'\beta/\sigma)\beta$
 
 - Es de esperarse que estas consecuencias se sostengan y vuelvan incluso más complejo el análisis cuando $y^*$ y $y$ tienen estructuras más generales
 
-
 ---
 
 class: inverse, middle, center
@@ -455,6 +456,8 @@ class: inverse, middle, center
 ---
 
 # Modelos en dos partes
+
+- En el modelo Tobit se asume que el mismo mecanismo determina el resultado que $y=0$ o $y>0$, y al mismo tiempo la magnitud de $y$ dado que $y>0$
 
 - Modelamos dos procesos diferentes:
 
@@ -473,9 +476,15 @@ P(d=0|x)\quad\text{si }y=0 \\
 P(d=1|x)f(y|d=1,x)\quad\text{si }y>0\\
 \end{cases}
 $$
+--
+
+- A este tipo de modelos también se les conoce como modelos de valla (*hurdle models*)
+
+- Se usan como alternativa al Tobit en problemas de censura
+
 ---
 
-# Ejemplo 1: modelo en dos partes Poisson
+# Ejemplo: modelo en dos partes Poisson
 
 - Se relajan los supuestos de que los ceros y los positivos son generados por el mismo proceso generador de datos
 
@@ -500,7 +509,7 @@ $$
 
 ---
 
-# Ejemplo 1: modelo en dos partes Poisson
+# Ejemplo: modelo en dos partes Poisson
 
 - Este modelo se puede pensar como
 
@@ -510,6 +519,42 @@ $$
   
 
 - No necesitamos generar una densidad mezclada pues la densidad que resulta es un producto del proceso binomial y de conteo, por lo que el log de este producto es una suma
+
+- En la tarea mostrarán que la función de log verosimilitud es la suma de dos log verosimilitudes, una para la parte Bernoulli y otra para la parte de conteo
+
+
+---
+
+# Modelos inflados en cero
+
+- Una alternativa más son los modelos inflados en cero, aunque son mucho menos utilizados en economía
+
+- Los modelos más comúnes inflados en cero son el Poisson inflado en cero y el negativo binomial inflazo en cero
+
+- En este tipo de modelos la variable de respuesta se modela como una mezcla con una Bernoulli
+
+$$
+g(y)=
+\begin{cases}
+f_1(0)(1-f_1(0))f_2(0) \quad\text{si }y=0 \\
+(1-f_1(0))f_2(y) \quad\text{si } y \geq1 \\
+\end{cases}
+$$
+---
+
+# Ejemplo: modelo Poisson inflado en cero
+
+- Si $y$ proviene de una distribución Poisson, sabemos que $f_2(0)=exp(-\lambda_i)$
+
+- Por tanto, la densidad del modelo inflado en cero es:
+
+$$
+P(Y=y)=
+\begin{cases}
+\pi + (1-\pi) exp(-\lambda)\quad\text{si } y=0 \\
+(1-\pi)exp(-\lambda)\lambda^y/y!\quad\text{si } y\geq 1 \\
+\end{cases}
+$$
 
 ---
 
@@ -622,18 +667,78 @@ E(y_2|x)&=E_{y_{1}^{*}}(E(y_2|x,y_1^*)) \\
 &=\Phi(x_1'\beta_1)x_2'\beta_2 + \sigma_{12}\phi(x_1'\beta_1)
 \end{aligned}
 $$
+---
+
+# Estimador de Heckman en dos etapas
+
+- Algunos autores lo conocen como *heckit*
+
+- Consiste en ver el problema como uno de *variable omitida* donde la variable omitida es $\lambda(x_{1i}'\beta_1)$
+
+- Podemos pensar el problema en dos etapas:
+
+  1. Probit de $y_1$ en $x_1$ usando toda la muestra, dado que asumimos que $P(y_1^*>0)=\Phi(X_1'\beta_1)$:
+  
+        - Usamos $\hat{\beta}_1$ para calcular el estimado del inverso de la razón de Mills: $$\lambda(x_i'\hat{\beta}_1)=\frac{\phi(x_1'\hat{\beta}_1)}{\Phi(x_1'\hat{\beta}_1)}=\hat{\lambda}(x_1'\hat{\beta}_1)$$
+
+--
+  1. Usamos los valores positivos de $y_2$ para estimar la regresión $$y_{2i}=x_{2i}'\beta_2+\sigma_{12}\lambda(x_{1i}'\beta_1)+v_i$$
+  
+---
+
+# Estimador de Heckman en dos etapas
+
+- Usando el resultado de la varianza truncada podemos estimar $$\sigma_2^2=\frac{1}{N}\sum_i(\hat{v}_i+\hat{\sigma}_{12}^2\hat{\lambda}_i(x_1'\beta_1+\hat{\lambda}_i))$$
+donde $\hat{v}_i$ son los residuales estimados
+
+- La correlación de errores puede ser estimada como $$\hat{\rho}=\hat{\sigma}_{12}/\hat{\sigma}_2$$
+
+- Por tanto, una prueba de que $\rho=0$ o $\sigma_{12}=0$ es una prueba de si los errores están correlacionados y si es necesaria la correción por muestra seleccionada
+
+- Poner atención a la significancia del inverso de la razón de Mills en la segunda etapa
+
+---
+
+# Errores estándar
+
+- Para estimar la varianza hay que considerar dos cosas:
+
+  1. Sabemos que $V(y_2|x,y_1^*>0) $ depende de $X$, es decir, la varianza es heterocedástica
+  1. En la segunda etapa, $\hat{lambda}_i$ no es observado sino estimado
+  
+- Heckman (1979) provee las fórmulas de los errores correctos (R y otros paquetes ya lo implementan correctamente)
+
+---
+
+# Efectos marginales
+
+- Definamos en un solo vector $x=[x_1\;x_2]$
+
+- Podemos reescribir $x_1\beta_1=x'\gamma_1$ y $x_2'\beta_2=x'\gamma_2$, donde $\gamma_1$ y $\gamma_2$ tendrán algunas entradas iguales a cero si $x_1\neq x_2$
+
+- Así, la media truncada es $$E(y_2|x)=x'\gamma+\sigma_{12}\lambda(x'\gamma_1)$$
+
+--
+
+- Y los efectos marginales relevantes son:
+
+1. Proceso sin censura: $\frac{\partial E(y_2^*|x)}{\partial x}=\gamma_2$
+
+1. Truncado en cero: $\frac{\partial E(y_2|x, y_1=1)}{\partial x}=\gamma_2-\sigma_{12}\lambda(x'\gamma_1)(x'\gamma_1+\lambda(x'\gamma_1))$
+
+1. Censurado en cero: $\frac{\partial E(y_2|x)}{\partial x}=\gamma_1\phi(x'\gamma_1)x¿\gamma_2+\Phi(x'\gamma_1)\gamma_2-\sigma_{12}x'\gamma_1\phi(x'\gamma_1)\gamma_1$
 
 
 ---
 # Próxima sesión
 
-- Concluiré la discusión sobre el estimador de Heckman
-
-
-- Veremos dos ejemplos aplicados:
+- Veremos algunos ejemplos aplicados:
 
   - **Tobit**: Zou, B., & Luo, B. (2019). Rural Household Energy Consumption Characteristics and Determinants in China. Energy.
   - **Heckman**: Parey, M., Ruhose, J., Waldinger, F., & Netz, N. (2017). The selection of high-skilled emigrants. *Review of Economics and Statistics*, 99(5), 776-792.
+  - **Dos partes**: Colchero, M. A., Molina, M., & Guerrero-López, C. M. (2017). After Mexico implemented a tax, purchases of sugar-sweetened beverages decreased and water increased: difference by place of residence, household composition, and income level. *The Journal of nutrition*, 147(8), 1552-1557.
+  - **Ordenado + selección**: Alemi, F., Circella, G., Mokhtarian, P., & Handy, S. (2019). What drives the use of ridehailing in California? Ordered probit models of the usage frequency of Uber and Lyft. *Transportation Research Part C: Emerging Technologies*, 102, 233-248.
+
 
 ---
 
