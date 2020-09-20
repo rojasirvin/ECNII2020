@@ -12,10 +12,10 @@
 | 8 | Ruhose & coautores | Heckman | 22 de septiembre | Wilmer Ferrer | 
 | 9 | Colchero & coautores | Dos partes | 22 de septiembre | Karla Amaro |
 | 10 | Circella & coautores | Ordenado + selección   | 22 de septiembre | Federico Daverio |
-| 11 | Campos & Nuñez | IV | 24 de septiembre | Luis Enrique Ramos |
-| 12 | López-Feldman | IV | 29 de septiembre   | Nevid Torres |
-| 13 | Hackett & Marquez | IV | 29 de septiembre | Thania Hernández |
-| 14 | Mocetti | MC2E2M | 29 de septiembre | César Ángeles |
+| 11 | Campos & Nuñez | IV | 29 de septiembre | Luis Enrique Ramos |
+| 12 | López-Feldman | IV | 1 de octubre   | Nevid Torres |
+| 13 | Hackett & Marquez | IV | 1 de octubre | Thania Hernández |
+| 14 | Mocetti | MC2E2M | 1 de octubre | César Ángeles |
 | 15 | Hirvonen & Hoddinott | Poisson + VI | 29 de septiembre | Daniel Hernández | 
 | 16 | Li & Maddala | Bootstrap | 20 de octubre | Eduardo García |
 | 17 | PENDIENTE | Panel | 22 de octubre | Miguel Manrique |
