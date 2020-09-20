@@ -1,0 +1,709 @@
+---
+title: |
+  | CIDE
+  | Maestría en Economía
+  | Econometría II
+
+subtitle: "Respuestas a la tarea 1"
+author: "Profesor: Irvin Rojas"
+date: "Fecha de entrega: 15 de septiembre a las 11:00."
+output:
+  html_document:
+  toc: true
+---
+
+
+```{r setup, include=FALSE}
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+#library(nnet)
+library(mlogit)
+library(readr)
+library(clubSandwich)
+library(modelsummary)
+library(estimatr)
+library(pastecs)
+library(car)
+library(MASS)
+library(COUNT)
+
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+```
+  
+## Instrucciones
+  
+La tarea debe entregarse de manera individual, pero se recomienda ampliamente colaborar en grupos de estudio. Las secciones teóricas deben estar desarrolladas en un procesador de textos y enviadas en formato .docx o .pdf. Las secciones prácticas deberán contener archivos de código replicable y archivos de salida en R (o similares, en caso de usar otro software) para considerarse completas. Las tareas deben entregarse antes de la fecha límite a través de Teams. Puede crear una carpeta comprimida que contenga todos sus archivos y subir esta carpeta en Teams. Recuerde que en Teams debe asegurarse de que los archivos se han subido correctamente.
+
+## Pregunta 1
+
+Suponga que está interesado en una variable aleatoria que tiene una distribución Poisson con parámetro $\lambda$. En particular:
+$$P(X=x)=\frac{\lambda^x e^{-\lambda}}{x!}$$
+Suponga que tiene una muestra de n independientes e idénticamente distribuidas.
+
+a. [2 puntos] Plantee la función de log verosimilitud del problema.
+
+    *La función de verosimilitud es* $$L_N(\lambda)=\prod_{i=1}^N\frac{\lambda^{x_i}exp(-\lambda)}{x1}=\frac{\lambda^{\sum_i x_i}exp(-n\lambda)}{\prod x!}$$ *por lo que la verosimilitud es* $$\mathcal{L}_N(\lambda)=\sum_i x_i\ln(\lambda)-n\lambda-\ln\left(\prod x!\right)$$
+
+a. [3 puntos] Obtenga las condiciones de primer orden y resuelva para $\lambda$.
+
+    *Derivando $\mathcal{L}_N$ con respecto a $\lambda$ obtenemos la condición de primer orden* $$\frac{d\mathcal{L}_N(\lambda)}{d\lambda}=\frac{\sum x_i}{\lambda}-n=0$$ *Y resolviendo, obtenemos el estimador de máxima verosimilitud $$\hat{\lambda}_{MV}=\bar{x}$$ es decir, la media muestral*
+
+a. [2 puntos] ¿Cuál es la media y la varianza del estimador de máxima verosimilitud que ha encontrado?
+
+    *Obtenemos directamente la esperanza* $$E(\hat{\lambda}_{MV})=E(\bar{x})=\frac{1}{N}E\left(\sum x_i\right)=\frac{1}{n}n\lambda=\lambda$$
+    
+    *Mientras que la varianza es* $$V(\hat{\lambda}_{MV})=\frac{1}{N^2}V\left(\sum x_i\right)=\frac{1}{n}\lambda$$
+
+a. [1 punto] Suponga que se las $x_i$ son tales que se puede aplicar un teorema de límite central a la media muestral. Entonces, se puede hacer la siguiente afirmación sobre el parámetro poblacional $\lambda$:
+$$P\left(-1.96\leq\left(\frac{\lambda-a}{b}\right)\leq 1.96\right)=0.95$$
+
+    *Sabemos que usando si podemos usar un teorema de límite central, basta con restar el valor esperado y dividir por la desviación estándar. Por tanto: $a=\lambda$ y $b=\sqrt{λ/n}$*
+
+
+## Pregunta 2 (Wooldridge, 2002)
+
+Suponga que $y_i|\mathbf{x}_i\sim\mathcal{N}(m(\mathbf{x}_i,\mathbf{\beta}_0),\sigma_0^2)$, donde $m(\mathbf{x},\mathbf{\beta})$ es una función del vector de variables explicativas $\mathbf{x}$ y del vector de parámetros $\mathbf{\beta}$ de dimensión $(k\times 1)$. Entonces, $E(y_i|\mathbf{x}_i)=m(\mathbf{x}_i,\mathbf{\beta}_0)$ y $V(y_i|\mathbf{x}_i)=\sigma^2_0$.
+
+a. [2 puntos] Escriba la función de log verosimilitud condicional para la observación $i$. Muestre que el estimador de máxima verosimilitud $\hat{\mathbf{\beta}}$ resuelve el problema de minimización $\min_\mathbf{\beta}\sum_i(y_i-m(\mathbf{x}_i,\mathbf{\beta}))^2$.
+
+    *La densidad de la $i$ésima observación es:*
+    
+    $$f(y|x_i)=\frac{1}{\sqrt{2\pi\sigma^2_0}}exp\left(-\frac{1}{2\sigma^2_0}(y-m(x_i,\beta))^2\right)$$
+    
+    *Por tanto, la log verosimilitud para $i$ es:*
+    
+    $$\mathcal{l}_i(\beta,\sigma^2)=-\frac{1}{2}\ln(2\pi)-\frac{1}{2}\ln(\sigma^2)-\frac{1}{2\sigma^2}(y_i-m(x_i,\beta))^2$$
+    
+    *Dado que solo la última parte de este problema depende de $\beta$, y siendo $\sigma^2>0$, el problema de $\sum_i\mathcal{l}_i(\beta,\sigma^2)$ es igual a maximizar $\sum_i(y_i-m(x_i,\beta))^2$.*
+
+a. [2 puntos] Sea $\mathbf{\theta}\equiv(\mathbf{\beta}'\;\sigma^2)'$ un vector de parámetros de dimensión $(k+1)\times 1$. Encuentre el vector score para la observación $i$. Muestre que $E(\mathbf{s}_i(\mathbf{\theta}_0)|\mathbf{x}_i)=\mathbf{0}$.
+
+    *El vector score es el vector de primeras derivadas parciales de la log verosimilitud. Las derivadas parciales son:* $$\begin{aligned} \frac{\partial \mathcal{l}_i}{\partial\beta}&=\left(\frac{\partial m(x,\beta)}{\partial\beta}\right)'\frac{(y_i-m(x_i,\beta))}{\sigma^2} \\ \frac{\partial \mathcal{l}_i}{\partial\sigma^2}&= -\frac{1}{2\sigma^2}+\frac{1}{2\sigma^4}(y_i-m(x_i,\beta))^2\end{aligned}$$
+    
+    *Noten que $\left(\frac{\partial \mathcal{l}_i}{\partial\beta}\right)'$ es un vector de $1\times k$. Podemos escribir el score como:*
+    $$
+    s_i(\beta,\sigma^2)=
+    \begin{pmatrix}
+    \frac{\partial m(x,\beta)}{\partial\beta}\frac{(y_i-m(x_i,\beta))}{\sigma^2} \\ 
+    -\frac{1}{2\sigma^2}+\frac{1}{2\sigma^4}(y_i-m(x_i,\beta))^2 \\
+    \end{pmatrix}
+    $$
+    
+    *Noten que dado que $E(y_i|x_i)=m(x_i,\beta)$,los primeros $k$ términos del score tienen esperanza 0. Por otro lado, noten que* $$E((y_i-m(x_i,\beta))^2)=E((y_i-E(y_i|x_i))^2)=V(y_i|x_i)=\sigma^2$$
+    
+    *lo que hace que la última entrada del vector score también tenga esperanza 0.*
+
+a. [2 puntos] Use las condiciones de primer orden, encuentre $\hat{\sigma}^2$ en términos de $\hat{\mathbf{\beta}}$.
+
+    *La condición de primer orden con respecto a $\sigma^2$ es* $$\sum_i \left(-\frac{1}{2\sigma^2}+\frac{1}{2\sigma^4}(y_i-m(x_i,\beta))^2\right)$$
+    
+    *Resolviendo para $\sigma^2$ obtenemos*: $$\hat{\sigma}^2=\frac{1}{N}\sum_i (y_i-m(x_i,\hat{\beta}))^2$$
+
+a. [4 puntos] Encuentre la matriz hesiana de la función de log verosimilitud con respecto a $\mathbf{\theta}$.
+
+    *Procedemos a derivar el score, primero con respecto a $\beta$ y luego con respecto a $\sigma^2$.*
+    
+    - $\frac{\partial}{\partial\beta}\left(\frac{\partial m(x,\beta)}{\partial\beta}\frac{(y_i-m(x_i,\beta))}{\sigma^2}\right)=-\frac{1}{\sigma^2}\frac{\partial m(x,\beta)}{\partial\beta}\left(\frac{\partial m(x,\beta)}{\partial\beta}\right)'+\frac{1}{\sigma^2}\frac{\partial m(x,\beta)}{\partial\beta\partial\beta}(y_i-m(x_i,\beta))$
+    
+    - $\frac{\partial}{\partial\sigma^2}\left(\frac{\partial m(x,\beta)}{\partial\beta}\frac{(y_i-m(x_i,\beta))}{\sigma^2}\right)=-\frac{1}{\sigma^4}\frac{\partial m(x,\beta)}{\partial\beta}(y_i-m(x_i,\beta))$
+    
+    - $\frac{\partial}{\partial\beta}\left( -\frac{1}{2\sigma^2}+\frac{1}{2\sigma^4}(y_i-m(x_i,\beta))^2\right)=-\frac{1}{\sigma^4}\left(\frac{\partial m(x,\beta)}{\partial\beta}\right)'(y_i-m(x_i,\beta))$
+    
+    - $\frac{\partial}{\partial\sigma^2}\left( -\frac{1}{2\sigma^2}+\frac{1}{2\sigma^4}(y_i-m(x_i,\beta))^2\right)=\frac{1}{2\sigma^4}-\frac{1}{\sigma^6}(y-m(x_i,\beta))^2$
+    
+    *Por lo que la matriz Hessiana es:*
+    
+    $$
+    H_i(\beta,\sigma^2)=
+    \begin{pmatrix}
+    -\frac{1}{\sigma^2}\frac{\partial m(x,\beta)}{\partial\beta}\left(\frac{\partial m(x,\beta)}{\partial\beta}\right)'+\frac{1}{\sigma^2}\frac{\partial m(x,\beta)}{\partial\beta\partial\beta}(y_i-m(x_i,\beta)) & -\frac{1}{\sigma^4}\frac{\partial m(x,\beta)}{\partial\beta}(y_i-m(x_i,\beta)) \\ -\frac{1}{\sigma^4}\left(\frac{\partial m(x,\beta)}{\partial\beta}\right)'(y_i-m(x_i,\beta)) & \frac{1}{2\sigma^4}-\frac{1}{\sigma^6}(y-m(x_i,\beta))^2 \\
+    \end{pmatrix}
+    $$
+
+a. [3 puntos] Muestre que $-E(\mathbf{H}_i(\mathbf{\theta}_0)|\mathbf{x}_i)=E(\mathbf{s}_i(\mathbf{\theta}_0)\mathbf{s}_i(\mathbf{\theta}_0)'|\mathbf{x}_i)$.
+
+    *Primero mostramos el valor esperado de cada entrada de la matriz hessiana. En la parte b. mostramos que $E(y-m(x_i,\beta))=0$, por lo que los elementos fuera de la diagonal principal tiene expectativa cero. Por la misma razón* $$E\left(-\frac{1}{\sigma^2}\frac{\partial m(x,\beta)}{\partial\beta}\left(\frac{\partial m(x,\beta)}{\partial\beta}\right)'+\frac{1}{\sigma^2}\frac{\partial m(x,\beta)}{\partial\beta\partial\beta}(y_i-m(x_i,\beta))\right)=-\frac{1}{\sigma^2}\frac{\partial m(x,\beta)}{\partial\beta}\left(\frac{\partial m(x,\beta)}{\partial\beta}\right)'$$
+    
+    *El último término usa lo que hemos mostrado antes, $E((y_i-m(x_i,\beta))^2)=\sigma^2$. Por tanto:* $$E\left(\frac{1}{2\sigma^4}-\frac{1}{\sigma^6}(y-m(x_i,\beta))^2\right)=-\frac{1}{2\sigma^4}$$
+    
+    *Entonces:*
+    
+    $$-E(H_i(\beta,\sigma^2)|x_i)=
+    \begin{pmatrix}
+    \frac{1}{\sigma^2}\frac{\partial m(x,\beta)}{\partial\beta}\left(\frac{\partial m(x,\beta)}{\partial\beta}\right)' & 0 \\
+    0 & \frac{1}{2\sigma^4}\\
+    \end{pmatrix}
+    $$
+    
+    *Ahora calculamos el valor esperado producto exterior del score*
+    
+    $$E(s(\beta,\sigma^2)s(\beta,\sigma^2)'|x_i)=E\left(\begin{pmatrix} A & B \\ B & C \end{pmatrix}\Bigg|x_i\right)$$.
+    
+    *El bloque superior de la matriz resultante es $E(A)$:*
+    
+    $$
+    \begin{aligned}
+    E(A)&=
+    \frac{\partial m(x,\beta)}{\partial\beta}\left(\frac{\partial m(x,\beta)}{\partial\beta}\right)'\frac{(y_i-m(x_i,\beta))^2}{\sigma^4} \\
+    &=\frac{1}{\sigma^2}\frac{\partial m(x,\beta)}{\partial\beta}\left(\frac{\partial m(x,\beta)}{\partial\beta}\right)'
+    \end{aligned}
+    $$
+    
+    *Noten que el término $B$ es*:
+    
+    $$E(B)=-\frac{1}{2\sigma^4}\left(\frac{\partial m(x,\beta)}{\partial\beta}\right)'(y-m(x_i,\beta))+\frac{1}{2\sigma^6}\left(\frac{\partial m(x,\beta)}{\partial\beta}\right)'(y-m(x_i,\beta))^3$$
+    
+    *por lo que para que este término tenga esperanza cero asumimos $E(y-m(x_i,\beta))^3|x_i)=0$*
+    
+    *Y finalmente, el término $E(C)$ será:*
+    
+    $$
+    \begin{aligned}
+    C&=
+    E\left(-\frac{1}{2\sigma^2}+\frac{1}{2\sigma^4}(y_i-m(x_i,\beta))^2\right)\\
+    &=E\left(\frac{1}{4\sigma^8}(y-m(x_i,\beta))^4-\frac{1}{2\sigma^6}(y-m(x_i,\beta))^2+\frac{1}{4\sigma^4}\right) \\
+    &=E\left(\frac{1}{4\sigma^8}(y-m(x_i,\beta))^4\right)-\frac{1}{2\sigma^4}+\frac{1}{4\sigma^4}
+    \end{aligned}
+    $$
+    
+    *Es decir, la condición para que $E(C)=0$ es que $E\left((y-m(x_i,\beta))^4|x_i\right)=3\sigma^2$*
+    
+a. [2 puntos] Encuentre la varianza asintótica estimada de $\hat{\mathbf{\beta}}$ y explique cómo obtendría los errores estándar.
+
+    *Por los resultados generales de MV vistos en clase, sabemos que la varianza asintótica está dada por $E(A_i(\theta))^{-1}$, donde $A_i(\theta)=-E(H_i(\theta))$, obtenida en la parte e (no confundir con $A$ del punto anterior, usada para simplificar la presentación de los cálculos sobre el producto exterior del score). Un extimador para la matriz de varianzas es entonces:*
+    
+    $$\hat{V}(\hat{\beta})=\hat{\sigma}^2\left(\sum_i\frac{\partial m(x_i,\hat{\beta})}{\partial\beta}\left(\frac{\partial m(x_i,\hat{\beta})}{\partial\beta}\right)'\right)^{-1}$$
+    
+    *El error estándar del $j$ésimo regresor estimado es simplemente la raíz cuadrada de la $j$ésima entrada en la diagonal principal de $\hat{V}(\hat{\beta})$.*
+
+
+    **Nota: la verosimilitud de ver un problema con más de un parámetro en el examen es casi cero. Pero no de ver un problema con un parámetro. Este problema era difícil porque era relativamente general al tener varios parámetros. Al estudiar este problema deberán ser capaces de hacer un razonamiento similar para una función de distribución mucho más simple.**
+
+## Pregunta 3
+
+Suponga una variable aleatoria $X_i$ con distribución desconocida. Sin embargo, sí conocemos que $E(X)=\mu=54$ y que $\sqrt{V(X)}=\sigma=6$. Suponga que se recolecta una muestra de 50 observaciones.
+
+a. [1 punto] ¿Cuál es la distribución asintótica de la media muestral $\bar{X}$?
+
+    *Si se puede aplicar un teorema de límite central a la media muestral, sabemos que la nueva variable hereda la media de $X_i$ y la desviación estándar es la desviación estándar de $X_i$ dividida por la raíz del tamaño de la muestra. Es decir*: $$\bar{X}\sim \mathcal{N}(54,6/\sqrt{50})$$
+
+
+a. [2 punto] ¿Cuál es la probabilidad de que $\bar{X}>60$?
+
+    *Sabemos que $\frac{\bar{X}-54}{6/\sqrt{50}}\sim\mathcal{N}(0,1)$, por tanto*: $$P(\bar{X}>60)=P\left(z>\frac{60-54}{6/\sqrt{50}}\right)=P(z>7.0710)=1-\Phi(7.0710)$$ *Un número extremadamente pequeño*:
+    
+    ```{r echo=T, include=T, evaluate=T}
+    1-pnorm(7.0710)
+    ``` 
+
+a. [1 punto] ¿Cuál es la probabilidad de que una observación elegida al azar sea tal que $X_i<50$?
+
+    *Es imposible de determinar porque no sabemos la distribución de $X_i$. Esto es algo muy bueno del TLC, pues nos permite decir cosas sobre la media muestral sin saber la distribución de la que provienen las observaciones.*
+
+a. [1 punto] Provea un intervalo de confianza de 90% para la media muestral.
+
+    *El intervalo es*: $$P\left(\bar{X}\pm 1.6448(6/\sqrt{50})\right)=0.90$$ donde obtenemos el 1.6648 como*
+    
+    ```{r echo=T, include=T, evaluate=T}
+    qnorm(0.95)
+    ```
+    *Entonces, un intervalo de confianza es*: $$P(\bar{X}\pm 2.1857)=0.90$$
+
+## Pregunta 4
+
+Sea $x_1$ un vector de variables continuas, $x_2$ una variable continua y $d_1$ una variable dicotómica. Considere el siguiente modelo probit:
+$$P(y=1│x_1,x_2 )=\Phi(x_1'\alpha+\beta x_2+\gamma x_2^2 )$$
+
+a. [2 punto] Provea una expresión para el efecto marginal de $x_2$ en la probabilidad. ¿Cómo estimaría este efecto marginal?
+
+    *El efecto marginal de interés es*: $$\frac{\partial P(y=1|x_1,x_2)}{\partial x_2}=\phi(x_1\alpha+\beta x_2+\gamma x_2^2)(\beta+2\gamma x_2)$$ *Para estimarlo, usamos un modelo probit para obtener estimadores consistentes de $\alpha$, $\beta$ y $\gamma$ y empleamos software para evaluar valores relevantes de $x_1$ y $x_2$ (por ejemplo, los promedios) en la función de distribución $\phi$.*
+
+a. [2 punto] Considere ahora el modelo:
+$$P(y=1│x_1  ,x_2 ,d_1)=\Phi(x_1 '\delta+\pi x_2+\rho d_1+\nu x_2 d_1 )$$
+Provea la nueva expresión para el efecto marginal de $x_2$.
+
+    *El efecto marginal es:* $$\frac{\partial P(y=1|x_1,x_2)}{\partial x_2}=\phi(x_1\delta+\pi x_2+\rho d_1+  \nu x_2d_1)(\pi+\nu d_1)$$
+
+a. [2 punto] En el modelo de la parte b., ¿cómo evaluaría el efecto de un cambio en $d_1$ en la probabilidad? Provea una expresión para este efecto.
+
+    *Dado que $d_1$ es una variable dicotómica, el efecto de $d_1$ se mide como la diferencia en probabilidad cuando $d_1=1$ y cuando $d_1=0$*: $$P(y=1|x_1,x_2,d_1=1)-P(y=1|x_1,x_2,d_1=0)=\phi(x_1\delta+(\pi+\nu)x_2+\rho)-\phi(x_1\delta+\pi x_2)$$
+
+## Pregunta 5
+
+Considere el modelo Poisson visto en clase y un vector de variables explicativas $x$, todas continuas, usadas para parametrizar la media.
+
+a. [1 puntos] ¿Cuál es el efecto de un cambio en el $j$ésimo regresor sobre $E(y│x)$?
+
+    *Con un modelo Poisson parametrizamos la media como $\mu=exp(x'\beta)$. En este caso, un cabio en un regresor $j$ tiene el efecto:*
+    
+    $$\frac{\partial E(y|x)}{\partial x_j}=\beta_j exp(x'\beta)$$
+    
+    *Es decir, un cambio en una unidad de $x_j$ produce un cambio en el conteo esperado de $y$ igual a $\beta_j exp(x'\beta)$ unidades.*
+
+
+a. [2 puntos] Usando esta expresión, muestre que si el $j$ésimo regresor es $x_j$, entonces $100 \beta_j$ es la semielasticidad de $E(y│x)$ con respecto a $x_j$. Nota: Este punto es muy útil para la interpretación de los coeficientes de un modelo Poisson.
+
+    *Resolviendo para $\beta_j$ en la expresión que acabamos de encontrar*: $$\beta_j=\frac{\partial E(y|x)}{\partial x_j}\frac{1}{\exp(x'\beta)}=\frac{\partial E(y|x)}{\partial x_j}\frac{1}{E(y|x)}=\frac{\partial\ln E(y|x)}{\partial x_j}$$
+    
+    $\frac{\partial\ln E(y|x)}{\partial x_j}$ *es una semileasticidad, es decirm un cambio marginal de $x_j$ se asocia con un cambio porcentual en la media condicional igual a* $100\beta_j\Delta x_j$.
+    
+
+a. [2 puntos] ¿Cómo se interpreta $\beta_j$ si reemplazamos $x_j$ por $\log(x_j)$)?
+
+    *Si ahora el regresor de interés entra en el índice como un logaritmo*: $$\beta_j=\frac{\partial E(y|x)}{\partial x_j}\frac{x_j}{E(y|x)}$$ *la defnición de una elasticidad.*
+    
+    
+
+## Pregunta 6 (Cameron & Trivedi, 2005)
+
+En esta pregunta comparará el estimador de MCO, de MV y de MCNL. Antes de comenzar, recuerde fijar una semilla en R (o el software que utilice) para poder replicar sus cálculos. Se recomienda repasar la sección 5.9 en CT.
+
+Cameron y Trivedi proveen pistas para replicar esta tabla [aquí](http://cameron.econ.ucdavis.edu/mmabook/mma05p1mle.do) y [aquí](http://cameron.econ.ucdavis.edu/mmabook/mma05p2nls.do), aunque ellos trabajan en Stata. La idea es entender la *anatomía* de los distintos estimadores estudiados en clase.
+
+a. [2 puntos] Genere una muestra de 10,000 observaciones llamadas $x$ tales que $x\sim\mathcal{N}(1,1)$. Posteriormente, genere $\lambda=exp(\beta_1+\beta_2x)$, donde $(\beta_1\;\beta_2)=(2\;-1)$. Note que $1/\lambda$ es conocida como la tasa en la distribución exponencial. En R, *rexp* requiere especificar como parámetro a la tasa en lugar de $\lambda$.
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+set.seed(820)
+# Here a = 2, b = -1  and  x ~ N[1, 1]
+a <- 2
+b <- -1
+mux <- 1
+sigx <- 1
+obs <- 10000
+
+
+x <- rnorm(obs,mux,sigx)
+lambda <- exp(a+b*x)
+Ey=1/lambda
+
+#Generar y
+y <- (1/lambda)*rexp(1/lambda)
+```
+
+a. [2 puntos] Reporte una tabla con la media, la desviación estándar, el mínimo y el máximo de $x$, $\lambda$ y $y$.
+
+    *Aquí usé la función stat.desc de la librería pastecs:*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#Obtener descriptiva
+descriptiva<-cbind(x,lambda,y)
+stat.desc(descriptiva)
+``` 
+
+a. [2 puntos] Reporte una gráfica donde muestre la relación entre $x$ y $\lambda$ en el plano $(x,\lambda)$. Realice otra gráfica similar, ahora para $(x,1/\lambda)$.
+
+    *$\lambda$ es decreciente en $x$*:
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+plot(x,lambda)
+``` 
+    *por lo que $1/\lambda$ es creciente en $x$:*
+    
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#Obtener descriptiva
+plot(x,Ey)
+``` 
+
+a. [2 puntos] Estime por MCO una regresión entre $y$ y $x$. Deberá obtener coeficientes parecidos a los de la primera columna de la Tabla 5.7 en CT.
+
+    *Estimando por MCO y obteniendo los errores que asumen homocedasticidad:*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+obs <- 10000
+X <- cbind(rep(1,10000),x)
+
+##MCO
+b_mco <- solve(t(X)%*%X)%*%t(X)%*%y
+b_mco
+
+##MCO, errores de mínimos cuadrados
+uhat_mco <- y-b_mco[1]-b_mco[2]*x
+s2_mco <- as.numeric(t(uhat_mco)%*%uhat_mco/(obs-2))
+
+V_mco <- s2_mco*solve(t(X)%*%X)
+sqrt(diag(V_mco))*obs/(obs-2)
+``` 
+
+
+a. [1 punto] ¿Por qué difieren los coeficientes que obtuvo y los que se presentan en la Tabla 5.7 de CT?
+
+    *Los errores son distintos a los presentados en la tabla del libro porque la muestra con la que trabajamos es distinta. Aunque el proceso generador de datos es el mismo, la muestra que tenemos a la mano es una realización de dicho proces.*
+
+a. [2 puntos] Obtenga los errores robustos. En R, una librería que será muy útil es *sandwich*.
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+##MCO, errores de White se puede obtener como un caso particular de la ecuación 5.77 en CT
+Omegahat_White <- diag(uhat_mco^2)
+V_mco_White <- solve(t(X)%*%X)%*%t(X)%*%Omegahat_White%*%X%*% solve(t(X)%*%X)
+sqrt(diag(V_mco_White))*obs/(obs-2)
+```
+    *La función vcoHC calcula los errores robustos. HC significa heterocedasticity consistent. Una búsqueda rápida en ?vcovHC permite saber que type = "HC0" o, equivalentemente, type = "HC", produce los errores de White.*
+    
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+mco_lm <- lm(y ~ x)   
+sqrt(diag(vcovHC(mco_lm, type = "HC0")))
+sqrt(diag(vcovHC(mco_lm, type = "HC")))
+``` 
+
+a. [1 punto] ¿El estimador de MCO es consistente? ¿Por qué?
+
+   *El estimador de MCO claramente no es consistente. Sabemos que $\beta_1=2$ y que $\beta_2=-1$, sin embargo, los coeficientes estimados están muy lejos de los parámetros del proceso generador de datos.*
+
+a. [2 puntos] Plantee la función de log verosimilitud.
+
+   *En el proceso generador de datos propuesto, la densidad es $f(\theta)=\lambda exp(-y\lambda)$, donde parametrizamos $\lambda=exp(\beta_1+\beta_2x)$. Por tanto $\ln f(\lambda)=\ln(\lambda)-y\lambda$. Y la función de log verosimilitud será*: 
+   
+   $$\mathcal{L}_N(\beta_1,\beta_2)=\sum_i \left(
+   (\beta_1+\beta_2 x_i)-y_i exp(\beta_1+\beta_2 x_i)\right)$$
+
+a. [4 puntos] Obtenga el estimador de máxima verosimilitud de $\beta_1$ y $\beta_2$ obteniendo la solución al negativo del problema de log verosimilitud. En R, puede emplear, por ejemplo *nlm*.
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#MV
+fn<-function(theta){
+  sum(-(theta[1]+theta[2]*x)+(y*exp(theta[1]+theta[2]*x)))
+}
+res_mv <-nlm(fn, theta <- c(.1,-.1), hessian=TRUE)
+res_mv$estimate
+
+#Errores asumiendo igualdad de la matriz de información, es decir, errores no robustos (no pedido en el problema). Son los errores entre () en la tabla
+A <- res_mv$hessian
+V_mv <- solve(A)
+sqrt(diag(V_mv))
+
+#Vean que si calculamos B
+index_mv <- X%*%t(t(res_mv$estimate))
+
+#El score es
+s <- matrix(c(1-y*exp(index_mv), x - y*x*exp(index_mv)),ncol = 2) 
+B <- t(s)%*%s
+V_mv_B <- solve(B)
+sqrt(diag(V_mv_B))
+
+#Esto es la igualdad de la matriz de información en acción
+``` 
+
+a. [3 puntos] Usando la matriz hesiana obtenida en la solución del problema de optimización, encuentre los errores estándar robustos de los coeficientes estimados.
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#Varianza de sándwich apenas cambia el estimador
+V_mv_White <- solve(A)%*%B%*%solve(A)
+sqrt(diag(V_mv_White))
+``` 
+
+a. [4 puntos] El modelo antes descrito puede expresarse como una regresión no lineal de la forma $y=exp(-x'\beta)+u$. Encuentre la solución para $\beta_1$ y $\beta_2$. Reporte los errores estándar no robustos. ¿Son consistentes estos errores? ¿Por qué?
+
+    ```{r tidy=TRUE,include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#MCNL
+res_mcnl <- nls(y~exp(-beta1-beta2*x))
+summary(res_mcnl)$coef
+
+#Calculamos el índice ajustado
+index_mcnl <- -summary(res_mcnl)$coef[1]-summary(res_mcnl)$coef[2]*x
+yhat <- exp(index_mcnl)
+uhat2 <- (y-yhat)^2
+```
+
+   *Estos errores asumen una varianza homocedástica. Sin embargo, sabemos de del proceso generador de datos que la varianza de una variable aleatoria con que se distribuye exponencial será $\lambda^2$. Es decir, por construcción el proceso simulado sufre de heterocedasticidad, por lo que el estimador de la varianza de $\hat{\theta}$ es inconsistente.*
+
+a. [3 puntos] Ahora implementará la matriz de varianzas y covarianzas robusta en la ecuación 5.81 de CT. Dé una expresión para $\hat{D}$ en este problema.
+
+    *En este problema $g(x_i,\beta)=exp(-x'\beta)$. Por tanto*: $$D=\partial g/\partial \beta'=exp(-x'\beta)x$$ *Y un estimador será: $$\hat{D}=exp(-x'\hat{\beta}_{MCNL})x$$*
+
+a. [3 puntos] Calcule el error estándar robusto definido como en la ecuación 5.81. En este caso $\hat{\Omega}=Diag(\hat{u}_i^2)$.
+
+   
+    ```{r tidy=TRUE,include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#Calculamos el índice ajustado
+index_mcnl <- -summary(res_mcnl)$coef[1]-summary(res_mcnl)$coef[2]*x
+yhat <- exp(index_mcnl)
+uhat2 <- (y-yhat)^2
+
+#MCNL robusta
+Omegahat <- diag(as.vector(uhat2))
+
+#El vector de derivadas
+d=cbind(yhat,yhat*x)
+
+#Construimos la matriz de varianzas
+V <- solve(t(d)%*%d)%*%t(d)%*%Omegahat%*%d%*%solve(t(d)%*%d)
+
+#Noten que hay que multiplicar por N/(N-k)
+sqrt(diag(V))*obs/(obs-2)
+```
+
+a. [3 puntos] Calcule una versión alternativa de errores estándar (entre corchetes en Tabla 5.7), esta vez con $\hat{\Omega}=Diag((exp(-x_i'\beta))^2)$.
+
+   ```{r tidy=TRUE,include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#MCNL, error robusto {}
+Omegahat_alt <- diag(as.vector(yhat^2))
+V <- solve(t(d)%*%d)%*%t(d)%*%Omegahat_alt%*%d%*%solve(t(d)%*%d)
+sqrt(diag(V))
+```
+
+a. [1 puntos] En este experimento, ¿qué estimador tiene las mejores propiedades?
+
+    *El estimador de MCO es inconsistente, mientras que el de MV y de MCNL son consistentes. Los errores no robustos de MCNL son inconsistentes dada la construcción del proceso generador de datos. Usando errores robustos, el estimador de MV es el más eficiente entre los estimadores consistentes.*
+
+## Pregunta 7
+
+Use la base *grogger.csv* para esta pregunta. Esta base contiene información sobre arrestos y características socioeconómicas de individuos arrestados.
+
+a.	[1 punto] Estime un modelo de probabilidad lineal que relacione **arr86** (haber si arrestado al menos una vez en 1986) con **pcnv**, **avgsen**, **tottime**, **ptime86**, **inc86**, **black**, **hispan** y **born60**. Reporte los errores que asumen homocedasticidad y los errores robustos a heteroscedasticidad.
+
+    ```{r tidy=TRUE,include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+data.grogger<-read_csv("./grogger.csv",
+                       locale = locale(encoding = "latin1"))   %>% 
+  clean_names()
+
+#7a. Modelo lineal
+prob_lineal <- lm(arr86 ~ pcnv+avgsen+tottime+ptime86+inc86+black+hispan+born60,
+                  data=data.grogger)
+
+#Errores homocedásticos
+summary(prob_lineal)$coef
+
+#Errores robustos
+coeftest(prob_lineal, vcov = vcovHC(prob_lineal, "HC"))
+```
+
+a.	[2 punto] ¿Cuál es el efecto en la probabilidad de arresto si **pcnv** pasa de 0.25 a 0.75?
+
+    *Como estamos estimando un modelo lineal, el efecto marginal es el mismo a lo largo de toda la curva de regresión. Para obtener el efecto deseado, basta multiplicar el coeficiente estimado para pcnv por la magnitud del cambio:*
+    
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+    prob_lineal$coef[2]*.5
+    ```
+
+a.	[2 punto] Realice una prueba de significancia conjunta de **avgsen** y **tottime**. ¿Qué concluye?
+
+    *Aquí usé linearHypothesis de la librería car:*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+    linearHypothesis(prob_lineal, c("avgsen=0", "tottime=0"))
+```
+
+    *La hipótesis nula $H_0$ es que ambos coeficientes son iguales a cero. El valor del estadístico F es pequeño (0.18), con un valor $p$ de 0.83, por lo que no se rechaza la $H_0$.*
+
+a.	[2 punto] Estime un modelo probit relacionando las mismas variables. ¿Cuál es el efecto en la probabilidad de arresto cuando **pcnv** pasa de 0.25 a 0.75 para los valores promedio de **avgsen**, **tottime**, **inc86** y **ptime86** y cuando los individuos son de raza negra, no hispánicos y nacidos en 1960 (**born60** igual a 1). ¿Cómo se comparan estos resultados con lo que encontró con el modelo de probabilidad lineal?
+
+    *Estimamos el modelo probit*:
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+prob_probit <- glm(arr86 ~ pcnv+avgsen+tottime+ptime86+inc86+black+hispan+born60, family = binomial(link = "probit"), 
+    data = data.grogger)
+summary(prob_probit)$coef
+```
+
+    *Para evaluar el cambio en la probabilidad, evaluamos dos distintos valores del índice, uno cuando pcnv es 0.25 y otro cuando es 0.75, mientras que en ambos casos mantenemos el resto de los regresores en los valores especificados. Esto es*: $$P(y=1│X=x,pcnv=0.75)-P(y=1│X=x,pcnv=0.25)$$
+    
+    ```{r tidy=TRUE,include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+        #Medias de cada variable tottime inc86 ptime86
+        mean_avgsen=mean(data.grogger$avgsen)
+        mean_tottime=mean(data.grogger$tottime)
+        mean_inc86=mean(data.grogger$inc86)
+        mean_ptime86=mean(data.grogger$ptime86)
+        
+        #Creamos un índice con todas las variables excepto pcnv
+        
+        index_partial <- summary(prob_probit)$coef[1]+
+        summary(prob_probit)$coef[3]*mean_avgsen+
+        summary(prob_probit)$coef[4]*mean_tottime+
+        summary(prob_probit)$coef[6]*mean_inc86+
+        summary(prob_probit)$coef[5]*mean_ptime86+
+        summary(prob_probit)$coef[7]*1+
+        summary(prob_probit)$coef[8]*0+
+        summary(prob_probit)$coef[9]*1
+        
+        #Evaluamos la diferencia de probabilidad
+        
+        pnorm(index_partial+summary(prob_probit)$coef[2]*.75)-pnorm(index_partial+summary(prob_probit)$coef[2]*.25)
+```
+
+    *El efecto es de una disminución de alrededor de 10.17%, mayor en magnitud que lo estimado con el modelo lineal.*
+
+
+## Pregunta 8
+
+Ahora estimará un modelo multinomial empleando la base *motral2012.csv*. El propósito será estudiar los factores relevantes para predecir la forma de ahorro que tienen las personas. Considere lo siguiente sobre las opciones de ahorro de los entrevistados, contenida en la variable **p14**:
+
+  - **p14** igual a 1 significa cuentas de ahorro bancarias
+  - **p14** igual a 2 significa cuenta de inversión bancaria
+  - **p14** igual a 3 significa inversiones en bienes raíces
+  - **p14** igual a 4 significa caja de ahorro en su trabajo
+  - **p14** igual a 5 significa caja de ahorro con sus amigos
+  - **p14** igual a 6 significa tandas
+  - **p14** igual a 7 significa que ahorra en su casa o alcancías
+  - **p14** igual a 8 significa otro lugar
+  
+a.	[1 punto] Genere una variable categórica llamada **ahorro** que sea igual a 1 cuando **p14** sea igual a 1 o 2, igual a 2 cuando **p14** sea igual a 7, e igual a 3 cuando **p14** sea igual a 3, 4, 5, 6 u 8. Haga que esa variable sea missing cuando **p14** sea missing. Se sugiere que posteriormente etiquete los valores de ahorro de forma que el valor 1 tenga la etiqueta “Banco”, el valor 2 tenga la etiqueta “Casa” y el valor 3 tenga la etiqueta “Otro”.
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+    data.financiero<-read_csv("./motral2012.csv",
+                       locale = locale(encoding = "latin1"))   %>% 
+  clean_names() %>% 
+      mutate(ahorro=NA) %>% 
+      mutate(ahorro=ifelse(p14%in%c(1,2),1,ahorro)) %>%
+      mutate(ahorro=ifelse(p14==7,2,ahorro)) %>% 
+      mutate(ahorro=ifelse(p14%in%c(3,4,5,6,8),3,ahorro)) %>% 
+      mutate(ahorro=factor(ahorro,
+                           levels=c(1,2,3), labels=c("Banco","Casa","Otro")))
+```
+
+a.	[2 puntos] Estime un modelo logit multinomial (regresores invariantes a la alternativa) con la opción de ahorro como variable dependiente y con la edad (**eda**) y la condición como jefe de hogar (**jefe_hog**) como variables independientes. ¿Qué puede decir sobre el coeficiente de edad en la alternativa “Casa”?
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#Hacemos categoría base
+data.financiero$ahorro <- relevel(data.financiero$ahorro, ref = "Banco")
+
+#Usando mlogit
+data.subset<-data.financiero %>% 
+  select(c(eda,jefe_hog,ahorro))
+
+data.subset <- dfidx(data.subset, shape="wide",choice = "ahorro")
+
+#Noten que aquí 1 significa que no hay variables que varíen entre alternativas, luego la barra "|" significa que vienen las variables que varían entre alternativas
+mmultilogit <- mlogit( ahorro~ 1| eda + jefe_hog, data=data.subset)
+summary(mmultilogit)
+
+```
+    *En el modelo multinominal (regresores invariantes) el coeficiente se interpreta con respecto a una categoría base. En este caso, la categoría base es Banco. El modelo implica que la probabilidad de ahorrar en casa disminuye con un año más de edad, en comparación con la probabilidad de ahorrar en el banco. En particular, sabemos que podemos escribir el log del cociente de la probabilidad de las categorías $j$ y $k$ sean escogidas, normalizando $k$ a ser la base, como:* $$\ln\left(\frac{P(y=Casa)}{P(y=Banco)}\right)=x'\beta=\beta_0+\beta_1 edad + beta_2 jefe$$ *es decir, un año más de edad se asocia con una reducción en el log de la razón de momios de 0.04.*
+    
+a.	[2 puntos] Calcule los efectos marginales sobre la probabilidad de ahorrar en el banco. Al considerar el cambio de no ser jefe de hogar a serlo, ¿de qué tamaño es el efecto predicho en la probabilidad de ahorrar en el banco?
+
+    *Esta pregunta era un poco más difícil. Aquí está una propuesta, pero se valorará el trabajo de cada persona.*
+    
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+    #El efecto marginal individual sobre la probabilidad de elegir cada alternativa puede ser calculado como sigue:
+stats::effects(mmultilogit, covariate="eda", data=data.subset)[1:5,]
+
+#Capturamos los nombres de los coeficientes, que están en las entradas 2 y 3
+(c.names <- names(mmultilogit$model)[c(2:3)])
+
+#Programamos una función, que para cada variable calcule el efecto marginal individual
+efecto_marginal <- sapply(c.names, function(x) 
+  stats::effects(mmultilogit, covariate=x, data=data.subset), 
+  simplify=FALSE) 
+
+#Obtenemos el promedio de los efectos marginales
+(promedio_efecto_marginal <- t(sapply(efecto_marginal, colMeans)))
+```
+
+    *El efecto de ser jefe del hogar es de una reducción de 7.18% en la probabilidad de ahorrar en casa al estimar el promedio de los efectos marginales.*
+
+d.	[4 puntos] Calcule los cocientes de riesgo relativo (relative risk ratios, RRR). ¿Qué significa el hecho de que el RRR de jefe de hogar sea mayor que 1 en la alternativa “Otro”?
+
+    ```{r tidy=TRUE,                 include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+(mmultilogit_rrr = exp(coef(mmultilogit)))
+```
+
+    *Los coeficientes en forma de RRR tienen la interpretación del cambio en el riesgo relativo que una categeoría sea elegida con relación al riesgo de escoger la categoría base. En este caso, el ser jefe del hogar está asociado con una probabilidad 1.008 veces mayor de ahorrar en “Otro” mayor que la de ahorrar en “Banco”.*
+
+e.	[1 puntos] Estime nuevamente el modelo, pero ahora, especifique que la alternativa “Casa” sea la alternativa base. ¿Cómo es el coeficiente de la edad en la alternativa “Banco”? ¿Es esto congruente con lo que noto en la parte d. de este problema?
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#Cambiando la categoría base
+data.financiero$ahorro <- relevel(data.financiero$ahorro, ref = "Casa")
+        data.subset <- dfidx(data.subset, shape="wide",choice = "ahorro")
+
+#Nueva estimación
+mmultilogit_casa<- mlogit( ahorro~ 1| eda + jefe_hog, data=data.subset)
+        
+(mmultilogit_casa_rrr = exp(coef(mmultilogit_casa)))
+(mmultilogit_rrr = exp(coef(mmultilogit)))
+```
+
+    *Al cambiar la categoría base a Casa solo se modifica la interpretación relativa. En la parte d. el RRR de la edad para la opción de Casa era 0.9592, es decir, si la edad se incrementa en una unidad, la probabilidad de ahorrar en Casa es 0.9592 veces la de ahorrar en Banco. Con la nueva categoría base, el RRR de la edad para ahorrar en Banco 1.043 veces, es decir, si la edad se incrementa en un año, la probabilidad de ahorrar en Banco es 1.043 veces más probable que la probabilidad de ahorrar en Casa. La parte d. implica que $P(Casa)=0.9592P(Banco)$. Mientras que estimando el modelo con la nueva categoría, $P(Banco)=1.043P(Casa)$, o $P(Casa)=1/1.043P(Banco)$. Empleando todos los decimales en R se puede notar que 1/1.043≅0.9592. Ambos resultados son consistentes.*
+
+
+## Pregunta 9
+
+Use la base de datos *phd_articulos.csv*, la cual contiene información sobre el número de artículos publicados en los últimos tres años del doctorado para una muestra de entonces estudiantes. Nuestra variable de interés será entonces **art**.
+
+a.	[1 punto] ¿Hay evidencia de sobredispersión en la variable **art**?
+
+    *La media de la variable **art** es 1.69, mientras que la varianza es 3.71. Esto puede ser un indicativo de que un modelo Poisson no es adecuado, pues en una distribución Poisson la media es igual a la varianza. Parce haber evidencia de sobredispersión.*
+
+    ```{r tidy=TRUE,include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+data.phd<-read_csv("./phd_articulos.csv",
+                          locale = locale(encoding =                "latin1")) 
+
+#a. Descriptiva
+stat.desc(data.phd$art)
+
+```
+
+a.	[2 puntos] Independientemente de si hay evidencia de sobredispersión o no, estime un modelo Poisson que incluya variables dicotómicas para estudiantes mujeres y para estudiantes casadas o casados, la cantidad de hijos mejores de cinco años, el ranking de prestigio del doctorado (**phd**) y el número de artículos publicados por su mentor. Interprete los coeficientes estimados.
+
+    ```{r tidy=TRUE,include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+  #Hay que asegurarnos que los factores tengan sentido
+data.phd <- data.phd %>% 
+  mutate(female=factor(female,
+                       levels=c('Male','Female')))
+
+mpoisson <- glm(art ~ factor(female) + factor(married) + kid5 + phd + mentor,
+                family="poisson", data=data.phd)
+
+summary(mpoisson)
+```
+
+    *Para las variables continuas, como el número de artículos publicados por el mentor, la interpretación es el cambio en el log conteo esperado. En este caso, un artículo más publicado por el mentor incrementa el log conteo esperado en 0.026. O, siguiendo el razonamiento de la parte b. de la pregunta 9, la semielasticidad del conteo con respecto al número de artículos publicados es 0.026. Para las variables dicotómicas, por ejemplo female, la interpretación es la diferencia entre el log conteo esperado entre mujeres y la categoría base (hombres).*
+
+
+a. [2 puntos] Obtenga la razón de tasas de incidencia (IRR) para los coeficientes e interprete los resultados.
+
+    ```{r tidy=TRUE,include=T,echo=T,collapse=TRUE,warning=FALSE,message=FALSE}
+exp(summary(mpoisson)$coef)
+```
+
+    *La interpretación de los coeficientes se vuelve más sencilla usando irr. Para la variable continua mentor, un artículo más publicado por el mentor está asociado con 1.026 veces más artículos publicados por el estudiante, es decir, un 2.6% más artículos. En cambio, la variable dicotómica para mujeres indica que las mujeres publican 0.8 veces el número de artículos que los hombres.*
+
+a.	[1 punto] Considere ahora que las mujeres han tenido carreras profesionales más cortas que los hombres, es decir, han estado menos expuestas a la ocurrencia de los eventos “publicar”. Incorpore esto al análisis y reinterprete los resultados. Pista: explore la opción *offeset* en R. Note que la variable **profage** mide la duración efectiva de las carreras profesionales de cada individuo.
+
+    *El razonamiento es que ahora queremos conocer cuál es la tasa de publicación, es decir, $art/profage$. Pero como nuestro podemos Poisson solo puede manejar conteos, podemos modificar el modelo para pasar la edad de la carrera del lado derecho:* $$\begin{aligned} ln(art/profage)&=x'\beta \\ ln(art)&=x'\beta+\ln(profage) \end{aligned}$$
+
+    ```{r tidy=TRUE,include=T,echo=T,collapse=TRUE,warning=FALSE,message=FALSE}
+mpoisson_duracion <- glm(art ~
+                  factor(female) + factor(married) + kid5 + phd + mentor,offset = log(profage),
+                family="poisson",
+                data=data.phd)
+
+summary(mpoisson_duracion)$coef
+```
+
+    *Hasta ahora hemos asumido que cada individuo ha estado “en riesgo” de publicar por el mismo periodo de tiempo, lo cual puede ser no cierto si, por ejemplo, algunos estudiantes se graduaron antes, o si otros han tenido pausas en sus carreras. Al controlar por el hecho de que las mujeres han tenido carreras más cortas, la variable female deja de ser negativa y se convierte en positiva. Las mujeres publican más que los hombres al tomar en cuenta la duración de las carreras.*
+
+a.	[2 puntos] Emplee ahora un modelo negativo binomial con sobredispersión constante para estimar la relación entre el número de artículos publicados y las variables explicativas antes enumeradas. Interprete el coeficiente asociado al número de hijos y a la variable dicotómica para estudiantes mujeres.
+
+    *Este es el modelo NB1 visto en clase y el menos usado de las dos posibles especificaciones del modelo negativo binomial. Se asume que la sobredispersión es un factor constante de la media. Los coeficientes tienen exactamente la misma interpretación que en el modelo Poisson pues en ambos casos la media está parametrizada de la misma manera. Más aún, los coeficientes estimados apenas difieren de la versión Poisson. Para estimar este modelo usé ml.nb1 del paquete COUNT.*
+
+    ```{r tidy=TRUE,                 include=T,echo=T,collapse=TRUE,warning=FALSE,message=FALSE}
+mnb1 <- ml.nb1(art ~
+                 factor(female) + factor(married) + kid5 + phd + mentor, data = data.phd)
+
+#Aquí \alpha es el parámetro \gamma descrito en el quinto párrafo de la página 676 en CT
+    mnb1
+```
+
+a. [2 puntos] Emplee ahora un modelo negativo binomial con sobredispersión cuadrática en la media para estimar la relación entre el número de artículos publicados y las variables explicativas antes enumeradas. Interprete el coeficiente asociado al número de hijos y a la variable dicotómica para estudiantes mujeres. ¿Qué puede decir sobre la significancia del $\alpha$ estimado?
+
+    ```{r tidy=TRUE,include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+mnb2 <- glm.nb(art ~
+                 factor(female) + factor(married) + kid5 + phd + mentor,
+               data = data.phd)
+summary(mnb2)
+
+#A diferencia de otros paquetes, R reporta \theta=1/\alpha
+(alpha <- 1/summary(mnb2)$theta)        
+```
+
+    *Este es el modelo NB2 visto en clase y la forma más usada para implementar un modelo negativo binomial. Se asume una sobredispersión cuadrática en la media, con la varianza parametrizada usando $\alpha$. En este caso, $\hat{\alpha}=0.44$ y es estadísticamente significativo al 10%. De nuevo, la interpretación se mantiene con respecto a NB1 y al modelo Poisson. Los coeficientes tienen magnitudes similares, pero se prefiere el modelo NB2 pues toma en cuenta la sobredispersión y le da suficiente flexibilidad a la varianza para depender de manera cuadrática de la media.*
+

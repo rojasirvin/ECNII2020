@@ -103,7 +103,7 @@ class: inverse, middle, center
 
   - Censura por abajo: $y=\begin{cases}y^* \quad \text{si }y^*>L \\ L \quad \text{si }y^*\leq L \end{cases}$
   
-  - Censura por arriba: $y=\begin{cases}y^* \quad \text{si }y^*<U \\ U \quad \text{si }y^*\geq L \end{cases}$
+  - Censura por arriba: $y=\begin{cases}y^* \quad \text{si }y^*<U \\ U \quad \text{si }y^*\geq U \end{cases}$
   
 - El típico ejemplo de censura se encuentra en los datos *top coded*, como los de ingreso
 
