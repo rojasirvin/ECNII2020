@@ -80,12 +80,36 @@ class: inverse, middle, center
 
 - Zou, B., & Luo, B. (2019). Rural Household Energy Consumption Characteristics and Determinants in China. Energy.
 
+- El consumo de energía representa un importante componente del gasto
+
+- Nos interesa conocer qué factores afectan el consumo energético
+
+- $y_i^j$ consumo de tipo de combustible $j$ en el hogar $i$
+
+- Tenemos $K$ características de los hogares
+
+- El interés es ver el efecto de un cambio en $x_{k}$ sobre la participación de cada tipo de energia $j$
+
+---
+
+# Censura
+
+- Muchos de los hogares tienen cero en el consumo de algunos tipos de combustible
+
+- Se reportan los coeficientes estimados y los efectos marginales
+
 
 ---
 
 class: inverse, middle, center
 
 # Heckman
+
+- Hipótesis Roy/Borjas
+
+- Las desigualdades entre los países determinan la selección de los migrantes
+
+- Los migrantes comparan lo que podrían ganar en el país de nacimiento
 
 ---
 

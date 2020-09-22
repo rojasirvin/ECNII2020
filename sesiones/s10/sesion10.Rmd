@@ -419,9 +419,24 @@ knitr::include_graphics("figures/cond_means.png")
 - Efecto marginal en la media truncada en cero: $\frac{\partial E(y,y>0|x)}{\partial x}=(1-x'\beta\lambda(x'\beta/\sigma)-\lambda(x'\beta/\sigma)^2)\beta$
 
 - Efecto marginal en la media censurada en cero:
-$\frac{\partial E(y|x)}{\partial x}=\Phi(x'\beta/\sigma)\beta$
+$\frac{\partial E(y|x)}{\partial x}=\Phi(x'\beta/\sigma)\beta$ <sup>1</sup>
+  
 
---
+.footnote[
+[1] Para ver por qué esto es cierto, consideren un modelo con un solo regresor: $y=a+bx$. En este caso, la media censurada es $E(y|x)=\Phi(\frac{a+x}{\sigma})(a+bx)+\sigma\phi(\frac{a+bx}{\sigma})$. Calculamos la derivada:
+
+$$\frac{\partial E(y|x)}{\partial x}=\Phi(\cdot)b+\left(\phi(\cdot)(a+bx)\frac{b}{\sigma}\right)+\sigma\phi'(\cdot)\frac{b}{\sigma}$$
+Usamos ahora un resultado de estadística (Cameron & Trivedi, 2005, pág. 542): $f'(z)=-zf(z)$. Entonces:
+
+$$\frac{\partial E(y|x)}{\partial x}=\Phi(\cdot)b+\left(\phi(\cdot)(a+bx)\frac{b}{\sigma}\right)-\phi(\cdot)(a+bx)\frac{b}{\sigma}$$
+
+con lo que se obtiene el resultado.
+
+]
+
+---
+
+# Efectos marginales
 
 - ¿cuál efecto nos interesa? Depende de la pregunta
 
