@@ -18,6 +18,9 @@
 
 [Sesión 10](https://rojasirvin.github.io/ECNII2020/sesiones/s10/sesion10.html#1). Modelos de selección
 
+[Sesión 11](https://rojasirvin.github.io/ECNII2020/sesiones/s11/sesion11.html#1). Aplicaciones de modelos de selección
+
+
 <!---
 
 commented
