@@ -1,0 +1,309 @@
+---
+title: "Endogeneidad y variables instrumentales"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "17 de septimebre de 2020"
+mathspec: true
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+```
+
+
+.title[
+# Sesión 12. Endogeneidad y variables instrumentales
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+# Agenda
+  
+1. Muchas de las aplicaciones empíricas en economía no cumplen con los supuestos de MCO sobre la exogeneidad de los regresores
+
+1. Esto es de importancia cuando se buscan estimar relaciones causales, donde los parámetros estimados tengan una interpretación estructural
+
+1. Crucialmente, hemos asumido que la exogeneidad en los regresores se cumple para utilizar LGN y TLC
+
+1. Estudiaremos un método muy popular en econometría, usado ampliamente en la investigación aplicada para la identificación de parámetros en presencia de endogeneidad
+
+---
+
+class: inverse, middle, center
+
+# Endogeneidad
+
+---
+
+# ¿Qué sucede si se violan los supuestos de MCO?
+
+- Supongamos que el el proceso de salarios **verdadero** está dado por
+
+$$\ln(w_i)=\beta_0+\beta_1 educ_i+\beta_2 habilidad_i+e_i$$
+
+- Y asumamos que la habilidad es no observada y decidimos estimar
+
+$$\ln(w_i)=\beta_0+\beta_1 educ_i+e_i$$
+
+- ¿Dónde queda la habilidad?
+
+
+--
+
+- El $\hat{\beta}_1$ estimado con esta regresión corta es inconsistente porque $u_i$ y $educ_i$ pues $u_i$ incluye la habilidad
+
+---
+
+# Instrumentos
+
+- Consideremos el siguiente modelo
+
+$$y=\beta_0+\beta_1 x+u$$
+
+donde $cov(x,u)\neq 0$
+
+- Suponga que existe una varible $z$ que cumple con:
+
+  1. **Exogeneidad**: $z$ no está correlacionada con $u$ 
+  $$cov(z,u)=0$$$
+  
+  1. **Relevancia**: $z$ está correlacionado con $x$
+  $$cov(x,x)\neq x$$
+  
+- Entonces $z$ es un **instrumento** de $x$
+
+--
+
+- La exogeneidad implica que $z$ no debe estar correlacionado con factores omitidos (por ejemplo, la habilidad)
+
+---
+
+# Estimador de VI
+
+- Calculando la covarianza con $z$ de $y=\beta_0+\beta_1 x+u$ obtenemos:
+
+$$cov(y,z)=\beta_1 cov(x,z)+cov(u,z)$$
+- Y, si $cov(u,z)$, resolviendo para $\hat{\beta}_1$
+
+$$\hat{\beta}_1=\frac{cov(y,z)}{cov(x,z)}$$
+
+siempre y cuando $cov(x,z)\neq 0$
+
+--
+
+- Por una LGN se puede mostrar que $\hat{\beta}_1$
+
+- Sin embargo, como prfundizaremos más adelante, $\hat{\beta}_1$ siempre es sesgado
+
+- El sesgo puede ser sustancial en muestras pequeñas, por lo que se recomienda tener precacuación con el tamañao de la muestra
+
+---
+
+# Ejemplo: rendimientos a la educación
+
+- Angrist & Krueger (1991) estudiaron un debate muy activo en economía laboral: ¿cuánto paga un año más de educación en el mercado de trabajo?
+
+- Como empezamos motivando esta sesión, es muy posible que la habilidad afecte tanto al desempeño del individuo en la escuela, como al desempeño del individuo en el trabajo
+
+--
+
+- Encontrar un instrumento casi nunca es tarea sencilla
+
+- Angrist y Krueger notan la siguiente regla para inscribir a un niño en la primaria
+
+  - Los niños pueden ingresar en el año en que **cumplen** 6 años
+  
+  - Un niño nacido en enero, entra en ese septiembre a la escuela (con 6 años y 8 meses)
+  
+  - Otro nacido en diciembre entra en el septiembre anterior a su cumpleaños a la escuela (con 5 años y 8 meses)
+  
+  - Pero todos los adolecentes de 16 años deben pasar a secundaria
+  
+  - Habrá niños que pasen a secundaria con 9 y otros con 10 años de educación
+  
+---
+
+# Lenguaje de VI
+
+- De forma más general, partimos del la siguiente **ecuación estructural** para $y_i$:
+
+$$y_i=\beta_0+\beta_1 x_{1i}+\beta_2 x_{2i}+u_i$$
+
+donde $cov(x_{1i},u_i)\neq 0$
+
+- A $x_{1i}$ se le llama la variable **endógena**
+
+- Se incluye también una o más variables **exógenas** como $x_{2i}$ que no están correlacionadas con $u_i$
+
+- A una regresión de la variable de interés en función del instrumento y las variables exógenas, de interés en algunas aplicaciones, se le conoce como **forma reducida**
+
+
+$$y_i=\beta_0+\beta_1 z_{1i}+\beta_2 x_{2i}+u_i$$
+
+---
+
+# Primera etapa
+
+- Un instrumento $z_i$ cumple con la restricción de exclusión: $cov(z_i,u_i)=0$
+
+- La **primera etapa** especifica la relación entre la variable endógena y el instrumento:
+
+$$x_{1i}=\pi_0+\pi_1 z_i+\pi_2x_{2i}+\nu_i$$
+
+- Donde se cumple que $cov(z_i,\nu_i=0)$ y $cov(x_{2i},\nu_i)=0$
+
+- Entonces, la condición de relevancia puede escribirse también como $\pi_1\neq 0$
+
+- Noten que la primera etapa también implica que, descontando el efecto de $z_i$, todavía $x_{1i}$ y $x_{2i}$ están correlacionadas
+
+-- 
+
+- La primera etapa puede y **debe** probarse empíricamente
+
+- En cambio, no es posible probar la restricción de exclusión, que debe estar respaldada sobre todo por la teoría económica, el conocimiento de las instituciones, la exogeneidad de experimentos naturales, etc.
+  
+---
+
+# Más de un instrumento
+
+- Es posible que haya $J$ variables $z_{ij}$ que puedan funcionar como instrumento
+
+- Se debe cumplir que $cov(u_i,z_{ij})=0$ y que cada una se correlacione con $x_{i1}$
+
+--
+
+- Con dos instrumentos, podemos escribir la primera etapa como
+
+$$x_{1i}=\pi_0+\pi_1 z_{1i}+ \pi_2 z_{2i} \pi_3x_{2i}+\nu_i$$
+
+- Ahora, debe cumplirse que $cov(z_{1i},\nu_i)=cov(z_{2i},\nu_i)=cov(x_{2i},\nu_i)=0$
+
+- Para lograr identificación, se requiere que $\pi_1\neq 0$ o $\pi_2\neq 0$
+
+- Podemos usar una prueba $F$ para probar que $\pi_1=\pi_2=0$
+
+
+---
+
+# Mínimos cuadrados en dos etapas
+
+- El modelo presentado anteriormente sugiere que podemos estimar $\beta_1$ con un procedimiento de dos etapas
+
+  1. Regresión de $x_{1i}$ sobre los instrumentos y las variables exógenas para obtener $\hat{x}_{1i}$
+  
+  1. Regresión de $y_i$ sobre las variables exógenas y $\hat_{x}_{1i}$
+  
+- Es como si *purgáramos* a $x_{1i}$ de su correlación con $u_i$
+
+---
+
+# Más sobre rendimientos a la educación
+
+- Angrist y Krueger (1991) proponen usar el trimestre de nacimiento como variable instrumental de los años de educación
+
+- El trimestr de nacimiento no afecta el ingreso directamente (a menos que estemos convencidos de la mayor productividad de los capricornio
+
+- La relevancia del instrumento surge por la relación antes descrita entre el trimestre de nacimiento y el número de años que un niño pasa en la escuela
+
+--
+
+- La primera etapa es
+
+$$esc_i=\pi_0+\pi_1 z_1+ \sum_{j=1930}^{1938}\phi_j D_{j}+\nu_i$$
+donde
+
+$$z_i=
+\begin{cases}
+1 \quad\text{nació en el primer trimestre} \\
+0 \quad\text{otro caso}\\
+\end{cases}
+$$
+
+--
+
+- En este ejemplo, la forma reducida es
+
+$$\ln(w_i)=\gamma_0+\gamma_1 z_1+  \sum_{j=1930}^{1938}\delta_j D_{j}+\varepsilon_i$$
+
+---
+# Próxima sesión
+
+- Continuaremos el estudio de VI, ahora en su versión matricial
+
+- Hablaremos sobre las propiedades de los estimadores de VI
+
+  - W, Capítulo 5
+
+  - CT, Capítulo 4 (secciones 4.8 y 4.9)
+
+- Algunas aplicaciones recientes se pueden encontrar en estos trabajos:
+
+  - Hackett, L., & Marquez-Padilla, F. (2019). Working for Change: the Effect of Female Labor Force Participation on Fertility. SSRN Working Paper 3354753.
+  - Campos-Vazquez, R. M., & Nuñez, R. (2019). Obesity and labor market outcomes in Mexico/Obesidad y el mercado de trabajo en México. *Estudios Económicos*, 34(2), 159-196.
+  - López-Feldman, A., & Chávez, E. (2017). Remittances and natural resource extraction: Evidence from Mexico. *Ecological Economics*, 132, 69-79.
+  - Mocetti, S. (2007). Intergenerational earnings mobility in Italy. *The BE Journal of Economic Analysis & Policy*, 7(2).  
+ - Hirvonen, K., & Hoddinott, J. (2017). Agricultural production and children's diets: Evidence from rural Ethiopia. *Agricultural Economics*, 48(4), 469-480.
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
