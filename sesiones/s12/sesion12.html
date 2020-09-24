@@ -93,7 +93,7 @@ donde `\(cov(x,u)\neq 0\)`
 - Suponga que existe una varible `\(z\)` que cumple con:
 
   1. **Exogeneidad**: `\(z\)` no está correlacionada con `\(u\)` 
-  `$$cov(z,u)=0$$`$
+  `$$cov(z,u)=0$$`
   
   1. **Relevancia**: `\(z\)` está correlacionado con `\(x\)`
   `$$cov(x,x)\neq x$$`
@@ -184,7 +184,7 @@ donde `\(cov(x_{1i},u_i)\neq 0\)`
 
 - Noten que la primera etapa también implica que, descontando el efecto de `\(z_i\)`, todavía `\(x_{1i}\)` y `\(x_{2i}\)` están correlacionadas
 
--- 
+--
 
 - La primera etapa puede y **debe** probarse empíricamente
 
@@ -202,7 +202,7 @@ donde `\(cov(x_{1i},u_i)\neq 0\)`
 
 - Con dos instrumentos, podemos escribir la primera etapa como
 
-`$$x_{1i}=\pi_0+\pi_1 z_{1i}+ \pi_2 z_{2i} \pi_3x_{2i}+\nu_i$$`
+`$$x_{1i}=\pi_0+\pi_1 z_{1i}+ \pi_2 z_{2i} +\pi_3x_{2i}+\nu_i$$`
 
 - Ahora, debe cumplirse que `\(cov(z_{1i},\nu_i)=cov(z_{2i},\nu_i)=cov(x_{2i},\nu_i)=0\)`
 
@@ -219,7 +219,7 @@ donde `\(cov(x_{1i},u_i)\neq 0\)`
 
   1. Regresión de `\(x_{1i}\)` sobre los instrumentos y las variables exógenas para obtener `\(\hat{x}_{1i}\)`
   
-  1. Regresión de `\(y_i\)` sobre las variables exógenas y `\(\hat_{x}_{1i}\)`
+  1. Regresión de `\(y_i\)` sobre las variables exógenas y `\(\hat{x}_{1i}\)`
   
 - Es como si *purgáramos* a `\(x_{1i}\)` de su correlación con `\(u_i\)`
 
@@ -238,25 +238,21 @@ donde `\(cov(x_{1i},u_i)\neq 0\)`
 - La primera etapa es
 
 `$$esc_i=\pi_0+\pi_1 z_1+ \sum_{j=1930}^{1938}\phi_j D_{j}+\nu_i$$`
-donde
+donde `\(z_i= \begin{cases} 1 \quad\text{nació en el primer trimestre} \\ 0 \quad\text{otro caso}\\ \end{cases}\)`
 
-`$$z_i=
-`\begin{cases}
-1 \quad\text{nació en el primer trimestre} \\
-0 \quad\text{otro caso}\\
-\end{cases}`
-$$
+---
 
---
+# Más sobre rendimientos a la educación
+
 
 - En este ejemplo, la forma reducida es
 
 `$$\ln(w_i)=\gamma_0+\gamma_1 z_1+  \sum_{j=1930}^{1938}\delta_j D_{j}+\varepsilon_i$$`
 
+- Sabemos que el trimestre de nacimiento estará correlacionado con el ingreso, pero estas diferencias se deben a las diferencias de escolaridad
+
 ---
 # Próxima sesión
-
-- Continuaremos el estudio de VI, ahora en su versión matricial
 
 - Hablaremos sobre las propiedades de los estimadores de VI
 
