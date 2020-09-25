@@ -6,7 +6,7 @@ title: |
 
 subtitle: "Tarea 2"
 author: "Profesor: Irvin Rojas"
-date: "Fecha de entrega: X de octubre a las 11:00."
+date: "Fecha de entrega: 5 de octubre a las 20:00."
 output:
   html_document:
   toc: true
@@ -20,35 +20,79 @@ La tarea debe entregarse de manera individual, pero se recomienda ampliamente co
 
 1. Retome la base de la base *motral2012.csv* usada en la Tarea 1. Estimará un modelo Tobit para explicar los factores que afectan la oferta laboral femenina. En esta la base de datos la variable **hrs_ocup** registra las horas trabajadas a la semana. 
 
-a. [1 punto] ¿Qué proporción de la muestra femenina reporta horas trabajadas iguales a cero?
+a. [2 punto] ¿Qué proporción de la muestra femenina reporta horas trabajadas iguales a cero?
 
-a. [1 puntos] Se desea estimar el efecto de los años de educación (**anios_esc**) sobre la oferta laboral femenina controlando por el estado marital, la edad (**eda**) y el número de hijos (**n_hij**) como una variable continua. Estime un modelo de MCO para **hrs_ocup** mayor que cero, usando solo la población femenina. Reporte errores robustos. En la base, **e_con** toma el valor de 5 para las personas casadas. Genere una variable dummy que tome el valor de 1 para las personas casadas y cero en otro caso. ¿Cuál es la interpretación sobre el coeficiente de los años de escolaridad?
+a. [3 puntos] Se desea estimar el efecto de los años de educación (**anios_esc**) sobre la oferta laboral femenina controlando por el estado marital (**casada**), la edad (**eda**) y el número de hijos (**n_hij**) como una variable continua. En la base, **e_con** toma el valor de 5 para las personas casadas. Genere la variable dummy **casada** que tome el valor de 1 para las mujeres casadas y cero en otro caso. Estime un modelo de MCO para **hrs_ocup** mayor que cero, usando solo la población femenina. Reporte errores robustos. ¿Cuál es la interpretación sobre el coeficiente de los años de escolaridad?
 
-a.	[2 puntos] ¿Qué problema existe con el modelo planteado en el punto anterior en términos de la selección? ¿Considera que se trata de un caso de censura o de truncamiento?
+a.	[3 puntos] ¿Qué problema existe con el modelo planteado en el punto anterior en términos de la selección? ¿Considera que se trata de un caso de censura o de truncamiento?
 
-a.	[2 puntos] Suponga que la condición de ofertar trabajo (horas de trabajo positivas) fuera completamente aleatoria. ¿Qué implicación tendría para su respuesta en el inciso anterior?
+a.	[8 puntos] Estime un modelo Tobit de datos censurados. ¿Qué resuelve el modelo Tobit en este caso? Interprete nuevamente el coeficiente sobre los años de escolaridad.
 
-a.	[2 puntos] Estime un modelo Tobit de datos censurados. ¿Qué resuelve el modelo Tobit en este caso? Interprete nuevamente el coeficiente sobre los años de escolaridad.
+a.	[4 puntos] ¿Cuál es el efecto marginal de un incremento de un año de educación en la oferta laboral? ¿Cómo cambia su respuesta si, en lugar de considerar la variable latente, considera la variable censurada? 
 
-a.	[2 puntos] ¿Cuál es el efecto marginal de un incremento de un año de educación en la oferta laboral? ¿Cómo cambia su respuesta si, en lugar de considerar la variable latente, considera la variable censurada? 
 
 ## Pregunta 2
 
-12.	Uno de los debates más activos en economía es el relativo a la relación entre años de educación e ingreso. La base de datos ingresos_iv.dta contiene una muestra de hombres en edad de trabajar de entre 24 y 36 años.
+Usando los mismos datos de la base *motral2012.csv* implementará un ejercicio en el mismo espíritu del famoso estudio de Mroz (1987)[^1] sobre la oferta laboral femenina. El propósito es estimar la relación entre el salario y el número de horas trabajadas, concentrándonos en la muestra de mujeres.
 
-a.	[1 puntos] Estime una regresión por MCO para explicar el logaritmo del salario (**lwage**) en función de la educación **educ** y los siguientes controles: **exper**, **expersq**, **black**, **south**, **smsa**, **reg661**, **reg662**, **reg663**, **reg664**, **reg665**, **reg666**, **reg667**, **reg668** y **smsa66**. ¿Qué problema encuentra en la estimación de esta relación? ¿El coeficiente sobre **educ** tiene una interpretación causal del efecto de la educación en el salario?
+a. [5 puntos] El primer problema al que nos enfrentamos es que el salario será no observado para las mujeres que no trabajan. Estime un modelo para el log del salario por hora, **ing_x_hrs**, usando las variables **anios_esc**, **eda**, **n_hijos** y **casada**, usando la submuestra de mujeres con salario por hora positivo. Use los coeficientes estimados para imputar el ingreso por hora faltante para las mujeres que reportan 0 en las horas trabajadas.
+  
+a. [5 puntos] Use una función[^2] para estimar por máxima verosimilitud un *heckit* para las horas trabajadas **hrs_ocup**. En la ecuación de selección (si la persona trabaja o no) incluya como variable explicativa el salario por hora (imputado para las mujeres que no trabajan), además de **anios_esc**, **eda**, **n_hijos** y **casada**. En la ecuación de horas, incluya los mismos regresores, excepto **n_hijos**.
+  
+a. [10 puntos] Estime ahora el *heckit* en dos pasos, *a mano*. Es decir, siga los siguientes pasos: i) estime un probit para la ecuación de selección y obtenga el índice $x_i'\hat{\beta}$; ii) calcule el inverso de la razón de Mills $\lambda_i(x_i'\hat{\beta})$; y iii) estime por MCO la ecuación para las horas trabajadas con la submuestra que tiene horas trabajadas positivas, incluyendo como regresor el inverso de la razón de Mills estimado y el resto de los regresores.
+  
+    Compare los coeficientes y los errores estándar obtenidos en esta parte con los de la parte b. ¿Por qué son iguales o por qué difieren?
+
+[^1]: Mroz, T. A. (1987). [The sensitivity of an empirical model of married women's hours of work to economic and statistical assumptions](https://www.jstor.org/stable/1911029?casa_token=Uwxeul7XeBkAAAAA%3AyOzMP-SP9bdQNxw1FwyVjnEJt3w2ShyTtiinMVL6RZnpxKeehfas96e2ETxA6us20xyQG-NUF71svQugl78mx6vG2oJ2k7U39TtJn6P6dq-iTH2aDWsH&seq=1#metadata_info_tab_contents). *Econometrica*: Journal of the econometric society, 765-799. 
+[^2]: Por ejemplo, la función *heckit* del paquete *sampleSelection* en R.
+
+## Pregunta 3
+
+En esta pregunta mostrará cómo para un modelo en dos partes Poisson la log verosimilitud del problema es la suma de log verosimilitud para un proceso binario y la log verosimilitud de un proceso Poisson truncado en cero. Considere una variable aleatoria $Y$ con observaciones iid que sigue una distribución Poisson con parámetro $\lambda$ tal que
+
+$$f(y,\lambda)=P(Y=y)=\frac{\lambda^y exp(-\lambda)}{y!}$$
+
+  a. [4 puntos] Obtenga la distribución Poisson truncada en cero, definida como $P(Y=y|Y>0)$.
+  
+  a. [4 puntos] Considere además un proceso binomial que modela la probabilidad de que la variable $Y$ tome un valor cero o un valor positivo, como sigue: $$ P(Y=y)=\begin{cases} \pi \quad\quad y=0 \\ 1-\pi\quad\quad y=1,2,3,\ldots \end{cases} $$ Especialice la ecuación del modelo de dos partes vista en la [sesión 10](https://rojasirvin.github.io/ECNII2020/sesiones/s10/sesion10.html#40), usando la distribución truncada derivada en a. y el proceso binomial definido  para obtener una función de masa de probabilidad no condicional para $Y$, $g(y)$.
+  
+  a. [4 puntos] Obtenga lo log verosimilitud para la $i$ésima observación. Se sugiere que continúe sus cálculos con una ecuación en dos partes.
+  
+  a. [4 puntos] En este problema, parametrizaremos $\lambda_i$ como $\lambda_i=exp(x_i'\beta_2)$, como regularmente lo hemos hecho en una regresión Poisson. Por otro lado, podemos trabajar con una parametrización general de la probabilidad $\pi$, $\pi=F(x_i'\beta_1)$. Escriba la función de log verosimilitud del problema usando la parametrización para $\pi_i$ y para $\lambda_i$ que acabamos de describir. Presente esta función en una sola parte.
+  
+  a. [4 puntos] Agrupe los términos para mostrar que $\mathcal{L}=\mathcal{L}_1(\beta_1)+\mathcal{L}_2(\beta_2)$. Así, mostrará que la log verosimilitud del problema se puede descomponer en una log verosimilitud para el modelo binario y otra para el conteo truncado en cero. Por tanto, no perdemos información si estimamos los parámetros de la probabilidad binomial por un lado, y los de la distribución Poisson truncada en cero, por el otro.
+
+
+## Pregunta 4
+
+Partiendo de la variable aleatoria $Y$ con observaciones iid que sigue una distribución Poisson con parámetro $\lambda$ usada en el problema anterior, en este problema caracterizará la estimación de un modelo Poisson inflado en cero.
+
+  a. [4 puntos] Especialice la expresión vista en la [sesión 10](https://rojasirvin.github.io/ECNII2020/sesiones/s10/sesion10.html#42) para obtener la función de masa de probabilidad del modelo Poisson inflado en cero $g(y|\lambda, \pi)$.
+  
+  a. [4 puntos] Provea una expresión para la función de verosimilitud $L(\lambda,\pi)=\prod_{i=1}^N g(y_i|\lambda, \pi)$. Una sugerencia para simplificar sus cálculos es definir una variable $X$ igual al numero de veces que $Y_i$ que toma el valor de cero.
+  
+  a. [6 puntos] Provea una expresión para la log verosimilitud del problema, $\mathcal{L}(\lambda,\pi)$.
+  
+  a. [6 puntos] Obtenga las condiciones de primer orden que caracterizan la solución del problema de máxima verosimilitud, derivando la log verosimilitud con respecto a $\lambda$ y a $\pi$.
+
+
+## Pregunta 5
+
+Uno de los debates más activos en economía es el relativo a la relación entre años de educación e ingreso. La base de datos *ingresos_iv.dta* contiene una muestra de hombres de entre 24 y 36 años de edad.
+
+a.	[2 puntos] Estime una regresión por MCO para explicar el logaritmo del salario (**lwage**) en función de la educación **educ** y los siguientes controles: **exper**, **expersq**, **black**, **south**, **smsa**, **reg661**, **reg662**, **reg663**, **reg664**, **reg665**, **reg666**, **reg667**, **reg668** y **smsa66**. ¿Qué problema encuentra en la estimación de esta relación? ¿El coeficiente sobre **educ** tiene una interpretación causal del efecto de la educación en el salario?
 
 a. [2 puntos] Se propone usar una variable dicotómica que indica si el individuo vivía cerca de una universidad cuando tenía cuatro años, como instrumento de los años de educación. ¿Qué condiciones debe cumplir la variable propuesta para funcionar como instrumento válido?
 
 a. [2 puntos] ¿Cómo juzga la propuesta de usar la variable antes descrita como instrumento?
 
-a. [2 puntos] Estime la relación entre el logaritmo del salario y la educación usando la variable dicotómica de acceso a una universidad como instrumento. Emplee las mismas variables de control que en el modelo de MCO.
+a. [4 puntos] Estime la relación entre el logaritmo del salario y la educación usando la variable dicotómica de acceso a una universidad como instrumento. Emplee las mismas variables de control que en el modelo de MCO.
 
-a. [2 puntos] Interprete la primera etapa en ´terminos del coeficiente sobre el instrumento y la magnitud y significancia del estadístico F.
+a. [2 puntos] Interprete la primera etapa en términos del coeficiente sobre el instrumento y la magnitud y significancia del estadístico $F$.
 
 a. [2 puntos] Interprete el coeficiente sobre la variable de educación en la segunda etapa. Compare la magnitud del efecto estimado con el resultado de MCO
 
-a. Realice ahora el siguiente procedimiento. Primero, estime la primera etapa usando una regresión por MCO. Obtenga los valores ajustados de educación y llámelos **educ_hat**. Luego, estime la segunda etapa empleando **educ_hat** como variable independiente, además del resto de variables de control. ¿Cómo cambian sus resultados en comparación con la parte f.?
+a. [4 puntos] Realice ahora el siguiente procedimiento. Primero, estime la primera etapa usando una regresión por MCO. Obtenga los valores ajustados de educación y llámelos **educ_hat**. Luego, estime la segunda etapa empleando **educ_hat** como variable independiente, además del resto de variables de control. ¿Cómo cambian sus resultados en comparación con la parte d.?
 
 a. [2 puntos] ¿A qué se deben las discrepancias que encuentra? ¿Cuál de las dos estrategias prefiere para estimar el modelo de variables instrumentales?
 

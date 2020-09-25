@@ -98,6 +98,8 @@ class: inverse, middle, center
 
 - Se reportan los coeficientes estimados y los efectos marginales
 
+- Podemos internalizar esta decisión en un modelo microeconómico donde el consumo cero es el resultado de un proceso de optimización
+
 
 ---
 
@@ -107,9 +109,32 @@ class: inverse, middle, center
 
 - Hipótesis Roy/Borjas
 
-- Las desigualdades entre los países determinan la selección de los migrantes
+  - Las desigualdades entre los países determinan la selección de los migrantes
 
 - Los migrantes comparan lo que podrían ganar en el país de nacimiento
+
+
+---
+
+# Dos ecuaciones
+
+- Selección:
+
+
+- Resultados:
+
+
+---
+
+# Estimación
+
+- Requerimos que al menos una variable esté omitida de la ecuación de resultados (segunda etapa)
+
+- Hay algunos autores que a esta variable excluída la llaman **instrumento** por las razones que quedarán claras más adelante
+
+- Conjunto de características demográficas se incluyen en ambas etapas
+
+- Hay un instrumento, las becas ERASMUS, 
 
 ---
 
@@ -129,6 +154,28 @@ class: inverse, middle, center
 
 - Colchero, M. A., Molina, M., & Guerrero-López, C. M. (2017). After Mexico implemented a tax, purchases of sugar-sweetened beverages decreased and water increased: difference by place of residence, household composition, and income level. *The Journal of nutrition*, 147(8), 1552-1557.
 
+- En México hay un problema de salud asociado al consumo de bebidas azucaradas
+
+- Problema de salud pública: ¿sirven los impuestos para reducir el consumo de bebidas azucaradas?
+
+- Datos de la ENIGH que tiene datos de ingresos y gastos de los hogares
+
+---
+
+# Modelo en dos partes
+
+- El cero es un cero verdadero resultado de un proceso de optimización
+
+- Primera parte: consumo positivo de bebidas azucaradas con un modelo Probit
+
+- Segunda parte: modelo lineal para las familias con compras positivas
+
+- Se comparan las tendencias esperadas vs las tendencias realizadas después de la implementación de un impuesto
+
+- Los resultados indican que el consumo de bebidas azucaradas efectivamente disminuyó 2% después de la implementación del impuesto
+
+- Además, hay evidencia de un incremento de 3% en la compra de agua embotellada
+
 ---
 
 class: inverse, middle, center
@@ -140,6 +187,50 @@ class: inverse, middle, center
 # Modelo ordenado con selección
 
 - **Ordenado + selección**: Alemi, F., Circella, G., Mokhtarian, P., & Handy, S. (2019). What drives the use of ridehailing in California? Ordered probit models of the usage frequency of Uber and Lyft. *Transportation Research Part C: Emerging Technologies*, 102, 233-248.
+
+- ¿Cómo varía el uso de serivicios de viajes individuales tipo Uber debido a las características de las personas y los lugares donde viven?
+
+- Datos en panel de California de millenials y generación X
+
+- Frecuencia de uso en tres categorías: nunca (0), con poca frecuencia (1) y con mucha frecuencia (2)
+
+- Tenemos un elemento de selección o adopción: vemos muchos ceros por usuarios que nunca usan los servicios
+  - Estos son los ceros estructurales
+
+---
+
+# Modelos
+
+- Modelo probit ordenado inflado en cero
+
+  - Variable frecuencia observada
+    - Vemos también ceros como resultado 
+    
+- Modelo probit ordenado con selección de muestra
+
+  - Extensión del modeo de Heckman en dos partes visto en clase
+  
+  - Se formulan dos procesos diferentes con errores correlacionados
+  
+     - Adopción
+     - Frecuencia
+
+- El OPSS reescala los resultados por la probabilidad de tener ceros estructurales
+
+- El ZIOPC
+  
+
+---
+
+# Resultados
+
+- Los aspectos sociodemográficas determinan la adopción, pero no la frecuencia
+
+- La frecuencia está determinada sobre todo por las características de las ciudades
+
+- Los dos modelos son consistentes entre sí
+  
+- [Liga a la presentación](https://slides.com/dave6788/ecnii/fullscreen)
 
 
 ---
