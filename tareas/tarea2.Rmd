@@ -6,7 +6,7 @@ title: |
 
 subtitle: "Tarea 2"
 author: "Profesor: Irvin Rojas"
-date: "Fecha de entrega: 5 de octubre a las 20:00."
+date: "Fecha de entrega: 5 de octubre a las 7:00."
 output:
   html_document:
   toc: true
