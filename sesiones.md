@@ -22,6 +22,8 @@
 
 [Sesión 12](https://rojasirvin.github.io/ECNII2020/sesiones/s12/sesion12.html#1). Endogeneidad y variables instrumentales
 
+[Sesión 13](https://rojasirvin.github.io/ECNII2020/sesiones/s13/sesion13.html#1). Propiedades del estimador de MC2E
+
 <!---
 
 commented

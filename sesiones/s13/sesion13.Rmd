@@ -1,0 +1,344 @@
+---
+title: "Propiedades del estimador de MC2E"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "29 de septimebre de 2020"
+mathspec: true
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+```
+
+
+.title[
+# Sesión 13. Propiedades del estimador de MC2E
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+# Agenda
+  
+1. Estuiaremos casos generales con endogeneidad donde hay más de un instrumento
+
+1. Introduciremos el método generalizado de momentos, necesario para estimar modelos de VI sobreidentificados
+
+1. Especializaremos el problema general de MGM al de MC2E
+
+---
+
+class: inverse, middle, center
+
+# Estimadores de VI
+
+---
+
+# Estimadores de VI
+
+- En la sesión anterior introdujimos la idea de MC2E al poder pensar el proceso de estimación de un modelo con una variable endógena y un instrumento en dos etapas
+
+- Dijimos que podemos generalizar el modelo a la inclusión de más de un instrumento
+
+- Esto nos permite fijar la terminología:
+
+--
+
+- **Estimador de VI**: reservaremos este término cuando tengamos tantas variables endógenas como instrumentos
+  
+    - En este caso, el estimador simplemente es $$\beta_{VI}=(Z'X)^{-1}Z'y$$
+    
+    - Noten que si solo se incluye un regresor (que además es endógeno) y un instrumento, esto se colapsa a $$\beta_{VI}=\frac{cov(x,y)}{cov(x,z)}$$
+    
+    - A un modelo con tantas variables endógenas como instrumentos se le conoce como **modelo exactamente identificado**
+    
+---
+
+# Estimadores de VI
+
+- **Estimador de MC2E**: reservamos este término para la situación general donde podemos tener más de un instrumento y regresores
+  
+    - Un modelo con más instrumentos que variables endógenas se conoce como **modelo sobreidentificado**
+    
+    - También es posible tener varias variables endógenas y múltiples instrumentos, y si hay más variables endógenas que instrumentos tendremos un **modelo no identificado**
+    
+
+
+
+---
+
+# Estimadores de VI
+
+- Consideremos el modelo exactamente identificado con $x_K$ endógeno: $$y=x\beta+u$$
+
+donde $x=(1,x_2,\ldots,x_K)$ y $z=(1,x_2,\ldots,z_1)$ 
+
+- Multiplicando por $z'$ y aplicando el operador de esperanza obtenemos  $$E(z'y)=E(z'x)\beta+E(z'u)$$
+
+- El supuesto de exogeneidad implica que $E(z'u)=0$, por lo que si $E(z'x)$ es de rango completo, $rango(E(z'x))=K$, entonces:
+
+$$\beta_{VI}=E(z'x)^{-1}E(z'y)$$
+
+--
+
+- Sustituyendo por los correspondientes análogos muestrales:
+
+$$\beta_{VI}=\left(\frac{1}{N}\sum_i z_i'x_i\right)^{-1}\left(\frac{1}{N}\sum_i z_i'y_i\right)=(Z'X)^{-1}Z'y$$
+---
+
+# Estimadores de VI
+
+- Consideremos la primera etapa
+
+$$x_K=\delta_0+\delta1 x_1+\ldots+\delta_{K-1}x_{K-1}+\theta_1 z_1 +v_K$$
+
+- Se puede mostrar que una condición suficiente para que $rango(E(z'x))=K$ es que $\theta_1\neq 0$
+
+- Es decir, se debe cumplir la condición de relevancia
+
+--
+
+- **Estimador de Wald**: es un caso especial del estimador de VI cuando $z_1$ es binaria
+
+- Por tanto, también se conoce como estimador por grupos
+
+---
+
+class: inverse, center middle
+
+# Breve introducción al método generalizado de momentos
+
+
+---
+
+# Método generalizado de momentos
+
+- El GMM generaliza una serie de estimadores comúnmente usados en econometría (incluyendo MCO, MV, VI, etc)
+
+- Asumimos que existen $r$ condiciones de momentos independientes para $q$ parámetros $$E(h(w_i,\theta_0))=0$$
+
+donde $\theta$ es un vector de $q\times 1$, $h(\cdot)$ es una función vector de $r \times 1$ con $r\geq q$
+
+- $w_i$ son los datos observables, incluyendo las variables dependientes, los regresores exógenos, potenciales regresores endógenos, así como instrumentos
+
+
+---
+
+# Método generalizado de momentos
+
+- La forma de $h(\cdot)$ es equivalente a escoger el modelo
+
+
+- Por ejemplo:
+
+| $h(\cdot)$ | Método de estimación |
+|:---:|:---:|
+| $x(y-x'\beta)$ | MCO |
+| $\partial\mathcal{L}/\partial\theta$ | MV |
+| $z(y-x'\beta)$ | VI |
+
+---
+
+# Método generalizado de momentos
+
+- Cuando $r=q$, tenemos un modelo **exactamente identificado**, es decir, tenemos tantos momentos como parámetros a estimar
+
+- Podemos obtener el **estimador de método de momentos** $\hat{theta}_{MM}$ como la solución a
+
+$$\frac{1}{N}h(w_i,\hat{\theta})=0$$
+
+---
+
+# Método generalizado de momentos
+
+- El caso que nos ocupa más en el contexto de MC2E es cuando $r>q$, es decir, un **modelo sobreidentificado**
+
+- En este caso, tenemos más ecuaciones que incógnitas en la condición de momentos
+
+- El **estimador de método generalizado de momentos** $\hat{theta}_{GMM}$ se define como el vector de parámetros que minimiza la forma cuadrática
+
+$$Q_N(\theta)=\left(\frac{1}{N}\sum_ih(w_i,\theta)\right)'W_N\left(\frac{1}{N}\sum_ih(w_i,\theta)\right)$$
+
+donde $W_N$ es una matriz simétrica y positiva definida que no depende de $\theta$
+
+- Diferentes matrices $W_N$ dan origen a distintos estimadores
+
+---
+
+# Estimador de MGM
+
+- **Proposición 6.1 en CT**: bajo una serie de supuestos para poder establecer LGN y TLC se muestra que
+
+$$\sqrt{N}\left(\hat{\theta}_{GMM}-\theta_0\right)\stackrel{a}{\sim}\mathcal{N}\left(0,(G_0'W_0G_0)^{-1}(G_0'W_0S_0W_0G_0)(G_0'W_0G_0)^{-1}\right)$$
+donde $W_0$ es una matriz finita, simétrica y positiva definida, y
+$$
+\begin{aligned}
+G_0&=p\lim\frac{1}{N}\sum_{i=1}^N \left(\frac{\partial h_i}{\partial\theta'}\Bigg|_{\theta_0}\right) \\
+S_0&=p\lim \frac{1}{N} \sum_{i=1}^N \sum_{j=1}^N \left(h_i h_j \Bigg|_{\theta_0} \right)
+\end{aligned}
+$$
+---
+
+# Matriz de varianzas óptima
+
+- Para implementar MGM debemos especificar las condiciones de momentos y la matriz $W_N$
+
+- En el caso de modelos sobreidentificados y con $S_0$ conocida, el estimador de MGM más eficiente se obtiene al especificar $W_N=S_0^-{1}$
+
+- Con esta elección, la expresión para la varianza de $\hat{\beta}_{MGM}$ se simplifica a:
+$$\sqrt{N}\left(\hat{\theta}_{GMM}-\theta_0\right)\stackrel{a}{\sim}\mathcal{N}\left(0,(G_0'S_0^{-1}G_0)^{-1}\right)$$
+- En la práctiva, $S_0$ es desconocida, así que la sustituimos por un estimador consistente $\hat{S}$
+
+
+---
+
+# MGM óptimo
+
+- La matriz de varianzas se estima siguiendo un procedimiento de dos etapas
+
+  1. Obtener el estimador de MGM usando una matriz subóptima, generalmente $W_N=I_r$ y con estos coeficientes obtener un estimador para $S_0$: $$\hat{S}=\frac{1}{N}\sum_i h_i(\hat{\theta})h_j(\hat{\theta})'$$
+  
+  1. Obtner un estimador de MGM óptimo o **estimador de MGM de dos etapas** $\hat{\theta}_{MGM,O}$ minimizando
+  
+$$Q_N(\theta)=\left(\frac{1}{N}\sum_ih(\theta)\right)'\hat{S}^{-1}\left(\frac{1}{N}\sum_ih(\theta)\right)$$
+
+---
+
+class: inverse, middle, center
+
+# De regreso a VI
+
+---
+
+# Estimador de MGM de VI
+
+- Notemos que la restricción de exclusión nos especifica una condición de momentos
+
+$$E(z_i(y_i-x_i'\beta))=0$$
+- Como estamos en el escenario $r>q$, es decir, más instrumentos que variables endógenas, el estimador GMM minimiza la forma cuadrática siguiente
+
+$$
+\begin{aligned}
+Q(\beta)&=\left(\frac{1}{N}\sum_i (y_i-x_i'\beta)z_i\right)'W_N\left(\frac{1}{N}\sum_i (y_i-x_i'\beta)z_i\right) \\
+&=(Z'u)'W(Z'u) \\
+&=(u'Z)W(Z'u)
+\end{aligned}
+$$
+--
+
+- Las condiciones de primer orden son
+
+$$\frac{\partial Q_N(\beta)}{\partial\beta}=-2\left(\frac{1}{N}X'Z\right)W_N\Big(\frac{1}{N}Z'(y-X\beta)\Big)=0$$
+
+---
+
+# Estimador de MGM de VI
+
+- Resolviendo para $\beta$ obtenemos el **estimador de VI de GMM**:
+
+$$\hat{\beta}_{GMM}=(X'ZW_NZ'X)^{-1}X'ZW_NZ'y$$
+- Las propiedades asintóticas de este estimador se pueden obtener de manera similar a como se obtuvieron las del estimador de MCO
+
+--
+
+- Escribimos
+
+$$\hat{\beta}_{GMM}=\beta+\left(\left(\frac{1}{N}X'Z\right)W_N\left(\frac{1}{N}X'Z\right)\right)^{-1}\left(\frac{1}{N}X'Z\right)W_N\left(\frac{1}{N}Z'u\right)$$
+- Para probar consistencia requerimos que $\frac{1}{N}Z'u$, es decir, que las condiciones de momentos se cumplan
+
+
+--
+
+- Por otro lado, una condición para que la matriz inversa exista es que $rango\left(\frac{1}{N}Z'X\right)=K$
+
+
+---
+
+# Estimador de la varianza de $\hat{\beta}_MGM$
+
+- El estimador $\hat{\beta}_MGM$ es asintóticamente normal, centrado en $\beta$ y con una varianza asintótica estimada dada por
+
+$$\hat{V}(\hat{\beta}_{GMM})=N(X'ZW_NZ'X)^{-1}(X'ZW_N\hat{S}W_NZ'X)(X'ZW_NZ'X)^{-1}$$
+donde $\hat{S}$ es un estimador consistente de
+
+$$S=\lim \frac{1}{N}\sum_{i=1}^NE(u_i^2z_iz_i')$$
+--
+
+- La forma específica de la varianza estimada depende lo que asumamos respecto a los errores
+
+
+---
+# Próxima sesión
+
+- Propuesta de examen
+
+- Algunas aplicaciones recientes se pueden encontrar en estos trabajos:
+
+  - Hackett, L., & Marquez-Padilla, F. (2019). Working for Change: the Effect of Female Labor Force Participation on Fertility. SSRN Working Paper 3354753.
+  - Campos-Vazquez, R. M., & Nuñez, R. (2019). Obesity and labor market outcomes in Mexico/Obesidad y el mercado de trabajo en México. *Estudios Económicos*, 34(2), 159-196.
+  - López-Feldman, A., & Chávez, E. (2017). Remittances and natural resource extraction: Evidence from Mexico. *Ecological Economics*, 132, 69-79.
+  - Mocetti, S. (2007). Intergenerational earnings mobility in Italy. *The BE Journal of Economic Analysis & Policy*, 7(2).  
+ - Hirvonen, K., & Hoddinott, J. (2017). Agricultural production and children's diets: Evidence from rural Ethiopia. *Agricultural Economics*, 48(4), 469-480.
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
