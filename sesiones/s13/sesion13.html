@@ -73,7 +73,7 @@ class: inverse, middle, center
   
     - En este caso, el estimador simplemente es `$$\beta_{VI}=(Z'X)^{-1}Z'y$$`
     
-    - Noten que si solo se incluye un regresor (que además es endógeno) y un instrumento, esto se colapsa a `$$\beta_{VI}=\frac{cov(x,y)}{cov(x,z)}$$`
+    - Noten que si solo se incluye un regresor (que además es endógeno) y un instrumento, esto se colapsa a `$$\beta_{VI}=\frac{cov(z,y)}{cov(x,z)}$$`
     
     - A un modelo con tantas variables endógenas como instrumentos se le conoce como **modelo exactamente identificado**
     
@@ -163,12 +163,12 @@ donde `\(\theta\)` es un vector de `\(q\times 1\)`, `\(h(\cdot)\)` es una funci�
 | `\(z(y-x'\beta)\)` | VI |
 
 ---
-
+f
 # Método generalizado de momentos
 
 - Cuando `\(r=q\)`, tenemos un modelo **exactamente identificado**, es decir, tenemos tantos momentos como parámetros a estimar
 
-- Podemos obtener el **estimador de método de momentos** `\(\hat{theta}_{MM}\)` como la solución a
+- Podemos obtener el **estimador de método de momentos** `\(\hat{\theta}_{MM}\)` como la solución a
 
 `$$\frac{1}{N}h(w_i,\hat{\theta})=0$$`
 
@@ -180,7 +180,7 @@ donde `\(\theta\)` es un vector de `\(q\times 1\)`, `\(h(\cdot)\)` es una funci�
 
 - En este caso, tenemos más ecuaciones que incógnitas en la condición de momentos
 
-- El **estimador de método generalizado de momentos** `\(\hat{theta}_{GMM}\)` se define como el vector de parámetros que minimiza la forma cuadrática
+- El **estimador de método generalizado de momentos** `\(\hat{\theta}_{GMM}\)` se define como el vector de parámetros que minimiza la forma cuadrática
 
 `$$Q_N(\theta)=\left(\frac{1}{N}\sum_ih(w_i,\theta)\right)'W_N\left(\frac{1}{N}\sum_ih(w_i,\theta)\right)$$`
 
