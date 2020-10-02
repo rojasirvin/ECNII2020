@@ -1,0 +1,231 @@
+---
+title: "Aplicaciones de variables instrumentales"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "29 de septimebre de 2020"
+mathspec: true
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+```
+
+
+.title[
+# Sesión 14. Aplicaciones de variables instrumentales
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+
+class: inverse, middle, center
+
+# Obesidad y mercado laboral
+
+---
+
+# Obesidad y mercado laboral
+
+- Campos-Vazquez, R. M., & Nuñez, R. (2019). Obesity and labor market outcomes in Mexico/Obesidad y el mercado de trabajo en México. *Estudios Económicos*, 34(2), 159-196.
+
+- Fuente de endogeneidad: doble causalidad
+
+  - La obesidad puede impactar negativamente el desempeño en el mercado de trabajo
+  
+
+- Instrumento: IMC de los hijos
+
+- Argumento de exogeneidad: IMC de los hijos no afecta directamente el desempeño del mercado laboral de los padres
+
+- El estudio muestra que el efecto ocurre sobre todo para las mujeres
+
+---
+
+class: inverse, middle, center
+
+# Producción de alimentos y dieta
+
+---
+
+# Producción de alimentos y dieta
+
+ - Hirvonen, K., & Hoddinott, J. (2017). Agricultural production and children's diets: Evidence from rural Ethiopia. *Agricultural Economics*, 48(4), 469-480.
+ 
+- Estudian la relación entre la variedad de la producción de alimentos local y la desnutrición en Etiopía
+
+- Se tienen datos sobre hogares, las dietas de más de siete mil niños
+
+- Una dieta sana, se recomienda, debería incluir al menos cuatro grupos de alimentos
+
+- Los autores muestran que las regiones 
+
+- La variable dependiente es el número de grupos de alimentos consumidos 
+
+- La variable endógena es el número de alimentos disponibles en la localidad donde viven los niños
+
+- Los instrumentos empleados en este análisis
+  - Variación de temperatura
+  - Topografía
+  - Altitud
+  - Erosión del suelo e inclinación
+  
+- La racionalidad del instrumento es que
+
+- Se encuentra que efectivamente los patrones de producción afectan los patrones de consumo (más diversidad en producción incrementa el número de grupos alimenticios consumidos)
+
+- Este efecto es más importante para quienes viven más lejos de los centros de producción
+
+
+---
+
+class: inverse, middle, center
+
+# Fertilidad y mercado laboral
+
+---
+
+- Hackett, L., & Marquez-Padilla, F. (2019). Working for Change: the Effect of Female Labor Force Participation on Fertility. SSRN Working Paper 3354753.
+
+- Hay una relación entre la participación de las mujeres en el mercado laboral y la fertilidad
+
+- La fertilidad ha ido cayendo y la participación de las mujeres en el mercado, en cambio, ha ido aumentando
+
+- De nuevo, este es un trabajo donde las autoras exlotan el conocimiento del contexto: el trabajo del hogar recae desproporcionadamente en las mujeres
+
+- Este trabajo utiliza datos en panel, es decir, tenemos datos sobre la participación y la fertilidad en cada municipio para varios años
+
+- Instrumento: precios de las lavadoras a nivel municipio
+
+- A menor precio, mayor demanda de un bien *ahorrador de tiempo*
+
+- El precio de las lavadoras no debería afectar a la fertilidad de manera directa
+
+- Se muestra la primera etapa analizando la relación entre precios de las lavadoras y la participación, encontrando que esta relación sí existe para las mujeres
+
+- Si no usamos VI, parece no haber relación entre fertilidad y las variables de mercado laboral
+
+- Al instrumentar la participación se encuentra que la participación incrementa la edad al tener el primer hijo y reduce el número de hijos
+
+- Se concluye que la participación de las mujeres en el mercado laboral tiene efectos importantes en la fertilidad
+
+
+
+---
+
+class: inverse, middle, center
+
+# Remesas y recursos naturales
+
+---
+
+# Remesas y recursos naturales
+
+- López-Feldman, A., & Chávez, E. (2017). Remittances and natural resource extraction: Evidence from Mexico. *Ecological Economics*, 132, 69-79.
+
+- Las remesas pueden reducir la presión que los hogares ejercen en la extracción de recursos naturales
+
+- La teoría de la nueva economía de la migración laboral nos ayuda a pensar en cómo los hogares diversifican sus recursos a dstintas actividades productivas
+
+- La variable de interés es la probabilidad de extraer recursos naturales y la dependencia del ingreso en recursos naturales
+
+  - Para la participación se usa un probit
+  - Para el ingreso ambiental se usa un tobit
+
+- Instrumento: costo para ir de una localiadd a la frontera usando la red de vías de ferrocarril en 1920
+
+- La idea de este instrumento es que predice las redes migratorias contemporáneas
+
+- Se encuentra que tomando en cuenta la endogeneidad, existe un efecto negativo de las remesas en la participación en la extracción
+
+- Se encuentra también un efecto negativo sobre los ingresos provenientes de recursos naturales
+
+
+
+
+---
+
+class: inverse, middle, center
+
+# Movilidad social
+
+---
+
+- Mocetti, S. (2007). Intergenerational earnings mobility in Italy. *The BE Journal of Economic Analysis & Policy*, 7(2).  
+
+---
+
+# Próxima sesión
+
+- Termiaremos de hablar sobre las propiedades de los estimadores de VI
+
+- Hablaremos de algunas pruebas estadísticas para:
+
+  - Endogeneidad
+  
+  - Sobreidentificación
+  
+  - Instrumentos débiles
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
