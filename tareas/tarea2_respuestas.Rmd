@@ -86,7 +86,7 @@ a. [2 puntos] Se propone usar una variable dicotómica que indica si el individu
 
 a. [2 puntos] ¿Cómo juzga la propuesta de usar la variable antes descrita como instrumento?
 
-a. [4 puntos] Estime la relación entre el logaritmo del salario y la educación usando la variable dicotómica de acceso a una universidad (**nearc4**) como instrumento. Emplee las mismas variables de control que en el modelo de MCO.
+a. [4 puntos] Estime la relación entre el logaritmo del salario y la educación usando la variable dicotómica de acceso a una universidad como instrumento. Emplee las mismas variables de control que en el modelo de MCO.
 
 a. [2 puntos] Interprete la primera etapa en términos del coeficiente sobre el instrumento y la magnitud y significancia del estadístico $F$.
 
