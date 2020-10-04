@@ -4,7 +4,7 @@ title: |
   | Maestría en Economía
   | Econometría II
 
-subtitle: "Tarea 2"
+subtitle: "Respuestas a la tarea 2"
 author: "Profesor: Irvin Rojas"
 date: "Fecha de entrega: 5 de octubre a las 7:00."
 output:
@@ -16,32 +16,230 @@ output:
   
 La tarea debe entregarse de manera individual, pero se recomienda ampliamente colaborar en grupos de estudio. Las secciones teóricas deben estar desarrolladas en un procesador de textos y enviadas en formato .docx o .pdf. Las secciones prácticas deberán contener archivos de código replicable y archivos de salida en R (o similares, en caso de usar otro software) para considerarse completas. Las tareas deben entregarse antes de la fecha límite a través de Teams. Puede crear una carpeta comprimida que contenga todos sus archivos y subir esta carpeta en Teams. Recuerde que en Teams debe asegurarse de que los archivos se han subido correctamente.
 
+```{r setup, include=FALSE}
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+#library(nnet)
+library(pastecs)
+library(nnet)
+library(MASS)
+library(AER)
+library(survival)
+library(sampleSelection)
+
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+```
+
 ## Pregunta 1
 
-1. Retome la base de la base *motral2012.csv* usada en la Tarea 1. Estimará un modelo Tobit para explicar los factores que afectan la oferta laboral femenina. En esta la base de datos la variable **hrsocup** registra las horas trabajadas a la semana. 
+1. Retome la base de la base *motral2012.csv* usada en la Tarea 1. Estimará un modelo Tobit para explicar los factores que afectan la oferta laboral femenina. En esta la base de datos la variable **hrsocup** registra las horas trabajadas a la semana.
 
 a. [2 punto] ¿Qué proporción de la muestra femenina reporta horas trabajadas iguales a cero?
 
+    *Si hacemos una dummy de horas positivas, al sacarle la media obtenemos la proporción:*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+data.salarios<-read_csv("./motral2012.csv",
+                          locale = locale(encoding = "latin1")) 
+
+#1a % de mujeres con horas igua a cero
+data.salarios <- data.salarios %>% 
+  filter(sex==2) %>% 
+  mutate(zerohrs=ifelse(hrsocup==0,1,0))
+
+#La media de la dummy zerohrs da el porcentaje de mujeres con horas cero
+stat.desc(data.salarios$zerohrs)
+```
+
 a. [3 puntos] Se desea estimar el efecto de los años de educación (**anios_esc**) sobre la oferta laboral femenina controlando por el estado marital (**casada**), la edad (**eda**) y el número de hijos (**n_hij**) como una variable continua. En la base, **e_con** toma el valor de 5 para las personas casadas. Genere la variable dummy **casada** que tome el valor de 1 para las mujeres casadas y cero en otro caso. Estime un modelo de MCO para **hrsocup** mayor que cero, usando solo la población femenina. Reporte errores robustos. ¿Cuál es la interpretación sobre el coeficiente de los años de escolaridad?
 
+    *El estimar por MCO, un año más de escolaridad se asocia con 0.17 horas trabajadas más a la semana. Sin embargo, este efecto no es estadísticamente significativo.*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#1b Dummy de casada y MCO
+data.salarios <- data.salarios %>% 
+  mutate(casada=ifelse(e_con==5,1,0))
+
+reg1b<-lm(hrsocup ~ anios_esc+casada+eda+n_hij,
+          data=filter(data.salarios,hrsocup>0))
+coeftest(reg1b,
+         vcov = vcovHC(reg1b, "HC1"))[1:4,]
+    ```
 a.	[3 puntos] ¿Qué problema existe con el modelo planteado en el punto anterior en términos de la selección? ¿Considera que se trata de un caso de censura o de truncamiento?
+
+    *Podemos racionalizar las horas trabajadas en un modelo microeconómico de oferta laboral. Las horas trabajadas observadas son positivas cuando la solución óptima es una cantidad positiva de horas. Sin embargo, si la solución óptima implicara horas negativas, las horas observadas se codificarían como cero. En este caso tenemos datos censurados en cero. Si existe una relación positiva entre educación y horas trabajadas, al estimar un modelo por MCO usando solo los datos con horas positivas estamos sobreestimando la media condicional pues se habrán omitido del análisis aquellas mujeres cuya solución a su problema de optimización eran horas iguales a cero o negativas.*
 
 a.	[8 puntos] Estime un modelo Tobit de datos censurados. ¿Qué resuelve el modelo Tobit en este caso? Interprete nuevamente el coeficiente sobre los años de escolaridad.
 
+    *La función tobit permite hacer esto muy fácilmente. Noten que left especifica dónde está la censura. La opción gaussian pone explícito uno de los supuestos críticos del modelo tobit visto en clase: errores normales. Además, se asume homocedasticidad.*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+reg1d <- tobit(hrsocup ~ anios_esc+casada+eda+n_hij,
+               left = 0,
+               right = Inf,
+               dist = "gaussian",
+               data = data.salarios)
+summary(reg1d)
+```
+
+    *El modelo tobit para datos censurados toma en cuenta que hay una de ceros en las horas trabajadas para individuos para los que disponemos de sus características en la base de datos. El modelo tobit ajusta la probabilidad de observar esta masa de ceros. El coeficiente estimado será ahora consistente si el modelo está bien especificado, es decir, si el proceso subyacente es lineal en los parámetros y con un error normal homoscedástico (los supuestos de tobit básico). En este caso, un año más de educación se asocia con 0.85 más horas semanales trabajadas, un efecto estadísticamente significativo. Usar MCO subestimaba el efecto de la escolaridad.*
+
 a.	[4 puntos] ¿Cuál es el efecto marginal de un incremento de un año de educación en la oferta laboral? ¿Cómo cambia su respuesta si, en lugar de considerar la variable latente, considera la variable censurada? 
 
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#Efecto marginal promedio
+data.salarios <- data.salarios %>%
+  mutate(index1=predict(reg1d,.)) %>% 
+  mutate(phi=pnorm(index1/reg1d$scale)) %>% 
+  mutate(mfx_anis_esc=reg1d$coefficients[2]*phi,
+         mfx_eda=reg1d$coefficients[4]*phi,
+         mfx_n_hij=reg1d$coefficients[5]*phi)
+  
+data.salarios %>%
+  filter(hrsocup>0) %>% 
+  summarise(mfx_anis_esc=mean(mfx_anis_esc)) 
+    ```
 
 ## Pregunta 2
 
 Usando los mismos datos de la base *motral2012.csv* implementará un ejercicio en el mismo espíritu del famoso estudio de Mroz (1987)[^1] sobre la oferta laboral femenina. El propósito es estimar la relación entre el salario y el número de horas trabajadas, concentrándonos en la muestra de mujeres.
 
 a. [5 puntos] El primer problema al que nos enfrentamos es que el salario será no observado para las mujeres que no trabajan. Estime un modelo lineal para el log del salario por hora, **ing_x_hrs**, usando las variables **anios_esc**, **eda**, **n_hij** y **casada**, usando la submuestra de mujeres con salario por hora positivo. Use los coeficientes estimados para imputar el ingreso por hora faltante para las mujeres que reportan 0 en las horas trabajadas.
+
+    *Imputamos el salario faltante:*
+    
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+data.salarios<-read_csv("./motral2012.csv",
+                        locale = locale(encoding = "latin1")) %>%
+  filter(sex==2) %>% 
+  mutate(casada=ifelse(e_con==5,1,0))
+
+#Log de salario ly
+data.salarios <- data.salarios %>% 
+  mutate(ly=ifelse(ing_x_hrs>0,log(ing_x_hrs),NA)) 
+
+#Modelo lineal
+reg2a <- lm(ly~anios_esc+casada+eda+n_hij,
+              data=data.salarios)
+
+#Imputación
+data.salarios <- data.salarios %>% 
+  mutate(lyhat = predict(reg2a, .)) %>% 
+  mutate(ly=ifelse(is.na(ly),lyhat,ly))
+    ```
   
 a. [5 puntos] Use una función[^2] para estimar por máxima verosimilitud un *heckit* para las horas trabajadas **hrsocup**. En la ecuación de selección (si la persona trabaja o no) incluya como variable explicativa el salario por hora (imputado para las mujeres que no trabajan), además de **anios_esc**, **eda**, **n_hij** y **casada**. En la ecuación de horas, incluya los mismos regresores, excepto **n_hij**.
-  
+
+    *La función heckit permite estimar el modelo de Heckman por máxima verosimilitud de manera muy simple. Hay que especificar method="ml" para que la estimación sea por máxima verosimilitud:*
+    
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+data.salarios <- data.salarios %>% 
+  mutate(trabaja=ifelse(hrsocup>0,1,0)) %>% 
+  mutate(trabaja=factor(trabaja,levels=c(0,1)))
+
+reg2b <- heckit(trabaja ~ anios_esc+casada+eda+ly+n_hij,
+                hrsocup ~ anios_esc+casada+eda+ly,
+                method="ml",
+                data = data.salarios)
+summary(reg2b)
+    ```
+
+
 a. [10 puntos] Estime ahora el *heckit* en dos pasos, *a mano*. Es decir, siga los siguientes pasos: i) estime un probit para la ecuación de selección y obtenga el índice $x_i'\hat{\beta}$; ii) calcule el inverso de la razón de Mills $\lambda_i(x_i'\hat{\beta})$; y iii) estime por MCO la ecuación para las horas trabajadas con la submuestra que tiene horas trabajadas positivas, incluyendo como regresor el inverso de la razón de Mills estimado y el resto de los regresores.
   
     Compare los coeficientes y los errores estándar obtenidos en esta parte con los de la parte b. ¿Por qué son iguales o por qué difieren?
+    
+    *Estimamos ahora el heckit *a mano*:*
+    
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#Probit
+mod.probit <- glm(trabaja ~ anios_esc+casada+eda+ly+n_hij,
+                  family = binomial(link = "probit"),
+                  data = data.salarios)
+
+#Predicción del índice y cálculo de IMR
+data.salarios <- data.salarios %>% 
+  mutate(index = predict(mod.probit, .)) %>% 
+  mutate(imr = dnorm(index)/pnorm(index))
+
+#Segunda etapa
+reg2c <- lm(hrsocup ~ anios_esc+casada+eda+ly+imr,
+            data=filter(data.salarios,trabaja==1))
+
+summary(reg2c)
+
+#El heckit por MV y en dos etapas no coinciden
+```
+
+    *El heckit estimado por máxima verosimilitud y en dos etapas a mano no coinciden. Notemos primero que podemos estimar el modelo en dos etapas con la función heckit:*
+
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+reg2c_alt <- heckit(trabaja ~ anios_esc+casada+eda+ly+n_hij,
+                hrsocup ~ anios_esc+casada+eda+ly,
+                method="2step",
+                data = data.salarios)
+
+stargazer(reg2c, reg2c_alt, reg2b,    
+          title="Comparación de heckit en 2 etapas, a mano y con la función heckit", type="text", 
+          df=FALSE, digits=4)
+```
+    *Tardé bastante en darme cuenta por qué los coeficientes de máxima verosimilitud y del procedimiento en dos etapas no eran casi iguales. El problema es que la variable de número de hijos no ayudaba a discriminar bien entre quienes participaban y quienes no. Entonces, añadí dos variables al proceso de selección: el número de hijos al cuadrado y una variable que identifica si el individuo ha buscado trabajo recientemente:*
+    
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#heckit por MV, aumentado
+
+reg_mv_aumentado <- heckit(trabaja ~ anios_esc+casada+eda+ly+n_hij+n_hij^2+busqueda,
+                hrsocup ~ anios_esc+casada+eda+ly,
+                method="ml",
+                data = data.salarios)
+
+reg_2etapas_aumentado <- heckit(trabaja ~ anios_esc+casada+eda+ly+n_hij+n_hij^2+busqueda,
+                          hrsocup ~ anios_esc+casada+eda+ly,
+                          method="2step",
+                          data = data.salarios)
+
+
+#Usé stargazer para poner mis resultados
+stargazer(reg_mv_aumentado, reg_2etapas_aumentado,    
+          title="Comparación de heckit con MV y en 2 etapas", type="text", 
+          df=FALSE, digits=4)
+```
+
+
+    *Ahora sí, notamos que los coeficientes son casi iguales. Por otro lado, los errores estándar también son muy parecidos, pues el heckit con dos etapas incorpora ya la corrección propuesta por Heckman para tomar en cuenta que en la primera etapa el inverso de la razón de Mills es estimado.*
+    
+    *¿Qué pasa si tratamos de hacer el procedimiento a mano, con estos dos regresores añadidos en el proceso de selección? Veamos:*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+#Probit
+mod.probit_aumentado <- glm(trabaja ~ anios_esc+casada+eda+ly+n_hij+n_hij^2+busqueda,
+                  family = binomial(link = "probit"),
+                  data = data.salarios)
+
+#Predicción del índice y cálculo de IMR
+data.salarios <- data.salarios %>% 
+  mutate(index_aumentado = predict(mod.probit_aumentado, .)) %>% 
+  mutate(imr_aumentado = dnorm(index_aumentado)/pnorm(index_aumentado))
+
+#Segunda etapa
+reg_amano_aumentado <- lm(hrsocup ~ anios_esc+casada+eda+ly+imr_aumentado,
+            data=filter(data.salarios,trabaja==1))
+
+stargazer(reg_mv_aumentado, reg_2etapas_aumentado,reg_amano_aumentado,    
+          title="Comparación de heckit con MV y en 2 etapas", type="text", 
+          df=FALSE, digits=4)
+```
+    
+    *Ahora sí, la magnitud de los coeficientes es práctiamente la misma entre el modelo estimado por máxima verosimilitud (columna 1), con un procedimiento en dos etapas con las fórmulas apropiadas para la varianza del estimador, ya incluidas en la función heckit (columna 2) y con un procedimiento en dos etapas a mano, donde no tomamos en cuenta que el inverso de la razón de Mills es estimado. Aunque en este ejemplo las diferencias son sutiles, en la práctica, debemos usar las fórmas correctas de la matriz de varianza de los estimadores.*
+
 
 [^1]: Mroz, T. A. (1987). [The sensitivity of an empirical model of married women's hours of work to economic and statistical assumptions](https://www.jstor.org/stable/1911029?casa_token=Uwxeul7XeBkAAAAA%3AyOzMP-SP9bdQNxw1FwyVjnEJt3w2ShyTtiinMVL6RZnpxKeehfas96e2ETxA6us20xyQG-NUF71svQugl78mx6vG2oJ2k7U39TtJn6P6dq-iTH2aDWsH&seq=1#metadata_info_tab_contents). *Econometrica*: Journal of the econometric society, 765-799. 
 [^2]: Por ejemplo, la función *heckit* del paquete *sampleSelection* en R.
@@ -52,28 +250,139 @@ En esta pregunta mostrará cómo para un modelo en dos partes Poisson la log ver
 
 $$f(y,\lambda)=P(Y=y)=\frac{\lambda^y exp(-\lambda)}{y!}$$
 
-  a. [4 puntos] Obtenga la distribución Poisson truncada en cero, definida como $P(Y=y|Y>0)$.
-  
-  a. [4 puntos] Considere además un proceso binomial que modela la probabilidad de que la variable $Y$ tome un valor cero o un valor positivo, como sigue: $$ P(Y=y)=\begin{cases} \pi \quad\quad y=0 \\ 1-\pi\quad\quad y=1,2,3,\ldots \end{cases} $$ Especialice la ecuación del modelo de dos partes vista en la [sesión 10](https://rojasirvin.github.io/ECNII2020/sesiones/s10/sesion10.html#40), usando la distribución truncada derivada en a. y el proceso binomial definido  para obtener una función de masa de probabilidad no condicional para $Y$, $g(y)$.
-  
-  a. [4 puntos] Obtenga lo log verosimilitud para la $i$ésima observación. Se sugiere que continúe sus cálculos con una ecuación en dos partes.
-  
-  a. [4 puntos] En este problema, parametrizaremos $\lambda_i$ como $\lambda_i=exp(x_i'\beta_2)$, como regularmente lo hemos hecho en una regresión Poisson. Por otro lado, podemos trabajar con una parametrización general de la probabilidad $\pi$, $\pi=F(x_i'\beta_1)$. Escriba la función de log verosimilitud del problema usando la parametrización para $\pi_i$ y para $\lambda_i$ que acabamos de describir. Presente esta función en una sola parte.
-  
-  a. [4 puntos] Agrupe los términos para mostrar que $\mathcal{L}=\mathcal{L}_1(\beta_1)+\mathcal{L}_2(\beta_2)$. Así, mostrará que la log verosimilitud del problema se puede descomponer en una log verosimilitud para el modelo binario y otra para el conteo truncado en cero. Por tanto, no perdemos información si estimamos los parámetros de la probabilidad binomial por un lado, y los de la distribución Poisson truncada en cero, por el otro.
+a. [4 puntos] Obtenga la distribución Poisson truncada en cero, definida como $P(Y=y|Y>0)$.
 
+    *Sabemos que la distribución truncada en cero es:*
+    
+    $$P(Y=y|Y>0)=\frac{f(y,\lambda)}{1-f(0,\lambda)}$$ 
+    
+    *Sustituyendo la forma de la densidad Poisson:* 
+    
+    $$P(Y=y|Y>0)=\frac{\frac{\lambda^y exp(-\lambda)}{y!}}{1-exp(-\lambda)}=\frac{\lambda^y}{y!(exp(\lambda)-1)}$$
+  
+a. [4 puntos] Considere además un proceso binomial que modela la probabilidad de que la variable $Y$ tome un valor cero o un valor positivo, como sigue: $$ P(Y=y)=\begin{cases} \pi \quad\quad y=0 \\ 1-\pi\quad\quad y=1,2,3,\ldots \end{cases} $$ Especialice la ecuación del modelo de dos partes vista en la [sesión 10](https://rojasirvin.github.io/ECNII2020/sesiones/s10/sesion10.html#40), usando la distribución truncada derivada en a. y el proceso binomial definido  para obtener una función de masa de probabilidad no condicional para $Y$, $g(y)$.
+  
+    *En clase vimos la forma general del modelo en dos partes:*
+    
+    $$
+    g(y)=
+    \begin{cases}
+    f_1(0) \quad\text{si }y=0 \\
+    \frac{(1-f_1(0))f_2(y)}{1-f_2(0)}\quad\text{si }y\geq 1 
+    \end{cases}
+    $$
+    
+    *Sea $\pi$ la probabilidad de observar un conteo igual a cero, especializamos la función vista en clase, incorporando la distribución truncada encontrada en la parte a.:*
+    
+    $$
+    g(y)=
+    \begin{cases}
+    \pi \quad\text{si }y=0 \\
+    (1-\pi)\frac{\lambda^y}{y!(exp(\lambda)-1)} \quad\text{si }y\geq 1 
+    \end{cases}
+    $$
+    
+a. [4 puntos] Obtenga la log verosimilitud para la $i$ésima observación. Se sugiere que continúe sus cálculos con una ecuación en dos partes.
+    
+    *La log verosimilitud de la $i$ésima observación es:*
+    
+    $$
+    \mathcal{l}_i(\pi,\lambda,y_i)=
+    \begin{cases}
+    \ln(\pi) \quad\text{si }y=0 \\
+    \ln\left((1-\pi)\frac{\lambda^{y_i}}{y!(exp(\lambda)-1)}\right) \quad\text{si }y\geq 1 
+    \end{cases}
+    $$
+  
+a. [4 puntos] En este problema, parametrizaremos $\lambda_i$ como $\lambda_i=exp(x_i'\beta_2)$, como regularmente lo hemos hecho en una regresión Poisson. Por otro lado, podemos trabajar con una parametrización general de la probabilidad $\pi$, $\pi=F(x_i'\beta_1)$. Escriba la función de log verosimilitud del problema usando la parametrización para $\pi_i$ y para $\lambda_i$ que acabamos de describir. Presente esta función en una sola parte.
+
+    *Con la parametrización dada, podemos reescribir la log verosimilitud de una observación como:*
+    
+    $$
+    \mathcal{l}_i(\pi,\lambda,y_i)=
+    \begin{cases}
+    \ln(F(x_i'\beta_1)) \quad\text{si }y=0 \\
+    \ln\left((1-F(x_i'\beta_1))\frac{exp(x_i'\beta_2)^{y_i}}{y!(exp(exp(x_i'\beta_2))-1)} \right) \quad\text{si }y\geq 1 
+    \end{cases}
+    $$
+    
+    
+    
+    *La log verosimilitud del problema es la probabilidad de observar los datos. Con la parametrización anterior:*
+    
+    $$\mathcal{L}(\beta_1,\beta_2,y_i)=\ln\left(\prod_{i\in y_i=0}F(x_i'\beta_1)\prod_{i\in y_i>0}(1-F(x_i'\beta_1))\prod_{i\in y_i>0}\frac{exp(x_i'\beta_2)^{y_i}}{y!(exp(exp(x_i'\beta_2))-1)} \right)$$
+    
+    *Distribuyendo el logarítmo:*
+    
+    $$\mathcal{L}(\beta_1,\beta_2,y_i)=\sum_{i\in y_i=0}\ln(F(x_i'\beta_1))+\sum_{i\in y_i>0}\ln\left(1-F(x_i'\beta_1)\right)+\sum_{i\in y_i>0}x_i'\beta_2y_i-\sum_{i\in y_i>0}\ln\left(exp(exp(x_i'\beta_2))-1\right)-\sum_{i\in y_i>0}y!$$
+    
+a. [4 puntos] Agrupe los términos para mostrar que $\mathcal{L}=\mathcal{L}_1(\beta_1)+\mathcal{L}_2(\beta_2)$. Así, mostrará que la log verosimilitud del problema se puede descomponer en una log verosimilitud para el modelo binario y otra para el conteo truncado en cero. Por tanto, no perdemos información si estimamos los parámetros de la probabilidad binomial por un lado, y los de la distribución Poisson truncada en cero, por el otro.
+
+    *Claramente:*
+    
+    $$\mathcal{L}(\beta_1,\beta_2,y_i)=\mathcal{L_1}(\beta_1,y_i)+\mathcal{L_2}(\beta_2,y_i)$$
+    
+    *es decir, la suma de dos log verosimilitudes, una de un proceso binario y otra para el modelo Poisson truncado en cero.*
 
 ## Pregunta 4
 
 Partiendo de la variable aleatoria $Y$ con observaciones iid que sigue una distribución Poisson con parámetro $\lambda$ usada en el problema anterior, en este problema caracterizará la estimación de un modelo Poisson inflado en cero.
 
-  a. [4 puntos] Especialice la expresión vista en la [sesión 10](https://rojasirvin.github.io/ECNII2020/sesiones/s10/sesion10.html#42) para obtener la función de masa de probabilidad del modelo Poisson inflado en cero $g(y|\lambda, \pi)$.
+a. [4 puntos] Especialice la expresión vista en la [sesión 10](https://rojasirvin.github.io/ECNII2020/sesiones/s10/sesion10.html#42) para obtener la función de masa de probabilidad del modelo Poisson inflado en cero $g(y|\lambda, \pi)$.
   
-  a. [4 puntos] Provea una expresión para la función de verosimilitud $L(\lambda,\pi)=\prod_{i=1}^N g(y_i|\lambda, \pi)$. Una sugerencia para simplificar sus cálculos es definir una variable $X$ igual al numero de veces que $Y_i$ que toma el valor de cero.
+    *En clase, vimos la expresión general para el modelo inflado en cero:*
+    
+    $$
+    g(y)=
+    \begin{cases}
+    f_1(0)(1-f_1(0))f_2(0) \quad\text{si }y=0 \\
+    (1-f_1(0))f_2(y) \quad\text{si } y \geq1 \\
+    \end{cases}
+    $$
+    
+    *En el caso particular de un modelo Poisson, sabemos que $f_2(0)=P(Y=0)=exp(-\lambda)$. Definiendo la probabilidad de observar un conteo cero como $\pi$, la función de masa de probabilidad del modelo inflado en cero es:*
+
+    $$
+    g(y)=
+    \begin{cases}
+    \pi(1-\pi)exp(-\lambda) \quad\text{si }y=0 \\
+    (1-\pi)\frac{\lambda^y exp(-\lambda)}{y!} \quad\text{si } y \geq1 \\
+    \end{cases}
+    $$
+    
   
-  a. [6 puntos] Provea una expresión para la log verosimilitud del problema, $\mathcal{L}(\lambda,\pi)$.
+a. [4 puntos] Provea una expresión para la función de verosimilitud $L(\lambda,\pi)=\prod_{i=1}^N g(y_i|\lambda, \pi)$. Una sugerencia para simplificar sus cálculos es definir una variable $X$ igual al numero de veces que $Y_i$ que toma el valor de cero.
+
+    *La función de verosimilitud del problema es:*
+    
+    $$L(\pi,\lambda,y_i)=\prod_i P(Y_i=y_i)$$
+    
+    *Con las formas específicas para el modelo Poisson inflado en cero:*
+    
+    $$L(\pi,\lambda,y_i)=\prod_{i\in y_i=0}\left(\pi(1-\pi)exp(-\lambda) \right) \prod_{i\in y_i>0}\left((1-\pi)\frac{\lambda^{y_i} exp(-\lambda)}{y!}\right)$$
+    
+    *Haciendo $X$ el número de veces que $y_i$ toma el valor de cero, el primer producto es $\left(\pi(1-\pi)exp(-\lambda) \right)$ elevado a la potencia $X$.*
+    
+    *¿Cuántos términos distintos de cero quedan? Qudan $n-X$. El segundo producto en la verosimilitud es:*
+    
+    $$\left((1-\pi)exp(-\lambda)\right)^{n-X}\frac{\lambda^{\sum_i y_i}}{\prod_{i\in y_i>0} y!}$$
+    
+    *La verosimilitud es por tanto:*
+
+    $$L(\pi,\lambda,y_i)=\left(\pi(1-\pi)exp(-\lambda) \right)^X \left((1-\pi)exp(-\lambda)\right)^{n-X}\frac{\lambda^{\sum_i y_i}}{\prod_{i\in y_i>0} y!}$$ 
+    
+    
+a. [6 puntos] Provea una expresión para la log verosimilitud del problema, $\mathcal{L}(\lambda,\pi)$.
+
+    *Dada la verosimilitud planteada en la parte anterior, la log verosimilitud es:*
+    
+    $$\mathcal{L}(\pi,\lambda,y_i)=X\ln \left(\pi(1-\pi)exp(-\lambda) \right)+(n-X)\ln(1-\pi)-(n-X)\lambda+n\bar{Y}\ln (\lambda)- \ln\left(\prod_{i\in y_i>0} y! \right)$$
   
-  a. [6 puntos] Obtenga las condiciones de primer orden que caracterizan la solución del problema de máxima verosimilitud, derivando la log verosimilitud con respecto a $\lambda$ y a $\pi$.
+a. [6 puntos] Obtenga las condiciones de primer orden que caracterizan la solución del problema de máxima verosimilitud, derivando la log verosimilitud con respecto a $\lambda$ y a $\pi$.
+
+    *Tenemos dos parámetros, así que tenemos dos condiciones de primer orden. Derivando la log verosimilitud con respecto a $\pi$ obtenemos:$
+    
+    
 
 
 ## Pregunta 5
@@ -82,17 +391,86 @@ Uno de los debates más activos en economía es el relativo a la relación entre
 
 a.	[2 puntos] Estime una regresión por MCO para explicar el logaritmo del salario (**lwage**) en función de la educación **educ** y los siguientes controles: **exper**, **expersq**, **black**, **south**, **smsa**, **reg661**, **reg662**, **reg663**, **reg664**, **reg665**, **reg666**, **reg667**, **reg668** y **smsa66**. ¿Qué problema encuentra en la estimación de esta relación? ¿El coeficiente sobre **educ** tiene una interpretación causal del efecto de la educación en el salario?
 
+    *Estimamos por MCO la relación entre salarios y educación, controlando por un conjunto de regresores:*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+data.ingresos<-read_csv("./ingresos_iv.csv",
+                        locale = locale(encoding = "latin1"))
+
+reg5a <- lm(lwage ~ educ + exper + expersq + black + south + smsa + reg661 +
+              reg662 + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + smsa66,
+            data = data.ingresos)
+summary(reg5a)
+```
+
+    *Hay una relación de 7.4% mayor ingreso por cada año de educación adicional. Sin embargo, esta no es una relación causal pues es muy probable que la educación no sea exógena en la ecuación de salarios. Esto puede deberse, por ejemplo, a una variable omitida de habilidad que afecta tanto al número de años de educación alcanzados como al desempeño en el mercado de trabajo.*
+
 a. [2 puntos] Se propone usar una variable dicotómica que indica si el individuo vivía cerca de una universidad cuando tenía cuatro años, como instrumento de los años de educación. ¿Qué condiciones debe cumplir la variable propuesta para funcionar como instrumento válido?
+
+    *El instrumento debe cumplir dos condiciones:*
+    
+    *a. Exogeneidad: el instrumento no debe pertenecer a la ecuación de salarios. Es decir, el haber crecido cerca de una universidad no debe afectar el salario contemporáneo de forma directa.*
+    
+    *a. Relevancia: el instrumento debe estar correlacionado con la variable endógena. En este caso, haber crecido cerca de una universidad debe estar correlacionado con el número de años de educación completados.*
 
 a. [2 puntos] ¿Cómo juzga la propuesta de usar la variable antes descrita como instrumento?
 
+    *Este argumento fue usado por [Card (1995)](https://www.nber.org/papers/w4483) para mostrar que los rendimientos a la educación están subestimados por un estimador de MCO. Card muestra que al usar variables instrumentales, el efecto estimado es de 25 a 60% más grande.*
+    
+    *No hay una respuesta correcta o incorrecta. Quiero leer sus argumentos.*
+
 a. [4 puntos] Estime la relación entre el logaritmo del salario y la educación usando la variable dicotómica de acceso a una universidad como instrumento. Emplee las mismas variables de control que en el modelo de MCO.
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+reg5d <- ivreg(lwage ~ educ + exper + expersq + black + south + smsa + reg661 +
+                 reg662 + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + smsa66  |
+                 nearc4 + exper + expersq + black + south + smsa + reg661 +
+                 reg662 + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + smsa66,
+               data=data.ingresos)
+summary(reg5d)
+    ```
 
 a. [2 puntos] Interprete la primera etapa en términos del coeficiente sobre el instrumento y la magnitud y significancia del estadístico $F$.
 
-a. [2 puntos] Interprete el coeficiente sobre la variable de educación en la segunda etapa. Compare la magnitud del efecto estimado con el resultado de MCO
+    *En la primera etapa, haber vivido cerca de una universidad incrementa en 0.32 los años de escolaridad acumulados. Este efecto estadísticamente significativo al 1% El estadístico F es de una magnitud muy por encima de 10, la regla de dedo comúnmente empleada para juzgar la presencia de instrumentos débiles.*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+reg5e <- lm(educ ~ nearc4 + exper + expersq + black + south + smsa + reg661 +
+              reg662 + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + smsa66,
+            data=data.ingresos)
+summary(reg5e)
+```
+
+a. [2 puntos] Interprete el coeficiente sobre la variable de educación en la segunda etapa. Compare la magnitud del efecto estimado con el resultado de MCO.
+
+    *El coeficiente estimado sobre los años de educación indica que un año adicional de escolaridad incrementa en 13.15% el salario. Este efecto es casi el doble del estimado por MCO y estadísticamente significativo al 5%.*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+stargazer(reg5a, reg5d,    
+          title="Comparación de estimadores de MCO y VI", type="text", 
+          df=FALSE, digits=4)
+```
 
 a. [4 puntos] Realice ahora el siguiente procedimiento. Primero, estime la primera etapa usando una regresión por MCO. Obtenga los valores ajustados de educación y llámelos **educ_hat**. Luego, estime la segunda etapa empleando **educ_hat** como variable independiente, además del resto de variables de control. ¿Cómo cambian sus resultados en comparación con la parte d.?
 
+    *La magnitud de los coeficientes estimados es la misma. Esto es lo que esperábamos pues sabemos que el estimador de MC2E puede entenderse como un procedimiento donde primero se estiman los valores ajustados de la variable endógena usando el instrumento y las variables de control y luego se usan estos valores ajustados en la ecuación estructural. En cambio, los errores estándar son algo distintos.*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+data.ingresos <- data.ingresos %>% 
+  mutate(educ_hat = predict(reg5e, .))
+
+reg5g <- lm(lwage ~ educ_hat + exper + expersq + black + south + smsa + reg661 +
+              reg662 + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + smsa66,
+            data=data.ingresos)
+
+#Comparamos
+stargazer(reg5d, reg5g,   
+          title="Comparación de VI con la función ivreg y el estimador a mano", type="text", 
+          df=FALSE, digits=4)
+```
+
 a. [2 puntos] ¿A qué se deben las discrepancias que encuentra? ¿Cuál de las dos estrategias prefiere para estimar el modelo de variables instrumentales?
+
+    *De manera análoga a lo que pasó en la estimación del heckit a mano, el problema es que nuestro procedimiento de MC2E a mano no toma en cuenta que en la ecuación estructural estamos usando valores ajustados de la variable endógena. Las funciones en la mayoría de los paquetes utilizados en econometría calculan los errores estándar de manera correcta.*
+
 
