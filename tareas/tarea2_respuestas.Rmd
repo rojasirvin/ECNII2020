@@ -344,7 +344,7 @@ a. [4 puntos] Especialice la expresión vista en la [sesión 10](https://rojasir
     $$
     g(y)=
     \begin{cases}
-    f_1(0)(1-f_1(0))f_2(0) \quad\text{si }y=0 \\
+    f_1(0)+(1-f_1(0))f_2(0) \quad\text{si }y=0 \\
     (1-f_1(0))f_2(y) \quad\text{si } y \geq1 \\
     \end{cases}
     $$
