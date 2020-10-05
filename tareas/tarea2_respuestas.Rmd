@@ -372,7 +372,7 @@ a. [4 puntos] Provea una expresión para la función de verosimilitud $L(\lambda
     
     *Haciendo $X$ el número de veces que $y_i$ toma el valor de cero, el primer producto es $\left(\pi+(1-\pi)exp(-\lambda) \right)$ elevado a la potencia $X$.*
     
-    *¿Cuántos términos distintos de cero quedan? Qudan $n-X$. El segundo producto en la verosimilitud es:*
+    *¿Cuántos términos distintos de cero quedan? Quedan $n-X$. El segundo producto en la verosimilitud es:*
     
     $$\left((1-\pi)exp(-\lambda)\right)^{n-X}\frac{\lambda^{\sum_i y_i}}{\prod_{i\in y_i>0} y!}$$
     
