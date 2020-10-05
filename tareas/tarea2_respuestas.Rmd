@@ -3,13 +3,13 @@ title: |
   | CIDE
   | Maestría en Economía
   | Econometría II
-
-subtitle: "Respuestas a la tarea 2"
-author: "Profesor: Irvin Rojas"
-date: "Fecha de entrega: 5 de octubre a las 7:00."
+author: 'Profesor: Irvin Rojas'
+date: 'Fecha de entrega: 5 de octubre a las 7:00.'
 output:
-  html_document:
-  toc: true
+  html_document: null
+  toc: yes
+  pdf_document: default
+subtitle: Respuestas a la tarea 2
 ---
   
 ## Instrucciones
@@ -89,9 +89,18 @@ reg1d <- tobit(hrsocup ~ anios_esc+casada+eda+n_hij,
 summary(reg1d)
 ```
 
-    *El modelo tobit para datos censurados toma en cuenta que hay una de ceros en las horas trabajadas para individuos para los que disponemos de sus características en la base de datos. El modelo tobit ajusta la probabilidad de observar esta masa de ceros. El coeficiente estimado será ahora consistente si el modelo está bien especificado, es decir, si el proceso subyacente es lineal en los parámetros y con un error normal homoscedástico (los supuestos de tobit básico). En este caso, un año más de educación se asocia con 0.85 más horas semanales trabajadas, un efecto estadísticamente significativo. Usar MCO subestimaba el efecto de la escolaridad.*
+    *El modelo tobit para datos censurados toma en cuenta que hay una masa de ceros en las horas trabajadas para individuos para los que disponemos de sus características en la base de datos. El modelo tobit ajusta la probabilidad de observar esta masa de ceros. El coeficiente estimado será ahora consistente si el modelo está bien especificado, es decir, si el proceso subyacente es lineal en los parámetros y con un error normal homoscedástico (los supuestos de tobit básico). En este caso, un año más de educación se asocia con 0.85 más horas semanales trabajadas, un efecto estadísticamente significativo. Usar MCO subestimaba el efecto de la escolaridad.*
 
 a.	[4 puntos] ¿Cuál es el efecto marginal de un incremento de un año de educación en la oferta laboral? ¿Cómo cambia su respuesta si, en lugar de considerar la variable latente, considera la variable censurada? 
+
+    *El efecto marginal en la variable latente es directamente el coficiente estimado en la parte d., es decir 0.855.*
+    
+    *El efecto marginal en la media censurada está dado por:*
+    
+    $$\frac{\partial E(y|x)}{\partial x_j}=\beta_j\Phi(x_i'\beta)$$
+    
+    *Lo que hice aquí fue calcular este efecto marginal para cada individuo y luego obtener el promedio de los efectos marginales en aquellos individuos con horas positivas.*
+    
 
     ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
 #Efecto marginal promedio
@@ -345,7 +354,7 @@ a. [4 puntos] Especialice la expresión vista en la [sesión 10](https://rojasir
     $$
     g(y)=
     \begin{cases}
-    \pi(1-\pi)exp(-\lambda) \quad\text{si }y=0 \\
+    \pi+(1-\pi)exp(-\lambda) \quad\text{si }y=0 \\
     (1-\pi)\frac{\lambda^y exp(-\lambda)}{y!} \quad\text{si } y \geq1 \\
     \end{cases}
     $$
@@ -359,9 +368,9 @@ a. [4 puntos] Provea una expresión para la función de verosimilitud $L(\lambda
     
     *Con las formas específicas para el modelo Poisson inflado en cero:*
     
-    $$L(\pi,\lambda,y_i)=\prod_{i\in y_i=0}\left(\pi(1-\pi)exp(-\lambda) \right) \prod_{i\in y_i>0}\left((1-\pi)\frac{\lambda^{y_i} exp(-\lambda)}{y!}\right)$$
+    $$L(\pi,\lambda,y_i)=\prod_{i\in y_i=0}\left(\pi+(1-\pi)exp(-\lambda) \right) \prod_{i\in y_i>0}\left((1-\pi)\frac{\lambda^{y_i} exp(-\lambda)}{y!}\right)$$
     
-    *Haciendo $X$ el número de veces que $y_i$ toma el valor de cero, el primer producto es $\left(\pi(1-\pi)exp(-\lambda) \right)$ elevado a la potencia $X$.*
+    *Haciendo $X$ el número de veces que $y_i$ toma el valor de cero, el primer producto es $\left(\pi+(1-\pi)exp(-\lambda) \right)$ elevado a la potencia $X$.*
     
     *¿Cuántos términos distintos de cero quedan? Qudan $n-X$. El segundo producto en la verosimilitud es:*
     
@@ -369,21 +378,34 @@ a. [4 puntos] Provea una expresión para la función de verosimilitud $L(\lambda
     
     *La verosimilitud es por tanto:*
 
-    $$L(\pi,\lambda,y_i)=\left(\pi(1-\pi)exp(-\lambda) \right)^X \left((1-\pi)exp(-\lambda)\right)^{n-X}\frac{\lambda^{\sum_i y_i}}{\prod_{i\in y_i>0} y!}$$ 
+    $$L(\pi,\lambda,y_i)=\left(\pi+(1-\pi)exp(-\lambda) \right)^X \left((1-\pi)exp(-\lambda)\right)^{n-X}\frac{\lambda^{\sum_i y_i}}{\prod_{i\in y_i>0} y!}$$ 
     
     
 a. [6 puntos] Provea una expresión para la log verosimilitud del problema, $\mathcal{L}(\lambda,\pi)$.
 
     *Dada la verosimilitud planteada en la parte anterior, la log verosimilitud es:*
     
-    $$\mathcal{L}(\pi,\lambda,y_i)=X\ln \left(\pi(1-\pi)exp(-\lambda) \right)+(n-X)\ln(1-\pi)-(n-X)\lambda+n\bar{Y}\ln (\lambda)- \ln\left(\prod_{i\in y_i>0} y! \right)$$
+    $$\mathcal{L}(\pi,\lambda,y_i)=X\ln \left(\pi+(1-\pi)exp(-\lambda) \right)+(n-X)\ln(1-\pi)-(n-X)\lambda+n\bar{Y}\ln (\lambda)- \ln\left(\prod_{i\in y_i>0} y! \right)$$
   
 a. [6 puntos] Obtenga las condiciones de primer orden que caracterizan la solución del problema de máxima verosimilitud, derivando la log verosimilitud con respecto a $\lambda$ y a $\pi$.
 
-    *Tenemos dos parámetros, así que tenemos dos condiciones de primer orden. Derivando la log verosimilitud con respecto a $\pi$ obtenemos:$
+    *Tenemos dos parámetros, así que tenemos dos condiciones de primer orden. Derivando la log verosimilitud con respecto a $\pi$ obtenemos:*
     
+    $$\frac{\partial \mathcal{L}}{\partial \pi}=\frac{X}{\pi+(1-\pi)exp(-\lambda)}(1-exp(-\lambda))-\frac{n-X}{1-\pi}=0$$
     
-
+    *La primer condición (A) es:*
+    
+    $$\frac{X(1-exp(-\lambda))(1-\pi)}{\pi+(1-\pi)exp(-\lambda)}=n-X\quad\quad\ldots(A)$$
+    
+    *Ahora derivando la log verosimilitud con respecto a $\lambda$:*
+    
+    $$\frac{\partial \mathcal{L}}{\partial \lambda}=-\frac{X}{\pi+(1-\pi)exp(-\lambda)}(1-\pi)exp(-\lambda)-(n-X)+\frac{n\bar{Y}}{\lambda}=0$$
+    
+    *La segunda condición (B) es:*
+    
+    $$\frac{X(1-\pi)exp(-\lambda)}{\pi+(1-\pi)exp(-\lambda)}+(n-X)=\frac{n\bar{Y}}{\lambda}\quad\quad\ldots(B)$$
+    
+    *$(\hat{\pi}_{MV},\hat{\lambda}_{MV})$ son los valores de los parámetros que resulven el sistema dado por (A) y (B).*
 
 ## Pregunta 5
 
@@ -409,9 +431,9 @@ a. [2 puntos] Se propone usar una variable dicotómica que indica si el individu
 
     *El instrumento debe cumplir dos condiciones:*
     
-    *a. Exogeneidad: el instrumento no debe pertenecer a la ecuación de salarios. Es decir, el haber crecido cerca de una universidad no debe afectar el salario contemporáneo de forma directa.*
+    *Exogeneidad: el instrumento no debe pertenecer a la ecuación de salarios. Es decir, el haber crecido cerca de una universidad no debe afectar el salario contemporáneo de forma directa.*
     
-    *a. Relevancia: el instrumento debe estar correlacionado con la variable endógena. En este caso, haber crecido cerca de una universidad debe estar correlacionado con el número de años de educación completados.*
+    *Relevancia: el instrumento debe estar correlacionado con la variable endógena. En este caso, haber crecido cerca de una universidad debe estar correlacionado con el número de años de educación completados.*
 
 a. [2 puntos] ¿Cómo juzga la propuesta de usar la variable antes descrita como instrumento?
 
