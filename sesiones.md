@@ -24,6 +24,9 @@
 
 [Sesión 13](https://rojasirvin.github.io/ECNII2020/sesiones/s13/sesion13.html#1). Propiedades del estimador de MC2E
 
+[Sesión 15](https://rojasirvin.github.io/ECNII2020/sesiones/s15/sesion15.html#1). Cuestiones prácticas de variables instrumentales
+
+
 <!---
 
 commented

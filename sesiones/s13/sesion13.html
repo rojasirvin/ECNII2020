@@ -163,7 +163,7 @@ donde `\(\theta\)` es un vector de `\(q\times 1\)`, `\(h(\cdot)\)` es una funci�
 | `\(z(y-x'\beta)\)` | VI |
 
 ---
-f
+
 # Método generalizado de momentos
 
 - Cuando `\(r=q\)`, tenemos un modelo **exactamente identificado**, es decir, tenemos tantos momentos como parámetros a estimar
@@ -223,7 +223,7 @@ $$
 
   1. Obtener el estimador de MGM usando una matriz subóptima, generalmente `\(W_N=I_r\)` y con estos coeficientes obtener un estimador para `\(S_0\)`: `$$\hat{S}=\frac{1}{N}\sum_i h_i(\hat{\theta})h_j(\hat{\theta})'$$`
   
-  1. Obtner un estimador de MGM óptimo o **estimador de MGM de dos etapas** `\(\hat{\theta}_{MGM,O}\)` minimizando
+  1. Obtner un estimador de MGM óptimo o **estimador de MGM de dos etapas óptimo** `\(\hat{\theta}_{MGM,O}\)` minimizando
   
 `$$Q_N(\theta)=\left(\frac{1}{N}\sum_ih(\theta)\right)'\hat{S}^{-1}\left(\frac{1}{N}\sum_ih(\theta)\right)$$`
 
@@ -279,7 +279,7 @@ $$
 
 ---
 
-# Estimador de la varianza de `\(\hat{\beta}_MGM\)`
+# Estimador de la varianza de `\(\hat{\beta}_{MGM}\)`
 
 - El estimador `\(\hat{\beta}_MGM\)` es asintóticamente normal, centrado en `\(\beta\)` y con una varianza asintótica estimada dada por
 

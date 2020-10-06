@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Cuestiones prácticas de variables instrumentales</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.3/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs\cide.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\stackpath.bootstrapcdn.com\bootstrap\4.3.1\css\bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\use.fontawesome.com\releases\v5.7.2\css\all.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\cdn.rawgit.com\jpswalsh\academicons\master\css\academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: title-slide
+
+
+
+&lt;style type="text/css"&gt;
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+&lt;/style&gt;
+
+
+.title[
+# Sesión 15. Cuestiones prácticas de variables instrumentales
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas &lt;br&gt; División de Economía
+]
+
+---
+
+# Cuestiones prácticas con VI
+
+- Hemos aprendido que la forma general del estimador de MGM para MC2E es:
+
+`$$\hat{\beta}_{GMM}=(X'ZW_NZ'X)^{-1}X'ZW_NZ'y$$`
+
+- Y vimos también la forma general del estimador de la varianza:
+
+`$$\hat{V}(\hat{\beta}_{GMM})=N(X'ZW_NZ'X)^{-1}(X'ZW_N\hat{S}W_NZ'X)(X'ZW_NZ'X)^{-1}$$`
+---
+
+# Estimador óptimo de MGM
+
+- Para obtener el estimador óptimo escogemos una forma particular para la matriz de pesos:
+
+`$$W=\hat{S}^{-1}$$`
+- Y entonces el estimador de MGM se vuelve:
+
+`$$\hat{\beta}_{GMM,O}=(X'Z\hat{S}^{-1}Z'X)^{-1}X'Z\hat{S}^{-1}Z'y$$`
+- Y el estimador de varianza se simplifica a:
+
+`$$\hat{V}(\hat{\beta}_{GMM,O})=N(X'Z\hat{S}^{-1}Z'X)^{-1}$$`
+- En estos dos estimadores no asumimos nada sobre la forma de los errores
+
+- Lo único que nos permitió pasar de la forma general al estimador óptimo es la elección de `\(W\)`
+
+- Con esto obtenemos el estimador más eficiente
+
+---
+
+# Modelo sobreidentificado con heterocedasticidad
+
+- Con errores heterocedásticos, se estima `\(\hat{S}\)` en una primera etapa usando, por ejemplo `\(W=I\)`
+
+- Luego se estima `\(\hat{\beta}_{MGM,O}\)` resolviendo
+  
+`$$Q_N(\theta)=\left(\frac{1}{N}\sum_i (y − X\beta)'Z\right)\hat{S}^{-1}\left(\frac{1}{N}\sum_i Z'(y − X\beta)\right)$$`
+- Y luego estimamos la varianza
+
+`$$\hat{V}(\hat{\beta}_{GMM,O})=N(X'Z\tilde{S}^{-1}Z'X)^{-1}$$`
+- La diferencia es que usamos los residuales de  `\(\hat{\beta}_{MGM,O}\)` para construir `\(\tilde{S}\)`
+
+- Este es el **estimador óptimo de MGM**
+
+---
+
+# Modelo sobreidentificado con homocedasticidad
+
+- Con errores homocedásticos:
+
+`$$\hat{S}^{-1}=\left(\frac{1}{N}\sigma^2Z'Z\right)^{-1}$$`
+- Y entonces hacemos
+`$$W=\left(\frac{1}{N}Z'Z\right)$$`
+- Con esta simplificación, el estimador de MGM es:
+
+$$
+`\begin{aligned}
+\hat{\beta}_{MC2E}&amp;=(X'Z(Z'Z)^{-1}Z'X)^{-1}X'ZZ(Z'Z)^{-1}Z'y \\
+&amp;=(X'P_ZX)^{-1}X'P_Zy
+\end{aligned}`
+$$
+- Este es el **estimador de MC2E**, también llamado **estimador de variables instrumentales generalizado**
+
+---
+
+# Modelo sobreidentificado con homocedasticidad
+
+- A `\(P_Z=Z(Z'Z)^{-1}Z'\)` se le conoce como matriz de proyección
+
+- Y la matriz de varianzas se simplifica a
+
+`$$\hat{V}(\hat{\beta}_{MC2E})=\sigma^2\left(X'P_z X\right)^{-1}$$`
+---
+
+# Modelo exactamente identificado
+
+- En el caso cuando `\(r=q\)`, es decir, tantos instrumentos como variables endógenas, `\(X'Z\)` es una matriz cuadrada que puede ser invertida
+
+- Entonces
+
+`$$(X'ZW_NZ'X)^{-1}(X'Z)^{-1}=(Z'X)^{-1}W_N(X'Z)^{-1}$$`
+
+- Sustituyendo esto en la forma general del estimador de MGM obtenemos:
+
+`$$\beta_{VI}=(Z'X)^{-1}Z'y$$`
+- Este es el estimador de **variables instrumentales**
+
+- En otras palabras, el estimador de MGM es igual al de VI para cualquier matriz `\(W_N\)`
+
+---
+
+# Modelo exactamente identificado
+
+- Con heterocedasticidad, tenemos una matriz de varianzas de la forma
+
+`$$\hat{V}(\hat{\beta}_{VI})=N(Z'X)^{−1}\hat{S}(X'Z)^{−1}$$`
+donde `\(\hat{S}=\frac{1}{N}\sum_i\hat{u}_i^2z_iz_i'\)`
+
+- Y con homocedasticidad, la matriz de varianzas de nuevo es:
+
+`$$\hat{V}(\hat{\beta}_{VI})=\sigma ^2\left(X'P_z X\right)^{-1}$$`
+---
+
+# Recapitulando
+
+- Podemos vivir con las convenciones de Camerony Trivedi (2005)
+
+- El **estimador de MGM** es el estimador para el caso general de método de momentos, cuales quiera que sean las formas de los momentos especificados
+
+- El **estimador óptimo de MGM** ocurre cuando asumimos una forma particular para la matriz de pesos, `\(W=\hat{S}^{-1}\)`
+
+- El **estimador óptimo de MGM** se emplea en el caso más general de modelos de variables instrumentales sobreidentificados con heterocedasticidad
+
+- El **estimador de variables instrumentales generalizado** se obtiene cuando asumimos homocedasticidad en el modelo sobreidentificado y lleva el *apellido* generalizado porque es la generalización del estimador IV para el caso sobreidentificado
+
+- El **estimador de variables instrumentales** surge en el modelo exactamente identificado
+
+---
+
+class: inverse, middle, center
+
+# Prueba de Hausman
+
+---
+
+# Prueba de Hausman
+
+- En general, las pruebas que comparan dos estimadores distintos se conocen como pruebas de Hausman, Wu-Hausman o Durbin-Wu-Hausman
+
+- Consideremos dos estimadores `\(\tilde{\theta}\)` y `\(\hat{\theta}\)` que tienen la misma probabilidad límite bajo la `\(H_0\)` pero que difieren bajo la `\(H_a\)`
+
+$$
+`\begin{aligned}
+H_0:\quad\quad p\lim(\tilde{\theta}-\hat{\theta})=0 \\
+H_a:\quad\quad p\lim(\tilde{\theta}-\hat{\theta})\neq 0 \\
+\end{aligned}`
+$$
+- Construimos el estadístico de prueba `\(H\)`:
+
+`$$H=(\tilde{\theta}-\hat{\theta})'(\hat{V}(\tilde{\theta}-\hat{\theta}))^{-1}(\tilde{\theta}-\hat{\theta})\stackrel{a}{\sim}\chi^2(q)$$`
+
+- Se rechaza la `\(H_0\)` si `\(H&gt;\chi^2_{\alpha}(q)\)`
+
+- La implementacón es un poco complicada dado que
+
+`$$\hat{V}(\tilde{\theta}-\hat{\theta})=\hat{V}(\tilde{\theta})-\hat{V}(\hat{\theta})-2cov(\tilde{\theta},\hat{\theta})$$`
+
+---
+
+# Prueba de Hausman
+
+- Con errores homocedásticos, el estimador de MCO es eficiente
+
+- En ese caso, se puede mostrar que
+
+`$$H_{h}=(\tilde{\theta}-\hat{\theta})'(\hat{V}(\tilde{\theta})-\hat{V}(\hat{\theta}))^{-1}(\tilde{\theta}-\hat{\theta})\stackrel{a}{\sim}\chi^2(q)$$`
+que es fácil de calcular en el software
+
+- Si no estamos dispuestos a asumir homocedasticidad, se requiere estimar `\(cov(\tilde{\theta},\hat{\theta})\)`, que se implementa en R y otros paquetes
+
+--
+
+- La prueba de Hausman puede usarse para comparar dos estimadores, uno más eficiente que otro
+
+- La estimación de la prueba robusta puede complicarse en algunas aplicaciones, aunque como prueba de endogeneidad casi todo está disponible como funciones en R y otros paquetes
+
+---
+
+class: inverse, middle, center
+
+# Prueba de sobreidentificación
+
+---
+
+# Prueba de sobreidentificación
+
+- También conocida como prueba de Hansen, quien propuso la forma general de la prueba, o prueba de Sargan, quien propuso la forma particular para el modelo lineal de VI
+
+- Es una prueba sobre qué tan cerca está de cumplirse la hipótesis nula de que `\(E(h(w,\theta_0))=0\)`
+
+- Hansen (1982) define el estadístico de prueba como
+
+`$$J=\left(\frac{1}{N}\sum_i \hat{h}_i\right)'\hat{S}^{-1}\left(\frac{1}{N}\sum_i \hat{h}_i\right)\stackrel{a}{\sim}\chi^2(r-q)$$`
+- El estadístico `\(J\)` es la función objetivo de MGM evaluada en `\(\hat{\theta}_{MGM}\)`
+
+- Si el estadístico es gran, rechazamos la hipótesis de que las condiciones de momentos poblacionales se cumplen y se concluye que el estimador de MGM es inconsistente
+
+---
+
+# Prueba de sobreidentificación
+
+- En el caso de variables instrumentales, el estadístico tiene la forma específica:
+
+`$$J=\hat{u}'Z\hat{S}^{-1}Z'\hat{u}$$`
+donde `\(\hat{u}=y-X'\hat{\beta}_{MGM}\)`
+
+- Si se rechaza `\(H_0\)`, hay evidencia de que los instrumentos `\(z\)` son endógenos (aunque también podría ser que haya una mala especificación del modelo)
+
+
+---
+
+class: inverse, middle, center
+
+# Instrumentos débiles
+
+
+---
+
+# Instrumentos débiles
+
+- Discusión intuitiva en Angrist &amp; Pischke (MHE, 2009)
+
+- El estimador de MCO tiene las propiedades de ser consistente e insesgado
+
+  - En una muestra de tamaño arbitrario, la distribución del coeficiente de MCO está centrada en el coeficiente de  poblacional
+  
+--
+
+- En cambio, el estimador de MC2E, aunque consistente, **es sesgado**
+
+  - En muestras grandes el el estimador está *cerca* del coeficiente poblacional
+
+--
+
+- Esto tiene importantes consecuencias para la estimación y la inferencia
+
+
+---
+
+# Sesgo del estimador de MC2E
+
+- Consideremos el modelo simple con un solo regresor endógeno `\(y=\beta x+ \eta\)`
+
+- Supongamos que tenemos una matriz de instrumentos `\(Z\)`, por lo que la primera etapa es:
+
+`$$x=Z\pi+\xi$$`
+
+- El estimador de MCE es:
+
+`$$\hat{\beta}_{MC2E}=\beta+(x'P_Z x)^{-1}x'P_Z\eta$$`
+
+- Sustituyendo `\(x\)`:
+
+`$$\hat{\beta}_{MC2E}-\beta=(x'P_z x)^{-1}\pi'Z'\eta+(x'P_z x)^{-1}\xi'P_z\eta=sesgo_{Mc2E}$$`
+
+- No podemos calcular directamente el sesgo pues el operador esperanza es un operador lineal
+
+- Angrist &amp; Pischke (2009) aproximan el sesgo como.
+
+
+`$$E(\hat{\beta}_{MC2E}-\beta)\approx(E(x'P_z x))^{-1}E(\pi'Z'\eta)+(E(x'P_z x))^{-1}\xi'P_z\eta$$`
+---
+
+# Sesgo del estimador de MC2E
+
+- La expresión del sesgo puede reescribirse como
+
+`$$E(\hat{\beta}_{MC2E}-\beta)\approx\frac{\sigma_{\eta\xi}}{\sigma_{xi}^2}\frac{1}{F+1}$$`
+
+donde `\(\frac{\sigma_{\eta \xi}}{\sigma_{xi}^2}\)` es el sesgo del estimador de MCO
+
+--
+
+- Cuando `\(\pi=0\)`, el sesgo de MC2E es el mismo que el de MCO
+
+- Es decir, cuando `\(F\)` es pequeña, el sesgo de MC2E se acerca al sesgo de MCO: el estimador de MC2E está sesgado hacia el de MCO cuando la primera etapa es débil
+
+- Staiger &amp; Stock (1997) mostraron con simulaciones que cuando `\(F&gt;10\)`, el sesgo máximo en el estimador de MC2E es de 10%
+
+- De aquí viene la regla de dedo frecuentemente usada para juzgar instrumentos débiles
+
+
+---
+
+# Recomendaciones prácticas
+
+1. Reportar la primera etapa y ver si los coeficientes tienen sentido económico
+
+1. Reportar el estadístico `\(F\)` de la primera etapa para los instrumentos excluidos
+
+1. Reportar los resultados usando un modelo exactamente identificado usando el *mejor* instrumento
+
+1. Poner atención a la forma reducida, recordando que la forma reducida es proporcional al efecto causal de interés
+
+&gt; "Si no puedes ver la relación causal de interés en la forma reducida es porque probablemente no haya nada ahí."
+&gt;
+&gt; --- Angrist &amp; Krueger (2001)
+
+
+
+---
+
+# Próxima sesión
+
+- Comenzaremos a hablar sobre panel
+
+  - CT, Capítulos 21 y 22
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": null,
+"scroll": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
