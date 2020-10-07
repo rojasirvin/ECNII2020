@@ -202,7 +202,32 @@ class: inverse, middle, center
 
 ---
 
-- Mocetti, S. (2007). Intergenerational earnings mobility in Italy. *The BE Journal of Economic Analysis & Policy*, 7(2).  
+# Movilidad social
+
+- Mocetti, S. (2007). Intergenerational earnings mobility in Italy. *The BE Journal of Economic Analysis & Policy*, 7(2).
+
+- La elasticidad intergeneracional del ingreso mide cómo se correlacionan los ingresos de los hijos con los de sus padres
+
+- Dificultades:
+
+  - Necesitamos un panel que abarquen dos generaciones o más
+  
+  - Factores que afectan los ingresos de hijos y padres al mismo tiempo
+  
+- Aplicación en dos muestras
+
+  - En una muestra de hijos tenemos: ingreso de hijos y características de padres
+  
+  - En una muestra de padres tenemos: ingreso de padres y características de padres
+
+---
+
+# Movilidad social
+
+- En una primera etapa ajustamos los ingresos de los padres usando características educativas y de ocupación de los padres
+
+- En la ecuación estructural podemos pensar que el ingreso de los padres es un ingreso imputado, es decir, lo que a veces se conoce como *padres sintéticos*
+
 
 ---
 
@@ -217,6 +242,14 @@ class: inverse, middle, center
   - Sobreidentificación
   
   - Instrumentos débiles
+
+- Los errores estándar son calculados con rutinas bootstrap
+
+  - Esta es una forma alternativa de hacer inferencia, útil en procedimientos de varias etapas
+  
+  - Consiste calcular el estimador en B submuestras bootstrap
+  
+- Los resultados muestran evidencia de que Italia es una sociedad con poca movilidad (elasticidad del ingreso alta)
 
 ---
 

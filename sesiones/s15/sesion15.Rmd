@@ -72,6 +72,14 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
 # Cuestiones prácticas con VI
 
+.center[
+<iframe width="560" height="315" src="https://www.youtube.com/embed/8s4pgc3DPN0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+]
+
+---
+
+# Cuestiones prácticas con VI
+
 - Hemos aprendido que la forma general del estimador de MGM para MC2E es:
 
 $$\hat{\beta}_{GMM}=(X'ZW_NZ'X)^{-1}X'ZW_NZ'y$$
@@ -266,7 +274,7 @@ $$J=\left(\frac{1}{N}\sum_i \hat{h}_i\right)'\hat{S}^{-1}\left(\frac{1}{N}\sum_i
 $$J=\hat{u}'Z\hat{S}^{-1}Z'\hat{u}$$
 donde $\hat{u}=y-X'\hat{\beta}_{MGM}$
 
-- Si se rechaza $H_0$, hay evidencia de que los instrumentos $z$ son endógenos (aunque también podría ser que haya una mala especificación del modelo)
+- Si se rechaza $H_0$, hay evidencia de que los instrumentos $z$ son exógenos (aunque también podría ser que haya una mala especificación del modelo)
 
 
 ---
