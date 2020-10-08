@@ -26,6 +26,7 @@
 
 [Sesión 15](https://rojasirvin.github.io/ECNII2020/sesiones/s15/sesion15.html#1). Cuestiones prácticas de variables instrumentales
 
+[Sesión 16](https://rojasirvin.github.io/ECNII2020/sesiones/s16/sesion16.html#1). Datos en panel
 
 <!---
 

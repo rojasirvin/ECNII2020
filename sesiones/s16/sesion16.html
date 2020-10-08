@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Datos en panel</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.3/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs\cide.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\stackpath.bootstrapcdn.com\bootstrap\4.3.1\css\bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\use.fontawesome.com\releases\v5.7.2\css\all.css" type="text/css" />
+    <link rel="stylesheet" href="https:\\cdn.rawgit.com\jpswalsh\academicons\master\css\academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: title-slide
+
+
+
+&lt;style type="text/css"&gt;
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+&lt;/style&gt;
+
+
+.title[
+# Sesión 16. Datos en panel
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas &lt;br&gt; División de Economía
+]
+
+---
+
+# Estructura de datos en panel
+
+- Consideremos el siguiente modelo para unidades indexadas como `\(i\)` observadas en varios periodos indexados con `\(t\)`
+
+`$$y_{it}=\alpha_{it}+x_{it}'\beta_{it}+u_{it}$$`
+
+con `\(i=1,\ldots,N\)` y `\(t=1,\ldots,T\)`
+
+- Este modelo así escrito es muy general pues tiene un intercepto y una pendiente para cada $i $ y `\(t\)`
+
+- Sin embargo, este modelo es imposible de estimar pues hay más parámetros que `\(T\times N\)`
+
+---
+
+# Estructura de datos en panel
+
+- Una forma de resolver el problema es formulando un *modelo de efectos específicos por individuo*
+
+`$$y_{it}=\alpha_i+x_{it}'\beta+\varepsilon_{it}$$`
+
+donde `\(\varepsilon_{it}\)` es iid sobre `\(i\)` y `\(t\)`
+
+- Las `\(\alpha_i\)` las pensamos como variables aleatorias que capturan la heterogeneidad
+
+- Para propósitos de estimación, recurriremos a un supuesto clave:
+
+- **Exogeneidad fuerte o estricta**: asumimos que el error tiene media cero condicional cuando condicionamos en los valores contemporáneos, pasados y futuros
+
+`$$E(\varepsilon_{it}|\alpha_i,x_{i1},\ldots,x{iT})=0,\quad\quad t=1,\ldots,T$$`
+
+--
+
+- La forma en que tratemos a `\(\alpha\)` resultará en los dos tipos de modelos principales que estudiaremos en el curso
+
+
+---
+
+# Modelo de efectos fijos
+
+- Si asumimos que los efectos individuales están potencialmente correlacionados con `\(x_{it}\)`, nuestro modelo se conoce como de **efectos fijos**
+
+- `\(\alpha_i\)` es la heterogeneidad no observada
+
+
+---
+
+# Modelo de efectos aleatorios
+
+- Por otro lado, si asumimos que la heterogeneidad no observada es una variable aleatoria independiente de `\(x_{it}\)`, podemos hacer algunos supuestos sobre su distribución y especificar un modelo de **efectos aleatorios**
+
+--
+
+- Suponemos que tanto la heterogeneidad no observada como el error son iit
+
+  - `\(\alpha_i \sin (\alpha,\sigma^2_{\alpha})\)`
+  
+  - `\(\varepsilon_{it} \sin (0,\sigma^2_{\varepsilon})\)`
+
+---
+
+# Nota sobre la terminología
+
+- Quizás un mejor nombre para el modelo de efectos aleatorios es el a veces usado modelo de **intercepto aleatorio** o de **componentes aleatorios**
+
+- Para el modelo de efectos fijos, Lee (2002) usa el nombre de **efecto relacionado** y para el de efectos aleatorios el de **efecto no relacionado**
+
+- Lo más importante es tener en cuenta que `\(\alpha_i\)` es una variable aleatoria, lo que cambia es lo que asumimos sobre su correlación con los regresores
+
+---
+
+class: middle, center, inverse
+
+# Estimador de efectos fijos
+
+---
+
+# Estimador de efectos fijos
+
+- También conocido como estimador *within*
+
+- Tomando la media sobre `\(i\)`
+
+`$$\bar{y}_{i}=\alpha_i+\bar{x}_i'\beta+\bar{\varepsilon}_i$$`
+
+- Y luego restando del modelo original estas medias
+
+`$$y_{it}-\bar{y}_{i}=(x_{it}-\bar{x}_i)'\beta+(\varepsilon_{it}-\bar{\varepsilon}_i)$$`
+
+- El estimador within es el estimador de MCO a esta ecuación modificada
+
+- `\(\hat{\beta}\)` es consistente si los `\(\alpha_i\)` son efectos fijos y `\(\varepsilon_{it}\)` es iid
+
+--
+
+- Una desventaja del modelo de efectos fijos es que no se puede identificar el parámetros sobre regresores que son fijos en el tiempo, auque sean observables (sexo, IQ, lugar de nacimiento, raza, entre muchos otros)
+
+---
+
+# Estimador de efectos fijos
+
+- Frecuentemente no estamos interesados en estimar los efectos fijos, es decir, los consideremos **parámetros incómodos**
+
+- Si quisiéramos estimarlos directamente, podríamos incluir dummies individuales
+
+- Se requieren páneles largos para que los efectos estimados sean consistentes
+
+- En el resto del curso nos enfocaremos en casos donde podemos ignorar estos parámetros incómodos
+
+---
+
+# Estimador de primeras diferencias
+
+- Consideremos el modelo 
+
+`$$y_{it}-y_{it-1}=(x_{it}-x_{it-1})'\beta+(\varepsilon_{it}-\varepsilon_{it-1})$$`
+
+- El estimador de primeras diferencias es el estimador de MCO de esta ecuación
+
+
+
+# Modelo de efectos fijos
+
+- Supongamos que existen una serie de características que son fijas en el tiempo
+
+- El estimador de primeras diferencias es consistente
+
+- El estimador de primeras diferencias y el within son iguales cuando `\(T=2\)`
+
+- Con `\(T&gt;2\)` el estimador de primeras diferencias es menos eficiente
+
+- Los paquetes estadísticos usan un estimador within
+
+
+---
+
+# Propiedades del estimador within
+
+- El estimador within puede escribirse como
+
+`$$\hat{\beta}_W=\left(\sum_i\sum_t(x_{it}-\bar{x}_i)(x_{it}-\bar{x}_i)'\right)^{-1}\sum_i\sum_y(x_{it}-\bar{x}_i)(y_{it}-\bar{y}_i)$$`
+
+- La consistencia del estimador depende de que `\(p\lim \frac{1}{NT}\sum_i\sum_y(x_{it}-\bar{x}_i)(y_{it}-\bar{y}_i)=0\)` cuando `\(N\to\infty\)` o `\(T\to\infty\)`
+
+- Frecuentemente tenemos pocos periodos (páneles cortos), por lo que esperamos que haya muchos individuos para probar consistencia
+
+- La condición de exogeneidad fuerte es suficiente para que `\(p\lim \frac{1}{NT}\sum_i\sum_y(x_{it}-\bar{x}_i)(y_{it}-\bar{y}_i)=0\)` cuando `\(N\to\infty\)` o `\(T\to\infty\)`
+
+---
+
+# Propiedades del estimador within
+
+- Podemos asumir que los errores `\(\varepsilon_{it}\)` y obtener
+
+`$$\hat{V}(\hat{\beta}_{W,h})= \sigma^2_{\varepsilon}\left(\sum_i\sum_t (x_{it}-\bar{x}_i)(x_{it}-\bar{x}_i)'\right)^{-1}$$`
+donde se puede estimar `\(\hat{\sigma}^2_{\varepsilon}=\frac{1}{N(T-1)-K}\sum_i\sum_t\hat{\varepsilon}_{it}\)`
+--
+
+- Sin embargo, en panel esto es un supuesto fuerto pues esperamos que, auque las observaciones sean independientes entre individuos, haya correlación serial
+
+- Generalmente usamos una versión robusta, que considera la correlación serial y permite heterocedasticidad (ver ecuación 21.28 en CT)
+
+---
+
+class: inverse, middle, center
+
+# Mínimos cuadrados generalizados
+
+---
+
+# Breve desviación a mínimos cuadrados generalizados
+
+- En ECNI aprendimos que el estimador de MCO es el estimador de varianza mínima entre los estimadores lineales insesgados cuando los errores son iid
+
+- Ahora consideremos el modelo `\(y=X\beta+u\)`
+
+- Aasumamos que la varianza de los errores es `\(\Omega\neq\sigma^2I\)`
+
+- Asumamos que conocemos `\(\Sigma\)`, una matriz no singular
+
+--
+
+- Si premultiplicamos el modelo lineal por `\(\Omega^{-1/2}\)`
+
+`$$\Omega^{-1/2}y=\Omega^{-1/2}X\beta+\Omega^{-1/2}u$$`
+se puede mostrar con algo de álgebra que
+
+`$$V(\Omega^{-1/2}u)=E((\Omega^{-1/2}u)(\Omega^{-1/2}u)'|X)=I$$`
+---
+
+# Breve desviación a mínimos cuadrados generalizados
+
+- Es decir, los errores del modelo transformado son iid
+
+- Así que podemos estimar `\(\beta\)` eficientemente por MCO al modelo transformado
+
+- El estimador **mínimos cuadrados generalizados** (MCG) es
+
+`$$\hat{\beta}_{MCG}=(X'\Omega^{-1}X)^{-1}X'\Omega^{-1}y$$`
+--
+
+- En la práctica, no conocemos `\(\Omega\)`
+
+- Podemos proponer un modelo para `\(V(u|x)\)` y obtener un estimador consistente para `\(\Omega\)`
+
+- Esto da lugar al estimador de **mínimos cuadrados generalizados feasibles**
+
+`$$\hat{\beta}_{MCGF}=(X'\hat{\Omega}^{-1}X)^{-1}X'\hat{\Omega}^{-1}y$$`
+
+---
+
+class: middle, center, inverse
+
+# Estimador de efectos aleatorios
+
+---
+
+# Estimador de efectos aleatorios
+
+- Podemos escribir el modelo general añadiendo un intercepto no aleatorio `\(\mu\)` para que los efectos aleatorios puedan tener media cero:
+
+`$$y_{it}=\mu+x_{it}'\beta+\alpha_i+\varepsilon_{it}=w_{it}'\delta+\alpha_i+\varepsilon_{it}$$`
+donde `\(w_{it}=[1\;w_{it}]\)` y `\(\delta=[\mu\;\beta']'\)`
+
+- Asumimos que `\(\alpha_i\)` y `\(\varepsilon_i\)` son iid
+
+--
+
+- Podríamos estimar este modelo usando el estimador de MCGF
+
+- Como `\(\alpha_i\)` y `\(\varepsilon_{it}\)` son independientes, la matriz de varianzas es
+
+`$$\Omega=\sigma_{\varepsilon}^2 I_T+\varepsilon_{\alpha}^2ee'$$`
+donde `\(e=(1,1,\ldots,1)'\)` es un vector de unos de dimensión `\(T\times 1\)`
+
+---
+
+# Estimador de efectos aleatorios
+
+- El estimador de MCGF de `\(\mu\)` y `\(\beta\)` puede implementarse como MCO a la ecuación transformada
+
+`$$y_{it}-\lambda\bar{y}_i=(1-\lambda)\mu+(x_{it}-\lambda\bar{x}_i)'\beta+\nu_{it}$$`
+donde `\(\nu_{it}=(1-\lambda)\alpha_i+(\varepsilon_{it}-\lambda\bar{\varepsilon}_i)\)`
+
+- Esto se logra premultiplicando el modelo `\(y_{it}=w_{it}'\delta+\alpha_i+\varepsilon_{it}\)` por `\(\Omega^{-1/2}\)` y con algo de álgebra
+
+--
+
+- Para construir `\(\lambda\)` requerimos estimadores consistentes ára `\(\sigma^2_{\varepsilon}\)` y `\(\hat{\alpha}^2\)`
+
+
+`$$\lambda=1-\frac{\hat{\sigma}_{\varepsilon}}{\sqrt{T\hat{\sigma}_{\alpha}^2+\hat{\sigma}_{\varepsilon}^2}}$$`
+- El software estadístico hace estas estimaciones basadas en las ecuaciones 21.48 y 21.49 en CT
+
+---
+
+# Propiedades del estimador de efectos aleatorios
+
+- El estimador de efectos es aleatorio si `\(NT\to\infty\)`, lo cual requiere que `\(N\to\infty\)` o `\(T\to\infty\)` (o ambos)
+
+- Con paneles cortos, es natural requerir suficientes individuos en la muestra
+
+- Por otro lado, CT proveen dos expresiones para las matrices de varianza en los casos de homocedasticidad (es decir, si `\(\varepsilon_{it}\)` y `\(\alpha_i\)` son iid) y para el caso general donde donde se permite heterocedasticidad y autocorrelación de `\(\varepsilon_{it}\)`
+
+
+---
+
+class: inverse, middle, center
+
+# Modelo agrupado o *pooled*
+
+---
+
+# Modelo agrupado o *pooled*
+
+- Si ignoramos la estructura de panel y simplemente estimamos
+
+`$$y_{it}=\alpha+x_{it}'\beta+u_{it}$$`
+tenemos lo que se conoce como modelo pooled o de **coeficientes constantes**
+
+
+- Este modelo no explota la estructura del panel
+
+- El modelo es correcto si los regresores no están correlacionados con el errror (es decir, el modelo **no** es de efectos fijos)
+
+- Podemos estimar consistemente `\(\beta\)` por MCO
+
+- Los errores estándar deben tomar en cuenta la correlación serial
+
+
+- Si estamos dispuestos a asumir un modelo pooled, debemos al menos estimar un modelo de MCO con errores robustos agrupados **a nivel individual**
+
+---
+
+class: inverse, middle, center
+
+# ¿Efectos fijos o efectos aleatorios?
+
+---
+
+# ¿Qué modelo usar?
+
+- Si el modelo asumido es de efectos fijos
+
+  - Solo el estimador within o de primeras diferencias es consistente
+  
+  - Estimadores de efectos aleatorios y pooled son inconsistentes
+  
+--
+
+- Si el modelo asumido es de efectos aleatorios
+
+  - El estimador de efectos aleatorios y el estimador pooled son consistentes, pero el estimador de efectos aleatorios es más eficiente
+  
+
+---
+
+# Prueba de Hausman
+
+- Recordemos que a prueba de Hausman compara dos estimadores, uno consistente bajo la `\(H_0\)` y otro que no
+
+- Si los efectos individuales son efectos fijos correlaciondos con el error, el estimador within es consistente y el de efectos aleatorios no lo es
+
+
+- La `\(H_0\)` es que los efectos fijos no están correlacionados cpn el error
+
+- Si se rechaza la `\(H_0\)`, debemos usar un estimador de efectos fijos
+
+---
+
+# Próxima sesión
+
+- Comenzaremos a hablar sobre panel
+
+  - CT, Capítulos 21 y 22
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": null,
+"scroll": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
