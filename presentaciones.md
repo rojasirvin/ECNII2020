@@ -24,11 +24,11 @@
 
 | Presentación | **Autores** | **Tema** | **Fecha de exposición** | **Presentador** |
 | ---  | --- | --- | --- | --- |
-| 16 | Kagin & Coautores | Panel | 27 de octubre | Nevid Torres |
+| 16 | Kagin & Coautores | Panel | 20 de octubre | Nevid Torres |
 | 17 | Bwalya | Panel | 20 de octubre | Ricardo Solís |
 | 18 | Li & Maddala | Bootstrap | 22 de octubre | Eduardo García |
 | 19 | Castillo & coautores | Panel Poisson | 27 de octubre | Rafael Martínez |
-| 20 | PENDIENTE | Panel | 15 de octubre | Miguel Manrique |
+| 20 | PENDIENTE | Panel | 27 de octubre | Miguel Manrique |
 | 21 | PENDIENTE | Panel + VI | 3 de noviembre | César Ángeles | 
 | 22 | De Uña & coautores | Riesgo | 5 de noviembre | Karla Amaro |
 | 23 | PENDIENTE | Cuantil | 10 de noviembre | |
