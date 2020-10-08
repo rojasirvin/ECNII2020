@@ -23,6 +23,7 @@
 **Segunda ronda**
 
 | Presentación | **Autores** | **Tema** | **Fecha de exposición** | **Presentador** |
+| ---  | --- | --- | --- | --- |
 | 16 | PENDIENTE | Panel | 15 de octubre | Miguel Manrique |
 | 17 | Bwalya | Panel | 20 de octubre | Ricardo Solís |
 | 18 | Li & Maddala | Bootstrap | 22 de octubre | Eduardo García |
