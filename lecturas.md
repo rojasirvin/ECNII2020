@@ -46,7 +46,7 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 
 *Semana 8*
 + CT, Capítulo 22.
-+ **Panel**: Pendiente.
++ **Panel + DID**: Estrada, R. (2019). Rules versus discretion in public service: Teacher hiring in Mexico. *Journal of Labor Economics*, 37(2), 545-579.
 + **Panel**: Kagin, J., Taylor, J. E., & Yúnez-Naude, A. (2016). Inverse productivity or inverse efficiency? Evidence from Mexico. *The Journal of Development Studies*, 52(3), 396-411.
 + **Panel**: Bwalya, S. M. (2006). Foreign direct investment and technology spillovers: Evidence from panel data analysis of manufacturing firms in Zambia. *Journal of development economics*, 81(2), 514-526.
 
@@ -59,7 +59,7 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 + *Semykina, A., & Wooldridge, J. M. (2010). Estimating panel data models in the presence of endogeneity and selection. _Journal of Econometrics_, 157(2), 375-380.
 + Wooldridge, J. (2012). Panel data models with heterogeneity and endogeneity. Institute for Fiscal Studies.  
 + **Panel Poisson**: Castillo, J. C., Mejía, D., & Restrepo, P. (2020). Scarcity without leviathan: The violent effects of cocaine supply shortages in the mexican drug war. *Review of Economics and Statistics*, 102(2), 269-286.
-+ **Panel + VI**: Pendiente.
++ **Panel + VI**: Antman, F. M. (2011). The intergenerational effects of paternal migration on schooling and work: What can we learn from children's time allocations?. *Journal of Development Economics*, 96(2), 200-208.
 
 *Semana 11*
 + CT, Capítulo 17 (secciones 17.1 – 17.4 u 17.6-17.11).
@@ -68,14 +68,14 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 *Semana 12*
 + CT, Capítulo 4 (sección 4.6).
 + CT, Capítulo 9.
-+ **Cuantil**: Pendiente.
++ **Cuantil**: Engelhardt, G. V., & Kumar, A. (2011). Pensions and household wealth accumulation. *Journal of Human Resources*, 46(1), 203-236.
 + **Semiparamétrico**: Hussinger, K. (2008). R&D and subsidies at the firm level: An application of parametric and semiparametric two‐step selection models. *Journal of applied econometric*s, 23(6), 729-747.
 
 *Semana 13*
 + CT, Capítulo 25.
 + **Experimento de campo**: Jensen, R. T., & Miller, N. H. (2008). Giffen behavior and subsistence consumption. *American economic review*, 98(4), 1553-77.
 + **Correspondencia**: Bertrand, M., & Mullainathan, S. (2004). Are Emily and Greg more employable than Lakisha and Jamal? A field experiment on labor market discrimination. *American economic review*, 94(4), 991-1013.
-+ **LATE**: Pendiente.
++ **LATE**: Gonzalez-Navarro, M., & Quintana-Domeque, C. (2016). Paving streets for the poor: Experimental analysis of infrastructure effects. *Review of Economics and Statistics*, 98(2), 254-267.
 
 *Semana 14*
 + \*Angrist, J. D. (2014). The perils of peer effects. _Labour Economics_, 30, 98-108.

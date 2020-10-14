@@ -28,14 +28,14 @@
 | 17 | Bwalya | Panel | 20 de octubre | Ricardo Solís |
 | 18 | Li & Maddala | Bootstrap | 22 de octubre | Eduardo García |
 | 19 | Castillo & coautores | Panel Poisson | 27 de octubre | Rafael Martínez |
-| 20 | PENDIENTE | Panel | 27 de octubre | Miguel Manrique |
-| 21 | PENDIENTE | Panel + VI | 3 de noviembre | César Ángeles | 
+| 20 | Estrada | Panel + DID | 27 de octubre | Miguel Manrique |
+| 21 | Antman | Panel + VI | 3 de noviembre | César Ángeles | 
 | 22 | De Uña & coautores | Riesgo | 5 de noviembre | Karla Amaro |
-| 23 | PENDIENTE | Cuantil | 10 de noviembre | |
-| 24 | Hussinger | Semiparamétrico | 12 de noviembre | Thania |
+| 23 | Engelhardt & Kumar | Cuantil | 10 de noviembre | Daniel Mendoza |
+| 24 | Hussinger | Semiparamétrico | 12 de noviembre | Thania Hernández |
 | 25 | Jensen & Miller | Experimento de campo  | 12 de noviembre | Luis Enrique Ramos | 
 | 26 | Bertrand & Mullainathan | Correspondencia | 24 de noviembre | Wilmer Ferrer |
-| 27 | PENDIENTE | LATE | 24 de noviembre | Diana Castañeda |
+| 27 | Gonzalez & Quintana | LATE | 24 de noviembre | Diana Castañeda |
 | 28 | Carrel & Coautores | Pares | 26 de noviembre | Alonso Pizarro |
 | 29 | Peri & Sparber | Shift-share | 26 de noviembre | Daniel Hernández |
 | 30 | Li & Zhu | Espacial | 26 de noviembre | Federico Daverio |
