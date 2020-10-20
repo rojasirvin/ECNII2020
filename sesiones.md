@@ -28,8 +28,11 @@
 
 [Sesión 16](https://rojasirvin.github.io/ECNII2020/sesiones/s16/sesion16.html#1). Datos en panel
 
-[Sesión 17](https://rojasirvin.github.io/ECNII2020/sesiones/s17/sesion17.html#1). Errores estándar e inferencia
+[Sesión 17](https://rojasirvin.github.io/ECNII2020/sesiones/s17/sesion17.html#1). Extensiones con datos en panel
 
+[Sesión 18](https://rojasirvin.github.io/ECNII2020/sesiones/s18/sesion18.html#1). Errores estándar e inferencia
+
+[Sesión 19](https://rojasirvin.github.io/ECNII2020/sesiones/s19/sesion19.html#1). Modelos no lineales en panel
 
 <!---
 

@@ -1,9 +1,11 @@
 ---
-title: "Errores estándar e inferencia"
+title: "Extensiones con datos en panel"
 author: "Irvin Rojas"
 institute: "CIDE"
 date: "13 de octubre de 2020"
 mathspec: true
+header-includes:
+  - \usepackage{amsmath}
 output:
   xaringan::moon_reader:
     seal: false
@@ -55,7 +57,7 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
 
 .title[
-# Sesión 17. Errores estándar e inferencia
+# Sesión 17. Extensiones con datos en panel
 ]
 .subtitle[
 ## Econometría II
@@ -69,384 +71,485 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 ]
 
 ---
+
 # Agenda
 
-1. En esta sesión nos concentraremos en la estimación de errores estándar
+- Abrir la posibilidad a problemas de endogeneidad en panel
 
-1. Definiremos los estimadores de la matriz de varianzas robusta usadas por los programas más usados
+- Introducir modelos con dependencia temporal (dinámicos)
 
-1. Estudiaremos el uso de rutinas bootstrap para la estimación de errores estándar
-
-1. Estudiaremos las implicaciones de los datos agrupados en la estimación de errores estándar
+- Breve introducción a diferencia en diferencias
 
 ---
 
 class: inverse, middle, center
 
-# Errores estándar no estándar
+# Variables instrumentales con panel 
 
 ---
 
-# Errores estándar robustos
+# Variables instrumentales con panel
 
-- Recordemos que con errores homocedásticos, la matriz de varianzas del estimador de MCO puede ser estimada como:
+- Consideremos el modelo sin efectos individuales
 
-$$\Omega_{MCO}=\hat{\sigma}^2(X'X)^{-1}$$
-donde $\hat{\sigma}^2=\frac{1}{N-k}\hat{e}_i^2$ y $\hat{e}_i^2=(y_i-X_i'\hat{\beta}_{MCO})^2$
+$$y_{it}=X_{it}\beta+u_{it}$$
+- Asumimos independencia entre las $i$ y que nuestro panel es *corto* y con $N\to\infty$
+
+- Ahora, apilamos las observaciones
+
+$$\mathbf{y}_i=\mathbf{X}_i\beta+\mathbf{u}_i$$
+donde $\mathbf{y}_i$ y $\mathbf{u}_i$ son vectores de $T\times 1$ para cada individuo $i$ y $\mathbf{X}_i$ es una matriz de $T\times K$
+
+
+---
+
+# Instrumentos
+
+- Supongamos que existe una matriz de $T\times r$ de instrumentos llamada $Z_i$, con $r\geq K$ siendo el número de instrumentos
+
+- Supongamos la condición de momentos
+$$E(\mathbf{Z}_i'\mathbf{u}_i)=\mathbf{0}$$
+- Entonces, podemos plantear un problema de momentos:
+
+$$Q_N(\beta)=\left(\sum_i\mathbf{Z}_i'\mathbf{u}_i\right)'\mathbf{W}_N\left(\sum_i\mathbf{Z}_i'\mathbf{u}_i\right)$$
+
+---
+
+# Estimador de panel por MGM
+
+- Y la solución al problema nos da el estimador de panel por MGM
+
+$$\hat{\beta}_{MGM,Panel}=\left(\left(\sum_i\mathbf{X}_i'\mathbf{Z}_i\right)\mathbf{W}_N\left(\sum_i\mathbf{Z}_i'\mathbf{X}_i\right)\right)^{-1} \left(\sum_i\mathbf{X}_i'\mathbf{Z}_i\right)\mathbf{W}_N\left(\sum_i\mathbf{Z}_i'\mathbf{y}_i\right)$$
+--
+
+- La condición de consistencia es que la condición de momentos se cumpla
 
 --
 
-- Una primera *desviación*  respecto a los errores clásicos ocurre cuando relajamos el supuesto de homocedasticidad
+- La varianza del estimador será
 
-- En la [sesión 2](https://rojasirvin.github.io/ECNII2020/sesiones/s2/sesion2.html#33) estudiamos de manera general las propiedades asintóticas del estimador de MCO
+$$\hat{V}(\hat{\beta}_{MGM,Panel})=(X'ZW_NZ'X)^{-1}X'ZW_N(N\hat{S})W_N'Z'X(X'ZW_NZ'X)^{-1}$$
 
-- La varianza asintótica es:
-
-$$V(\hat{\beta})=(X'X)^{-1}X'\Omega X(X'X)^{-1}$$
-
-- Un estimador de la varianza del estimador de MCO que no asume homocedasticidad es el estimador propuesto por White (1980)
-
+donde, como siempre $\hat{S}$ es un estimador consistente de $S=p\lim\frac{1}{N}\sum_iZ_i'u_iu_i'Z_i$
 ---
 
-# Errores estándar robustos
+# Estimación
 
-- Dependiendo de cómo se especifique $\Omega$, obtenemos distintas versiones del estimador de varianzas robusto
-
-- La propuesta de White original es:
-
-$$HC0:\quad\hat{\omega}_i=\hat{e}_i^2$$
-- Este estimador asintóticamente consistente
+- Podemos implementar dos tipos de estimadores, dependiendo de la forma que se le da a $W_N$
 
 --
 
-- En muestras pequeñas, muchas veces se emplea la siguiente corrección:
-
-$$HC1:\quad\hat{\omega}_i=\frac{N}{N-k}\hat{e}_i^2$$
----
-
-# Desviación a la influencia
-
-- Un par de resultados nos ayudarán a entender qué hacen las otras correcciones a la matriz robusta en el software
-
-- Definimos la **influencia** de la observación $i$ como:
-
-$$h_{ii}=X_i'(X'X)^{-1}X_i$$
-
-- $h_{ii}$ nos dice qué tanto *jala* la observación $i$ a la línea de regresión
-
-- En una regresión con un solo regresor $x$, se puede mostrar que la influencia de la observación $i$ es:
-
-$$h_{ii}=\frac{1}{N}+\frac{(x_i-\bar{x})2}{\sum(x_j-\bar{x})^2}$$
-es decir, que la influencia se incrementa cuando $x_i$ se aleja de la media
-
-- La influencia es un número entre 0 y 1
-
----
-
-# Errores estándar robustos
-
-- Algunos autores sugieren usar la influencia en la matriz de varianzas robusta
-
-- Se proponen algunas alternativas:
-
-$$HC2:\quad\hat{\omega}_i=\frac{1}{1-h_{ii}}\hat{e}_i^2$$
-
-$$HC3:\quad\hat{\omega}_i=\frac{1}{(1-h_{ii})^2}\hat{e}_i^2$$
-
---
-
-- Long & Ervin (2000) condujeron un experimento de simulación y recomendaron usar $HC3$ en muestras pequeñas, por lo que el paquete *sandwich* en R usa $HC3$ por default
-
-- Es importante tener en cuenta qué tipo de errores estándar piden que el software calcule
-
----
-
-class: inverse, middle, center
-
-# Bootstrap
-
----
-
-# Bootstrap
-
-- A veces es difícil encontrar una expresión analítica de los errores estándar
-
-- La idea de las técnicas bootstrap es consutrir una distribución empírica del estimador de interés
-
-- Una muestra bootstrap es una muestra tomada de los mismos datos
-
---
-
-- En las rutinas para errores bootstrap, pensamos en $\{(y_1,x_1),\ldots,(y_N,X_n)\}$ como la población
-
-- Una muestra bootstrap es una muestra de tamaño $N$ tomada de la muestra original
-
---
-
-- El procedimiento bootstrap más usado es el boostrap no paramétrico o boostrap en parejas (nos enfocaremos en este tipo de bootstrap en el curso)
-
-- La idea es remuestrear la pareja completa $(y_i,x_i)$
-
----
-
-# Algoritmo para errores estándar bootstrap
-
-1. Dada una muestra $W_1,\ldots,W_N$, obtener una muestra de tamaño $N$, remuestreando de la muestra original **con reemplazo**
-
-1. Calcular el estadístico $\hat{\theta}_b$ usado con la muestra bootstrap (coeficiente de regresión, diferencia de medias, función de coeficientes)
-
-1. Repetir los pasos 1 y 2 $B$ veces, donde $B$ es lo suficientemente grande (usualmente 1000 es suficiente)
-
-1. Usar las $B$ repeticiones para obtener el error estándar del estadístico como la raíz cuadrada de $s^2_{\hat{\theta},B}$:
-
-$$s^2_{\hat{\theta},B}=\frac{1}{B-1}\sum_{b=1}^B(\hat{\theta}_{b}-\bar{\hat{\theta}})^2$$
-donde $\bar{\hat{\theta}}=\frac{1}{B}\sum_{b=1}^B\hat{\theta}_b$
-
----
-
-# Refinamiento asintótico
-
-- Una aplicación de las técnicas bootstrap es el *refinamiento asintótico* de la prueba $t$ de coeficientes de regresión
-
-- Supongamos que $H_0:\quad \beta=0$ y trabajamos con un nivel $\alpha$ 
-
---
-
-- En cada repetición bootstrap el estadístico calculado es $t_b$
-
-- Ordenamos los $B$ estadísticos obtenidos
-
-- Rechazamos $H_0$ si $|t|$ está por encima del $(1-\alpha)$ésimo percentil de los $|t_b|$ en la distribución bootstrap
-
---
-
-- A pesar de sus propiedades teóricas, el refinamiento asintótico es poco usado
-
----
-
-# Aplicaciones comunes de bootstrap
-
-- Métodos de varias etapas (por ejemplo, el estimador de dos etapas de Heckman)
-
-- Funciones de estimadores (aunque aquí el método Delta también podría ser usado)
-
-- Datos agrupados con pocos grupos
-
---
-
-- El consejo práctico es usar resultados teóricos cuando se puede (por ejemplo, las matrices robustas descritas antes)
-
-- Pensemos siempre en la estructura de los datos antes de hacer boostrap
-
-- Usar una semilla siempre para poder reproducir sus resultados
-
-
-
----
-
-# Bootstrap salvaje
-
-- En presencia de heterocedasticidad se prefiere usar bootstrap salvaje (*wild bootstrap*) ([MacKinnon, 2012](https://link.springer.com/chapter/10.1007%2F978-1-4614-1653-1_17#enumeration))
-
-- Propuesto originalmente por Liu (1988), cada muestra bootstrap tiene la siguiente forma:
-
-$$y_i^*=X_i\hat{\beta}+f(\hat{u}_i)v_i^*$$
-- Noten que mantiene fijos los $X_i$ en cada muestra bootstrap
-
---
-
-- Una especificación comúnmente usada es hacer es $f(\hat{u}_i)=\hat{u}_i$ y 
-$$v_i^*=\begin{cases} 1 \quad\text{con probabilidad 0.5} \\ -1 \quad\text{con probabilidad 0.5} \end{cases}$$
-
-- $\hat{\beta}$ y $\hat{u}_i$ son estimados con la muestra original
-
----
-
-# Bootstrap salvaje
-
-- En cada una de las $B$ muestras bootstrap, mantenemos a los mismos individuos (no hay remuestreo)
-
-- Tendremos $B$ muestras bootstrap, pero ahora la aleatoriedad viene por $f(\hat{u}_i)v_i^*$
-
-- Pueden usarse otras funciones más complicadas para $f(\hat{u}_i)$
-
-- La ventaja de este método es que conserva la relación entre las varianzas residuales y las $X_i$ observadas en los datos originales
-
-- [Davidson & Flachaire (2008)](https://www.sciencedirect.com/science/article/pii/S0304407608000833) utilizan simulaciones para mostrar que con esta forma para $f(\hat{u}_i)v_i^*$ la inferencia es más confiable que con otras especificaciones
-
----
-
-# Otras aplicaciones
-
-- Bootstrap jacknife (útil para problemas con errores agrupados y pocos grupos)
-
-
----
-
-class: inverse, middle, center
-
-# Errores agrupados
-
----
-
-# Errores agrupados
-
-- Surgen naturalmente cuando las observaciones están agrupadas
-
-  - Niños en salones de clase
-  - Hogares en localidades
-  - Ahorradoras en un banco
-  - Datos en panel
-
-- El supuesto de errores independientes claramente no se cumple
-
---
-
-- Pensemos en un problema simple en sección cruzada para entender la intución:
-
-$$y_{ig}=\beta_0+\beta_1 x_g+e_{ig}$$
-
-- Aquí, $x_g$ es un regresor que es el mismo para todos los miembros del grupo $g$ (como cuando se asigna un tratamiento a todos los miembros del grupo)
-
-- Asumamos que todos los grupos tienen tamaño $n$
-
----
-
-# Errores agrupados
-
-- Podemos mostrar que la correlación de errores entre dos observaciones $i$ y $j$ que pertenecen a $g$ es $$E(e_{ig}e_{jg})=\overbrace{\rho_e}^{\text{coeficiente de correlación intraclase}} \underbrace{\sigma_e^2}_{\text{varianza residual}}$$
-
-- Le damos una estructura aditiva a los errores:
-
-$$e_{ig}=\nu_g+\eta_{ig}$$
-donde $\nu_g$ captura toda la correlación dentro del grupo
-
-- $\eta_{ig}$ es un error idiosincrático con media cero e independiente de cualquier otro $\eta_{jg}$
-
-- Como queremos analizar el problema del agrupamiento, asumimos que tanto $v_g$ y $\eta_{ig}$ son homocedásticos
-
-
----
-
-# Errores agrupados
-
-- Con esta estructura de errores, el coeficiente de correlación intraclase es:
-
-$$\frac{\sigma_{\nu}^2}{\sigma_{\nu}^2+\sigma_{\eta}^2}$$
-- Deberíamos calcular la matriz de varianzas $V_C(\hat{\beta})$ tomando en cuenta esta estructura
-
-
---
-
-- ¿Qué pasa si hacemos MCO en el contexto de este problema?
-
-
-- Moulton (1984) muestra que:
-
-$$\frac{V_C(\hat{\beta})}{V_{MCO}(\hat{\beta})}=1+(n-1)\rho_e$$
-- A $\sqrt{\frac{V_C(\hat{\beta})}{V_{MCO}(\hat{\beta})}}$ se le conoce como el *factor de Moulton*
-
----
-
-# Factor de Moulton
-
-- El factor de Moulton nos dice qué tanto sobreestimamos la precisión al ignorar la correlación entra clase
-
-- Visto de otro modo:
-
-$$V_C(\hat{\beta})=\left(1+(n-1)\rho_e\right)V_{MCO}(\hat{\beta})$$
-
-- Es decir entre más grande sea la correlación dentro de los grupos, más deberíamos *inflar* los errores de MCO
-
---
-
-- Consideremos el caso extremo de que $\rho_e=1$, es decir, que todas las $y_{ig}$ dentro del mismo $g$ son iguales
-
-- Entonces el factor de Moulton es simplemente $\sqrt{n}$
-
-- Y tendríamos que multiplicar por $n$ los errores de MCO:
-
-$$V_C(\hat{\beta})=n V_{MCO}(\hat{\beta})$$
----
-
-# Errores agrupados en general
-
-- En general, $x_{ig}$ varía a nivel individual y tenemos grupos de tamaño $n_g$
-
-- En este caso, el factor de Moulton es la raíz cuadrada de:
-
-$$\frac{V_C(\hat{\beta})}{V_{MCO}(\hat{\beta})}=1+\left(\frac{V(n_g)}{\bar{n}}+\bar{n}-1\right)\rho_x\rho_e$$
-donde $\bar{n}$ es el tamaño promedio del grupo y $\rho_x$ es la correlación intraclase de $x_{ig}$
-
-- No es necesario asumir una forma para $\rho_x$ (se puede calcular)
-
---
-
-- Noten que el error que cometemos es más grande entre más heterogéneo es el tamaño de grupos y entre más grande es $\rho_x$
-
-- Por tanto, cuando el tratamiento no varía entre grupos, este error es grande
-
----
-
-# Soluciones para errores agrupados
-
-- Solución paramétrica: calcular directamente el factor de Moulton e inflar los errores de MCO
-
-- Bootstrap por bloques: en vez de hacer muestras bootrstrap remuestreando individuos, se remuestrean grupos
-
-- Estimar los errores agrupados (*clustered standard errors*)
-
-  - En sección cruzada: geografía, hogares, salones de clase
+- **Estimador de mínimos cuadrados en dos etapas** o **estimador de MGM en un paso**: $W_N=(Z'Z)^{-1}$
   
-  - En panel: individuos, empresas, hogares 
+- En este caso, el estimador de MGM de panel es
+
+$$\hat{\beta}_{MC2E}=(X'Z(Z'Z)^{-1}Z'X)^{-1}(X'Z(Z'Z)^{-1}Z'y)$$
+
+- No se confundan con los nombres
+
+  - Se le llamama de MC2E porque lo podemos obtener, como ya hemos mostrado varias veces, primero obteniendo $\hat{X}_i$ y luego estimando la regresión de $y_i$ sobre estos valores ajustados (aunque nunca hagamos esto en la práctica)
+  
+  - También se le llama de un paso porque se puede obtener simplemente haciendo $W_N=(Z'Z)^{-1}$ en un solo paso
+  
+- La matriz de varianzas robusta es $\hat{V}(\hat{\beta}_{MGM,Panel})$, con $W_N=(Z'Z)^{-1}$
+  
+---
+
+# Estimación
+
+- **Estimador de MGM en dos pasos**: $W_N=\hat{S}^{-1}$
+
+- Habíamos hablado sobre este procedimiento en la [Sesión 13](https://rojasirvin.github.io/ECNII2020/sesiones/s13/sesion13.html#18), cuando introdujimos MGM
+
+  - En un primer paso se obtiene $\beta$ y se obtiene los residuales $\hat{u}_i$ para calcular $\hat{S}=\frac{1}{N}Z_i'\hat{u}_i\hat{u}_i'Z_i$
+  
+  - Obtener $\hat{\beta}_{MGMDP}=\left(X'Z\hat{S}^{-1}Z'X\right)^{-1}X'Z\hat{S}^{-1}Z'y$ y $\hat{V}(\hat{\beta}_{MGMDP})=\left(X'Z(N\hat{S})^{-1}Z'X\right)^{-1}$
+  
+- Este estimador es el más eficiente
 
 
 ---
 
-# Errores estándar agrupados
+# Ganancias de eficiencia
 
-- Es una generalización de la propuesta de White para errores robustos
+- Supongamos exogeneidad estricta de $X$, por lo que $Z=X$
 
-- Si $G\to\infty$, el estimador de la matriz de errores agrupados robusta (CRVE) es consistente para estimar $V(\hat{\beta})$:
+- Aún en este caso podríamos incrementar la eficiencia del estimador al incluir en $Z$ a funciones de $X$ (por ejemplo, potencias) o sus valores rezagados
 
-$$\hat{V}_{CRVE}(\hat{\beta})=(X'X)^{-1}\left(\sum_{g=1}^G X_g'\hat{u}_g\hat{u}_g'X'_g\right)(X'X)^{-1}$$
-donde $\hat{u}_g\hat{u}_g'$ es la matriz de varianzas para los individuos del grupo $g$
+- Por esta razón, al estimador de MGM en dos pasos no le llamamos el estimador óptimo
 
-- El software calcula esta matriz de varianzas haciendo una corrección parecida a $HC1$, pero ahora tomando en cuanta $G$ y no $N$
+---
+
+# Selección de instrumentos
+
+- Los resultados anteriores asumen la existencia de la matriz de instrumentos $Z_i$ de $T\times r$
+
+- Recordemos que la condición para identificación es $E(Z_i'u_i)=0$
+
+- Tendremos más instrumentos entre más supuestos estemos dispuestos a hacer sobre las correlaciones entre $u_{it}$ y $z_{is}$
+
+- A estos supuestos se les llama **supuestos de exogeneidad**
+
+
+---
+
+# Exogeneidad contemporánea
+
+- Asume que los instrumentos están contemporáneamente no correlacionados con el error
+
+$$E(z_{it}u_{it})=0,\quad\quad t=1,\ldots,T$$
+
+- Tenemos $Tr$ condiciones de momentos:
+  
+$$Z_i=\begin{pmatrix}z_{i1}' &  0 & \cdots & 0 \\0 &  z_{i2}' && \vdots \\\vdots & & \ddots & 0 \\0 & \cdots & 0 &z_{iT}'\\\end{pmatrix}$$
+
+---
+
+# Exogeneidad débil
+
+- Podemos usar los valores predeterminados (pasados) como instrumentos
+
+- Asumimos que estos valores rezagados están no correlacionados con el error contemporáneo
+
+$$E(z_{is}u_{is})=0,\quad\quad s\leq t,\quad t=1.\ldots,T$$
+
+---
+
+# Exogeneidad fuerte
+
+- Podemos usar los valores pasados y futuros como instrumentos al asumir que no están correlacionados con el error contemporáneo
+
+$$E(z_{is}u_{is})=0,\quad\quad s,t=1.\ldots,T$$
+
+---
+
+class: inverse, middle, center
+
+# Heterogeneidad no observada y endogeneidad
+
+---
+
+# Heterogeneidad no observada
+
+- Consideremos ahora el modelo con efectos fijos correlacionados y donde algunos regresores son endógenos
+
+$$y_{it}=\alpha_i+x_{it}'\beta++\varepsilon_{it}$$
+
+- El error en este caso será $\alpha_i+\varepsilon{it}$ y el estimador de MCO será incosistente porque $E(x_{it}(\alpha_i+\varepsilon{it}))\neq 0$
+
+---
+
+# Modelo transformado
+
+- Consideremos el modelo transformado de efectos fijos (comúnmente desviaciones con respecto a la media)
+
+$$\tilde{y}_{it}=\tilde{X}_{it}+\tilde{\varepsilon}_{it}$$
+
+- Podemos apilar las observaciones como
+
+$$\tilde{y}_{i}=\tilde{X}_{i}+\tilde{\varepsilon}_{i}$$
+---
+
+# Variables instrumentales
+
+- Siguiendo la lógica de VI en sección cruzada, buscamos instrumentos $Z_i$ que satisfacen $E(Z_i'\tilde{\varepsilon}_i)=0$
+
+- Es decir, buscamos variables que no pertenezcan a la ecuación estructural y que estén correlacionadas con el regresor
+
+- Implementamos directamente los estimadores de MGM vistos anteriormente
 
 --
 
-- El resultado asintótico de consistencia depende de que $G\to\infty$
+- Pero podemos tener más instrumentos usando regresores exógenos en periodos distintos al periodo contemporáno, usando los supuestos de exogeneidad débil o fuerte
 
-- Si $G$ está fijo, no importa qué tan grande sea $N$, $\hat{V}_{CRVE}(\hat{\beta})$ no será consistente
+- Notemos que en el modelo transformado las correlaciones relevantes son entr $Z_{is}$ y el error transformado $\tilde{\varepsilon}_{it}$
 
-- Recuerden que podemos aplicar una LGN a un promedio, pero noten que aquí la suma corre sobre $g$
+---
+
+# Instrumentos para el modelo en desviaciones
+
+- El modelo en desviaciones es
+
+$$y_{it}-\bar{y}_i=(x_{it}-\bar{x}_i)'\beta+(\varepsilon_{it}-\bar{\varepsilon}_i)$$
+
+- Supongamos exogeneidad débil, es decir que $E(z_{is}\varepsilon_{it})=0$ para $s\leq t$
+
+- Por ejemplo, supongamos que $E(z_{is}\varepsilon_{it})\neq 0$ para algunos periodos $s>t$
+
+- Entonces $\bar{\varepsilon}_i$ incluye valores del error que pueden estar correlaciondos con $z_{is}$
+
+--
+
+- **No** podemos usar usar VI si asumimos exogeneidad débil en el modelo within
+
+- En el modelo within debemos asumir exogeneidad estricta
+
+---
+
+# Instrumentos para el modelo en diferencias
+
+- El modelo en diferencias es
+
+$$y_{it}-y_{it-1}=(x_{it}-x_{it-1})'\beta+(\varepsilon_{it}-\varepsilon_{it-1}),\quad\quad t=2,\ldots,T$$
+
+- Si asumimos exogeneidad débil $E(z_{is}\varepsilon_{it})=0$ para $s\leq t$, entonces $E(z_{is}(\varepsilon_{it}-\varepsilon_{it-1}))=0$ para $s\leq t-1$
+
+- Es decir, podemos usar $z_{it-1}, z_{it-2},\ldots$ como instrumentos
+
+--
+
+- $\beta$ queda estimado de forma consistente bajo exogeneidad débil
+
+---
+
+# Instrumentos para el modelo de efectos aleatorios
+
+- Supongamos que tenemos instrumentos con $E(u_i|Z_i)=0$ y $V(u_i|Z_i=\Omega_i)$
+
+- De manera análoga a como hicimos con el modelo de efectos aleatorios en una sección cruzada, podemos escribir el modelo transformado como
+
+$$y_{it}-\hat{\lambda}\bar{y}_i=(x_{it}-\hat{\lambda}\bar{x}_i)'\beta+((1-\hat{\lambda})\alpha_i+(\varepsilon_{it}-\bar{\varepsilon}_i))$$
+- Podemos estimar el modelo usando $(z_{it}-\hat{\lambda}\bar{z}_i)$ como instrumentos
+
+--
+
+- Este método solo puede ser usado bajo el supuesto de instrumentos con exogeneidad fuerte
+
+---
+
+# Resumen
+
+- Podemos usar instrumentos en el sentido de sección cruzada (variables que no pertenecen a la ecuación estructural)
+
+- Podemos usar los rezagos de los instrumentos (incluyendo a los regresores) como instrumentos adicionales
+
+- Si asumimos un modelo de efectos aleatorios
+
+  - Podemos estimar el modelo transformado asumiendo exogeneidad estricta
+  
+--
+
+- Si asumimos un modelo de efectos fijos
+
+  - Podemos asumir exogeneidad débil y estimar el modelo en diferencias
+  
+  - Podemos asumir exogeneidad estricta y estimar el modelo within
+
+---
+
+class: inverse, middle, center
+
+# Panel dinámico
+
+---
+
+# Panel dinámico
+
+- Modelo con efectos individuales y con el rezago de la variable dependiente como regresor
+
+$$y_{it}=\gamma y_{it-1}+x_{it}'\beta+\alpha_i+\varepsilon_{it},\quad\quad i=1,\ldots,N,\quad t=1,\ldots,T$$
+- Se asume independencia sobre $i$, $\gamma<1$ y errores serialmente no correlacionados
+
+- Tenemos la complicación de que $y_{it-1}$ está correlacionado con el efecto fijo $\alpha_i$ por lo que estimar por MCO produce estimadores inconsistentes de $\gamma$ y $\beta$
 
 
+---
 
+# Fuentes de correlación
+
+- Para ganar intuición, consideremos el modelo con $\beta=0$
+
+$$y_{it}=\gamma y_{it-1}+\alpha_i+\varepsilon_{it},\quad\quad i=1,\ldots,N,\quad t=1,\ldots,T$$
+
+- Si pudiéramos observar $\alpha_i$, condicionamos en $\alpha_i$ y estamos en el mundo de series de tiempo donde el interés recae en estimar $\gamma$
+
+--
+
+- Pero con $\alpha_i$ desconocida, al condicionar en el valor rezagado tenemos:
+
+$$E(y_{it}|y_{it-1})=\gamma y_{it-1}+E(\alpha_i|y_{it-1})$$
+
+- Más aún, la correlación es:
+
+$$corr(y_{it},y_{it-1})=corr(\gamma y_{it-1}+\alpha_i+\varepsilon_{it},y_{it-1})$$
+- Asumiendo que $corr(\varepsilon_{it},y_{it-1})=0$, la expresión anterior se convierte en
+
+$$corr(y_{it},y_{it-1})=\gamma+corr(\alpha_i,y_{it-1})$$
+---
+
+# Fuentes de correlación
+
+- Caso especial de efectos aleatorios: $\varepsilon_{it}\sim[0,\sigma^2_{\varepsilon}]$ y $\\alpha_i\sim[0,\sigma^2_{\alpha}]$
+
+$$corr(y_{it},y_{it-1})=\gamma+\frac{1-\gamma}{1+\frac{\sigma^2_{\varepsilon}(1-\gamma)}{\sigma^2_{\alpha}(1+\gamma)}}$$
+--
+
+- **Dependencia de estado verdadera**: la correlación debida al mecanismo de persistencia de $y_{it-1}$ sobre $y_{it}$
+
+  - Si $\alpha_i=0$, simplemente $corr(y_{it},y_{it-1})=\gamma$
+  
+  - Más generalmente, si 
+  $\sigma^2_{\alpha}$ es muy pequeña con relación a $\sigma^2_{\varepsilon}$, entonces el denominador en la fracción es grande y la correlación se acerca a $\gamma$
+
+--
+
+- **Heterogeneidad no observada**: aún cuando $\gamma=0$, la correlación que se reduce a $corr(y_{it},y_{it-1})=\frac{\sigma^2_{\alpha}}{\sigma^2_{\alpha}+\sigma^2_{\varepsilon}}$
+
+
+---
+
+# Estimación
+
+- MCO produce estimadores inconsistentes pues $y_{it-1}$ incluido como regresor es
+
+$$y_{it-1}=\gamma y_{it-2}+\alpha_i+\varepsilon_{it-1}$$
+es decir, está correlacionado con $\alpha_i$
+
+
+--
+
+- El estimador within también es inconsistente porque el modelo con desviaciones respecto a la media tiene a $(y_{it-1}-\bar{y}_{i,-1})$ como regresor
+
+- Sin embargo, $y_{it-1}$ está correlacionado con $\varepsilon_{it-1}$ y por tanto con $\bar{\varepsilon}_i$
+
+--
+
+- El estimador de efectos aleatorios también es incosistente, como se mostró en el ejemplo con $\beta=0$
+
+---
+
+# Estimador de Arellano-Bond
+
+- Consideremos el modelo en primeras diferencias y tres periodos de datos
+
+
+$$y_{it}-y_{it-1}=\gamma(y_{it-1}-y_{it-2})+(x_{it-}-x_{it-1})'\beta+(\varepsilon_{it}-\varepsilon_{it-1}).\quad\quad t=2,\ldots,T$$
+
+- Noten que $y_{it-1}$ puede usarse como instrumento de $(y_{it-1}-y_{it-2})$ pues no está correlacionado con el error transformado
+
+--
+
+- El **estimador de Arellano-Bond** propone usar todos los rezagos hasta $t$
+
+- Las observaciones de los periodos 1 y 2 se pierden
+
+- Para el periodo 3, solo $y_{i1}$ puede usarse como instrumento
+
+- Para el periodo 4, se pueden usar $y_{i1}$ y $y_{i2}$
+
+- Para el periodo 5, se pueden usar $y_{i1}$, $y_{i2}$ y $y_{i3}$
+
+- También se pueden usar rezagos de $x_{it}$ como instrumentos adicionales
+
+---
+
+# Estimador de Arellano-Bond
+
+- La matriz de instrumentos tendrá la forma
+
+$$Z_i=\begin{pmatrix}z_{i3}' &  0 & \cdots & 0 \\0 &  z_{i4}' && \vdots \\\vdots & & \ddots & 0 \\0 & \cdots & 0 &z_{iT}'\\\end{pmatrix}$$
+donde $z'_{it}=[y_{it-1},y_{it-3},\ldots,y_{i1},x'_{it-1}]$
+
+- Y la estimación se realiza con los métodos de MGM vistos anteriormente
+
+  - MGM en dos etapas (un paso)
+  - MGM en dos pasos
+
+---
+
+class: inverse, middle, center
+
+# Estimador de diferencia en diferencias
+
+---
+
+# Estimador de diferencia en diferencias
+
+- Frecuentemente usado en la literatura de efectos de tratamiento
+
+- Puede ser generalizado a otros contextos
+
+--
+
+- Consideremos un tratamiento binario
+
+$$
+D_{it}=
+\begin{cases}
+1 \quad\quad\text{recibe el tratamiento} \\
+0 \quad\quad\text{no lo recibe} \\
+\end{cases}
+$$
+
+- Supongamos un modelo de efectos fijos
+
+$$y_{it}=\phi D_{it}+\delta_t+\alpha_i+\varepsilon_{it}$$
+
+
+---
+
+#Primeras diferencias
+
+- Expresando el modelo en primeras diferencias podemos eliminar $\alpha_i$
+
+$$\Delta y_{it}=\phi\Delta D_{it}+(\delta_t-\delta_{t-1})+\Delta\varepsilon_{it}$$
+- Podemos estimar el efecto de tratamiento por MCO a este modelo transformado
+
+---
+
+# Diferencia en diferencias
+
+- Consideremos un caso estilizado con dos periodos donde el tratamiento solo ocurre en el segundo de ellos:
+
+  - $D_{i1}=0$ para todos los individuos
+  - $D_{i2}=1$ para los tratados
+  - $D_{i2}=0$ para los no tratados
+
+--
+
+- Como tenemos dos periodos, podemos eliminar el subíndice $t$
+
+$$\Delta y_{i}=\phi D_{i}+\delta+\nu_i$$
+- El **estimador de diferencia en diferencias (DID)** es
+
+$$\hat{\phi}=\Delta\bar{y}^T-\Delta\bar{y}^{NT}$$
+- $\Delta\bar{y}^T$ es la media muestral de $\Delta y_i$ para los tratados (análogo para los no tratados)
+
+---
+
+# Diferencia en diferencias
+
+- El estimador de DID en este caso estilizado consiste en
+
+  - Calcular las diferencias a lo largo de tiempo en los tratados y en los no tratados
+  - Obtener la diferencia entre estas diferencias temporales
+  
+--
+
+- En la práctica, corremos la siguiente regresión
+
+$$y_{it}=\rho_0+\alpha T_i + \delta P_t + \phi T_iP_t+u_{it}$$
+
+donde $T_i$ es indica el haber recibido el tratamiento y $P_t$ es el indicador post intervención
+
+- $\phi$ identifica el efecto por DID
+  
+--
+
+- La expresión anterior deja claro cuál es el supuesto fundamental para que el estimador de DID sea consistente
+
+- $\delta_t=\delta$, es decir, los efectos temporales son comúnes entre los individuos, sin importar su estado de tratamiento
+
+- En otras palabras se asumen **tendencias comunes**
 
 ---
 
 # Próxima sesión
 
-- Lunes: laboratorio sobre bootstrap y errores estándar
+- Hablaremos sobre panel no lineal
 
-- Lunes por la tarde:
+  CT Capítulo 23
 
-- Extensiones a modelos de panel
-
-  - CT, 22.2, 22.4, 22.6
-  
-- Martes:
-
-  - **Panel**: Kagin, J., Taylor, J. E., & Yúnez-Naude, A. (2016). Inverse productivity or inverse efficiency? Evidence from Mexico. *The Journal of Development Studies*, 52(3), 396-411.
-  - **Panel**: Bwalya, S. M. (2006). Foreign direct investment and technology spillovers: Evidence from panel data analysis of manufacturing firms in Zambia. *Journal of development economics*, 81(2), 514-526.
-
-
-- Jueves:
-  
-  - CT, 23.2, 23.4, 23.6, 23.7
-  
 ---
 
 class: center, middle

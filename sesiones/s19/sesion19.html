@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Modelos no lineales en panel</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.4/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: title-slide
+
+
+
+&lt;style type="text/css"&gt;
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+&lt;/style&gt;
+
+
+.title[
+# Sesión 19. Modelos no lineales en panel
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas &lt;br&gt; División de Economía
+]
+
+---
+
+# Agenda
+
+- Abrir la posibilidad a modelos no lineales con datos en panel
+
+- Explorar las formas generales de solución
+
+- Analizar casos específicos con solucones específicas
+
+---
+
+class: inverse, middle, center
+
+# ¿Qué modelamos?
+
+---
+
+# ¿Qué modelamos?
+
+- Vale la pena hacer explícito algo que hasta ahora hemos hecho pero no le hemos puesto nombre
+
+--
+
+- Algunas veces hemos modelado de forma completamente parámetrica a los procesos especificando una densidad condicional
+
+  - Por ejemplo en probit y logit
+
+- Otras veces hemos asumido simplemente la forma funcional de la media condicional
+
+  - Por ejemplo en Poisson
+
+---
+
+# Modelos paramétricos
+
+- Especificamos un model de efectos fijos individuales como
+
+`$$f(y_{it}|\alpha_i,x_{it})=f(y_{it},\alpha_i+x'_{it}\beta,\gamma)$$`
+
+donde `\(\gamma\)` son los otros parámetros que caracterizan a la distribución, como puede ser la varianza
+
+- Este también es un modelo de *un solo índice*
+
+- Por ahora asumimos independencia entre las `\(i\)` y sobre `\(t\)`
+
+---
+
+# Modelos para la media condicional
+
+- Podemos también especificar un modelo para la media condicional con un componente individual no observado
+
+`$$E(y_{it}|\alpha_i,x_{it})=g(\alpha_i,x_{it},\beta),\quad\quad i=1,\ldots,N,\quad t=1,\ldots,T$$`
+--
+
+- Dependiendo de cómo especificamos `\(g\)` podemos tener
+
+- **Modelo de efectos individuales aditivos**: `\(g(\alpha_i,x_{it},\beta)=\alpha_i+g(x_{it},\beta)\)`
+
+- **Modelo de efectos individuales multiplicativo**: `\(g(\alpha_i,x_{it},\beta)=\alpha_ig(x_{it},\beta)\)`
+
+- **Modelo de un solo índice**: `\(g(\alpha_i,x_{it},\beta)=g(\alpha_i+x_{it}'\beta)\)`
+
+
+---
+
+class: middle, inverse, center
+
+# Modelo de efectos fijos
+
+---
+
+# Modelo de efectos fijos
+
+- Como hemos analizado antes, en un modelo de efectos fijos asumimos que hay efectos individuales `\(\alpha_i\)` potencialmente correlacionados con los regresores `\(x_{it}\)`
+
+- Consideremos el caso de un panel corto con `\(N\to\infty\)`
+
+  - En este caso, los parámetros `\(\alpha_i\)` son muchos y su estimación depende de `\(T\)` observaciones
+  
+  - Estos parámetros no pueden ser estimados consistentemente
+  
+--
+  
+- A los parámetros como `\(\alpha_i\)` Neyman &amp; Scott (1948) les llaman **parámetros incidentales**, mientras que a `\(\beta\)` y `\(\gamma\)` les llaman **parámetros comunes**
+
+- El **problema de los parámetros incidentales** es que *contaminan* la estimación de los parámetros comunes
+
+  - Esto ocurre aún cuando para estimar los parámetros comunes se usan `\(NT\to\infty\)` observaciones
+
+---
+
+# Modelo de efectos fijos
+
+- En otras palabras, el problema de los parámetros incidentales es que con paneles cortos es que no podemos estimar consistentemente los parámetros de la siguiente verosimilitud
+
+`$$f(y_i|X_i,\alpha_i,\beta.\gamma)=\prod_t f(y_{it}|x_{it},,\alpha_i,\beta,\gamma)$$`
+
+
+--
+
+- Cuando hay parámetros incidentales, buscamos métodos para eliminarlos y estimar consistentemente los parámetros comunes
+
+---
+
+# Verosimilitud condicional
+
+- Una forma de deshacernos de los parámetros incidentales es haciendo uso del siguiente resultado
+
+- Supongamos que `\(s_i\)` es una **estadística suficiente** para `\(\alpha_i\)`, entonces 
+
+`$$f(y_i|X_i,\alpha_i,\beta.\gamma,s_i)=f(y_i|X_i,\beta,\gamma,s_i)$$`
+
+--
+
+- Es decir, al condicionar sobre `\(s_i\)`, `\(\alpha_i\)` ya no aparece en la verosimilitud
+
+- Podemos entonces estima 
+
+`$$\mathcal{L}^{cond}_N(\beta,\gamma)=\sum_i \ln f(y_i|X_i,\beta,\gamma,s_i)$$`
+
+
+---
+
+class: middle, inverse, center
+
+# Modelos de efectos aleatorios
+
+---
+
+# Modelos de efectos aleatorios
+
+- Cuando podemos usar modelos de efectos aleatorios, especificamos una distribución para `\(\alpha_i\)`
+
+- Se elimina `\(\alpha_i\)` al integrar sobre su distribución
+
+--
+
+- Supongamos que la densidad para la observación `\(i\)` es `\(f(y_i|X_i,\alpha_i,\beta,\gamma)\)`
+
+- Supongamos que el efecto aleatorio tiene densidad `\(\alpha_i\sim g(\alpha_i|\nu)\)` que no depende de los regresores
+
+- La **densidad conjunta no condicional** de la observación `\(i\)` será
+
+`$$f(y_i|X_i,\beta,\gamma,\nu)=\int\left(\prod^T_{t=1}f(y_it|x_{it},\alpha_i,\beta,\gamma)\right)g(\alpha_i|\nu)d\alpha_i$$`
+- `\(f(y_i|X_i,\beta,\gamma,\nu)\)` se obtiene por métodos numéricos o de simulación
+
+- En la práctica, se especifica a `\(f\)` como la función que mejor ajustaría los datos sin efectos individuales y a `\(g\)` como una densidad normal
+
+---
+
+class: inverse, middle, center
+
+# Modelos de variable dependiente binaria
+
+---
+
+# Modelos de variable dependiente binaria
+
+- La extensión a los modelos de sección cruzada que vimos anteriormente es:
+
+`$$P(y_{it}=1|x_{it},\beta,\alpha_i)=F(\alpha_i+x'_{it}\beta)$$`
+
+- En este caso, la densidad para la observación `\(i\)` es
+
+`$$f(y_{it}|X_i,\beta,\alpha_i)=\prod_t F(\alpha_i+x'_{it}\beta)^{y_{it}}(1-F(\alpha_i+x'_{it}\beta))^{1-y_{it}}$$`
+
+--
+
+- Veremos que dependiendo de lo que asumamos sobre los errores, podemos usar ciertos modelos específicos
+
+---
+
+# Efectos aleatorios
+
+- Si no hay efectos fijos, podemos plantear un modelo de variable dependiente binaria con efectos aleatorios normales, `\(\alpha_i\sim \mathcal{N}(0,\sigma^2_{\alpha})\)`
+
+- Y planteamos la log verosimilitud
+
+`$$\mathcal{L}_N=\sum_i \ln f(y_i|X_i,\beta,\sigma^2_{\alpha})$$`
+- La densidad `\(f(y_i|X_i,\beta,\sigma^2_{\alpha})\)` se obtiene integrando `\(f(y_{it}|X_i,\beta,\alpha_i)\)` con respecto a la distribución de `\(\alpha_i\)` 
+
+`$$f(y_i|X_i,\beta,\sigma^2_{\alpha})=\int f(y_i|X_i,\beta,\alpha_i) \frac{1}{2\pi\sigma^2_{\alpha}}exp\left(\frac{-\alpha_i}{2\sigma^2_{\alpha}}\right)^2 d\alpha_i$$`
+--
+
+- Para estimar los parámetros, elegimos una forma para `\(F\)` (probit o logit)
+
+- Primero se debe estimar `\(f(y_i|X_i,\beta,\sigma^2_{\alpha})\)` numéricamente
+
+---
+
+# Efectos fijos
+
+- En presencia de efectos fijos, no podemos usar el método de especificar una densidad
+
+---
+
+# Próxima sesión
+
+- Dos presentaciones
+
+  - **Panel**: Bwalya, S. M. (2006). Foreign direct investment and technology spillovers: Evidence from panel data analysis of manufacturing firms in Zambia. *Journal of development economics*, 81(2), 514-526.
+  
+  - **Bootstrap**: Li, H., &amp; Maddala, G. S. (1999). Bootstrap variance estimation of nonlinear functions of parameters: an application to long-run elasticities of energy demand. *Review of Economics and Statistics*, 81(4), 728-733.
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": null,
+"scroll": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,460 @@
+---
+title: "Errores estándar e inferencia"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "15 de octubre de 2020"
+mathspec: true
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+```
+
+
+.title[
+# Sesión 18. Errores estándar e inferencia
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+# Agenda
+
+1. En esta sesión nos concentraremos en la estimación de errores estándar
+
+1. Definiremos los estimadores de la matriz de varianzas robusta usadas por los programas más usados
+
+1. Estudiaremos el uso de rutinas bootstrap para la estimación de errores estándar
+
+1. Estudiaremos las implicaciones de los datos agrupados en la estimación de errores estándar
+
+---
+
+class: inverse, middle, center
+
+# Errores estándar no estándar
+
+---
+
+# Errores estándar robustos
+
+- Recordemos que con errores homocedásticos, la matriz de varianzas del estimador de MCO puede ser estimada como:
+
+$$\Omega_{MCO}=\hat{\sigma}^2(X'X)^{-1}$$
+donde $\hat{\sigma}^2=\frac{1}{N-k}\hat{e}_i^2$ y $\hat{e}_i^2=(y_i-X_i'\hat{\beta}_{MCO})^2$
+
+--
+
+- Una primera *desviación*  respecto a los errores clásicos ocurre cuando relajamos el supuesto de homocedasticidad
+
+- En la [sesión 2](https://rojasirvin.github.io/ECNII2020/sesiones/s2/sesion2.html#33) estudiamos de manera general las propiedades asintóticas del estimador de MCO
+
+- La varianza asintótica es:
+
+$$V(\hat{\beta})=(X'X)^{-1}X'\Omega X(X'X)^{-1}$$
+
+- Un estimador de la varianza del estimador de MCO que no asume homocedasticidad es el estimador propuesto por White (1980)
+
+---
+
+# Errores estándar robustos
+
+- Dependiendo de cómo se especifique $\Omega$, obtenemos distintas versiones del estimador de varianzas robusto
+
+- La propuesta de White original es:
+
+$$HC0:\quad\hat{\omega}_i=\hat{e}_i^2$$
+- Este estimador asintóticamente consistente
+
+--
+
+- En muestras pequeñas, muchas veces se emplea la siguiente corrección:
+
+$$HC1:\quad\hat{\omega}_i=\frac{N}{N-k}\hat{e}_i^2$$
+---
+
+# Desviación a la influencia
+
+- Un par de resultados nos ayudarán a entender qué hacen las otras correcciones a la matriz robusta en el software
+
+- Definimos la **influencia** de la observación $i$ como:
+
+$$h_{ii}=X_i'(X'X)^{-1}X_i$$
+
+- $h_{ii}$ nos dice qué tanto *jala* la observación $i$ a la línea de regresión
+
+- En una regresión con un solo regresor $x$, se puede mostrar que la influencia de la observación $i$ es:
+
+$$h_{ii}=\frac{1}{N}+\frac{(x_i-\bar{x})2}{\sum(x_j-\bar{x})^2}$$
+es decir, que la influencia se incrementa cuando $x_i$ se aleja de la media
+
+- La influencia es un número entre 0 y 1
+
+---
+
+# Errores estándar robustos
+
+- Algunos autores sugieren usar la influencia en la matriz de varianzas robusta
+
+- Se proponen algunas alternativas:
+
+$$HC2:\quad\hat{\omega}_i=\frac{1}{1-h_{ii}}\hat{e}_i^2$$
+
+$$HC3:\quad\hat{\omega}_i=\frac{1}{(1-h_{ii})^2}\hat{e}_i^2$$
+
+--
+
+- Long & Ervin (2000) condujeron un experimento de simulación y recomendaron usar $HC3$ en muestras pequeñas, por lo que el paquete *sandwich* en R usa $HC3$ por default
+
+- Es importante tener en cuenta qué tipo de errores estándar piden que el software calcule
+
+---
+
+class: inverse, middle, center
+
+# Bootstrap
+
+---
+
+# Bootstrap
+
+- A veces es difícil encontrar una expresión analítica de los errores estándar
+
+- La idea de las técnicas bootstrap es consutrir una distribución empírica del estimador de interés
+
+- Una muestra bootstrap es una muestra tomada de los mismos datos
+
+--
+
+- En las rutinas para errores bootstrap, pensamos en $\{(y_1,x_1),\ldots,(y_N,X_n)\}$ como la población
+
+- Una muestra bootstrap es una muestra de tamaño $N$ tomada de la muestra original
+
+--
+
+- El procedimiento bootstrap más usado es el boostrap no paramétrico o boostrap en parejas (nos enfocaremos en este tipo de bootstrap en el curso)
+
+- La idea es remuestrear la pareja completa $(y_i,x_i)$
+
+---
+
+# Algoritmo para errores estándar bootstrap
+
+1. Dada una muestra $W_1,\ldots,W_N$, obtener una muestra de tamaño $N$, remuestreando de la muestra original **con reemplazo**
+
+1. Calcular el estadístico $\hat{\theta}_b$ usado con la muestra bootstrap (coeficiente de regresión, diferencia de medias, función de coeficientes)
+
+1. Repetir los pasos 1 y 2 $B$ veces, donde $B$ es lo suficientemente grande (usualmente 1000 es suficiente)
+
+1. Usar las $B$ repeticiones para obtener el error estándar del estadístico como la raíz cuadrada de $s^2_{\hat{\theta},B}$:
+
+$$s^2_{\hat{\theta},B}=\frac{1}{B-1}\sum_{b=1}^B(\hat{\theta}_{b}-\bar{\hat{\theta}})^2$$
+donde $\bar{\hat{\theta}}=\frac{1}{B}\sum_{b=1}^B\hat{\theta}_b$
+
+---
+
+# Refinamiento asintótico
+
+- Una aplicación de las técnicas bootstrap es el *refinamiento asintótico* de la prueba $t$ de coeficientes de regresión
+
+- Supongamos que $H_0:\quad \beta=0$ y trabajamos con un nivel $\alpha$ 
+
+--
+
+- En cada repetición bootstrap el estadístico calculado es $t_b$
+
+- Ordenamos los $B$ estadísticos obtenidos
+
+- Rechazamos $H_0$ si $|t|$ está por encima del $(1-\alpha)$ésimo percentil de los $|t_b|$ en la distribución bootstrap
+
+--
+
+- A pesar de sus propiedades teóricas, el refinamiento asintótico es poco usado
+
+---
+
+# Aplicaciones comunes de bootstrap
+
+- Métodos de varias etapas (por ejemplo, el estimador de dos etapas de Heckman)
+
+- Funciones de estimadores (aunque aquí el método Delta también podría ser usado)
+
+- Datos agrupados con pocos grupos
+
+--
+
+- El consejo práctico es usar resultados teóricos cuando se puede (por ejemplo, las matrices robustas descritas antes)
+
+- Pensemos siempre en la estructura de los datos antes de hacer boostrap
+
+- Usar una semilla siempre para poder reproducir sus resultados
+
+
+
+---
+
+# Bootstrap salvaje
+
+- En presencia de heterocedasticidad se prefiere usar bootstrap salvaje (*wild bootstrap*) ([MacKinnon, 2012](https://link.springer.com/chapter/10.1007%2F978-1-4614-1653-1_17#enumeration))
+
+- Propuesto originalmente por Liu (1988), cada muestra bootstrap tiene la siguiente forma:
+
+$$y_i^*=X_i\hat{\beta}+f(\hat{u}_i)v_i^*$$
+- Noten que mantiene fijos los $X_i$ en cada muestra bootstrap
+
+--
+
+- Una especificación comúnmente usada es hacer es $f(\hat{u}_i)=\hat{u}_i$ y 
+$$v_i^*=\begin{cases} 1 \quad\text{con probabilidad 0.5} \\ -1 \quad\text{con probabilidad 0.5} \end{cases}$$
+
+- $\hat{\beta}$ y $\hat{u}_i$ son estimados con la muestra original
+
+---
+
+# Bootstrap salvaje
+
+- En cada una de las $B$ muestras bootstrap, mantenemos a los mismos individuos (no hay remuestreo)
+
+- Tendremos $B$ muestras bootstrap, pero ahora la aleatoriedad viene por $f(\hat{u}_i)v_i^*$
+
+- Pueden usarse otras funciones más complicadas para $f(\hat{u}_i)$
+
+- La ventaja de este método es que conserva la relación entre las varianzas residuales y las $X_i$ observadas en los datos originales
+
+- [Davidson & Flachaire (2008)](https://www.sciencedirect.com/science/article/pii/S0304407608000833) utilizan simulaciones para mostrar que con esta forma para $f(\hat{u}_i)v_i^*$ la inferencia es más confiable que con otras especificaciones
+
+---
+
+# Otras aplicaciones
+
+- Bootstrap jacknife (útil para problemas con errores agrupados y pocos grupos)
+
+
+---
+
+class: inverse, middle, center
+
+# Errores agrupados
+
+---
+
+# Errores agrupados
+
+- Surgen naturalmente cuando las observaciones están agrupadas
+
+  - Niños en salones de clase
+  - Hogares en localidades
+  - Ahorradoras en un banco
+  - Datos en panel
+
+- El supuesto de errores independientes claramente no se cumple
+
+--
+
+- Pensemos en un problema simple en sección cruzada para entender la intución:
+
+$$y_{ig}=\beta_0+\beta_1 x_g+e_{ig}$$
+
+- Aquí, $x_g$ es un regresor que es el mismo para todos los miembros del grupo $g$ (como cuando se asigna un tratamiento a todos los miembros del grupo)
+
+- Asumamos que todos los grupos tienen tamaño $n$
+
+---
+
+# Errores agrupados
+
+- Podemos mostrar que la correlación de errores entre dos observaciones $i$ y $j$ que pertenecen a $g$ es $$E(e_{ig}e_{jg})=\overbrace{\rho_e}^{\text{coeficiente de correlación intraclase}} \underbrace{\sigma_e^2}_{\text{varianza residual}}$$
+
+- Le damos una estructura aditiva a los errores:
+
+$$e_{ig}=\nu_g+\eta_{ig}$$
+donde $\nu_g$ captura toda la correlación dentro del grupo
+
+- $\eta_{ig}$ es un error idiosincrático con media cero e independiente de cualquier otro $\eta_{jg}$
+
+- Como queremos analizar el problema del agrupamiento, asumimos que tanto $v_g$ y $\eta_{ig}$ son homocedásticos
+
+
+---
+
+# Errores agrupados
+
+- Con esta estructura de errores, el coeficiente de correlación intraclase es:
+
+$$\frac{\sigma_{\nu}^2}{\sigma_{\nu}^2+\sigma_{\eta}^2}$$
+- Deberíamos calcular la matriz de varianzas $V_C(\hat{\beta})$ tomando en cuenta esta estructura
+
+
+--
+
+- ¿Qué pasa si hacemos MCO en el contexto de este problema?
+
+
+- Moulton (1984) muestra que:
+
+$$\frac{V_C(\hat{\beta})}{V_{MCO}(\hat{\beta})}=1+(n-1)\rho_e$$
+- A $\sqrt{\frac{V_C(\hat{\beta})}{V_{MCO}(\hat{\beta})}}$ se le conoce como el *factor de Moulton*
+
+---
+
+# Factor de Moulton
+
+- El factor de Moulton nos dice qué tanto sobreestimamos la precisión al ignorar la correlación entra clase
+
+- Visto de otro modo:
+
+$$V_C(\hat{\beta})=\left(1+(n-1)\rho_e\right)V_{MCO}(\hat{\beta})$$
+
+- Es decir entre más grande sea la correlación dentro de los grupos, más deberíamos *inflar* los errores de MCO
+
+--
+
+- Consideremos el caso extremo de que $\rho_e=1$, es decir, que todas las $y_{ig}$ dentro del mismo $g$ son iguales
+
+- Entonces el factor de Moulton es simplemente $\sqrt{n}$
+
+- Y tendríamos que multiplicar por $n$ los errores de MCO:
+
+$$V_C(\hat{\beta})=n V_{MCO}(\hat{\beta})$$
+---
+
+# Errores agrupados en general
+
+- En general, $x_{ig}$ varía a nivel individual y tenemos grupos de tamaño $n_g$
+
+- En este caso, el factor de Moulton es la raíz cuadrada de:
+
+$$\frac{V_C(\hat{\beta})}{V_{MCO}(\hat{\beta})}=1+\left(\frac{V(n_g)}{\bar{n}}+\bar{n}-1\right)\rho_x\rho_e$$
+donde $\bar{n}$ es el tamaño promedio del grupo y $\rho_x$ es la correlación intraclase de $x_{ig}$
+
+- No es necesario asumir una forma para $\rho_x$ (se puede calcular)
+
+--
+
+- Noten que el error que cometemos es más grande entre más heterogéneo es el tamaño de grupos y entre más grande es $\rho_x$
+
+- Por tanto, cuando el tratamiento no varía entre grupos, este error es grande
+
+---
+
+# Soluciones para errores agrupados
+
+- Solución paramétrica: calcular directamente el factor de Moulton e inflar los errores de MCO
+
+- Bootstrap por bloques: en vez de hacer muestras bootrstrap remuestreando individuos, se remuestrean grupos
+
+- Estimar los errores agrupados (*clustered standard errors*)
+
+  - En sección cruzada: geografía, hogares, salones de clase
+  
+  - En panel: individuos, empresas, hogares 
+
+
+---
+
+# Errores estándar agrupados
+
+- Es una generalización de la propuesta de White para errores robustos
+
+- Si $G\to\infty$, el estimador de la matriz de errores agrupados robusta (CRVE) es consistente para estimar $V(\hat{\beta})$:
+
+$$\hat{V}_{CRVE}(\hat{\beta})=(X'X)^{-1}\left(\sum_{g=1}^G X_g'\hat{u}_g\hat{u}_g'X'_g\right)(X'X)^{-1}$$
+donde $\hat{u}_g\hat{u}_g'$ es la matriz de varianzas para los individuos del grupo $g$
+
+- El software calcula esta matriz de varianzas haciendo una corrección parecida a $HC1$, pero ahora tomando en cuanta $G$ y no $N$
+
+--
+
+- El resultado asintótico de consistencia depende de que $G\to\infty$
+
+- Si $G$ está fijo, no importa qué tan grande sea $N$, $\hat{V}_{CRVE}(\hat{\beta})$ no será consistente
+
+- Recuerden que podemos aplicar una LGN a un promedio, pero noten que aquí la suma corre sobre $g$
+
+
+
+
+---
+
+# Próxima sesión
+
+- Lunes: laboratorio sobre bootstrap y errores estándar
+
+- Lunes por la tarde:
+
+- Extensiones a modelos de panel
+
+  - CT, 22.2, 22.4, 22.6
+  
+- Martes:
+
+  - **Panel**: Kagin, J., Taylor, J. E., & Yúnez-Naude, A. (2016). Inverse productivity or inverse efficiency? Evidence from Mexico. *The Journal of Development Studies*, 52(3), 396-411.
+  - **Panel**: Bwalya, S. M. (2006). Foreign direct investment and technology spillovers: Evidence from panel data analysis of manufacturing firms in Zambia. *Journal of development economics*, 81(2), 514-526.
+
+
+- Jueves:
+  
+  - CT, 23.2, 23.4, 23.6, 23.7
+  
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
