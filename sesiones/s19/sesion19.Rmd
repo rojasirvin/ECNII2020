@@ -189,6 +189,18 @@ $$f(y_i|X_i,\alpha_i,\beta.\gamma,s_i)=f(y_i|X_i,\beta,\gamma,s_i)$$
 
 $$\mathcal{L}^{cond}_N(\beta,\gamma)=\sum_i \ln f(y_i|X_i,\beta,\gamma,s_i)$$
 
+---
+
+# Verosimilitud condicional
+
+
+- Una estadística $t$ es **suficiente** para el parámetro $\theta$ si la distribución de la muestra condicional en $t$ no depende de $\theta$
+
+- En este caso, estamos buscando una estadística suficiente para el parámetro $\alpha_i$ tal que, al condicionar en esta estadística suficiente, la distribución de los datos ya no dependa de $\alpha_i$
+
+- Este enfoque por tanto depende de que exista la estadística suficiente, lo cual no está garantizado para todos los modelos
+
+  - Sí existen estadísticas suficientes para la familia lineal exponencial
 
 ---
 
@@ -241,7 +253,7 @@ $$f(y_{it}|X_i,\beta,\alpha_i)=\prod_t F(\alpha_i+x'_{it}\beta)^{y_{it}}(1-F(\al
 
 ---
 
-# Efectos aleatorios
+# Efectos aleatorios con variable dependiente binaria
 
 - Si no hay efectos fijos, podemos plantear un modelo de variable dependiente binaria con efectos aleatorios normales, $\alpha_i\sim \mathcal{N}(0,\sigma^2_{\alpha})$
 
@@ -255,23 +267,190 @@ $$f(y_i|X_i,\beta,\sigma^2_{\alpha})=\int f(y_i|X_i,\beta,\alpha_i) \frac{1}{2\p
 
 - Para estimar los parámetros, elegimos una forma para $F$ (probit o logit)
 
-- Primero se debe estimar $f(y_i|X_i,\beta,\sigma^2_{\alpha})$ numéricamente
+- $f(y_i|X_i,\beta,\sigma^2_{\alpha})$ se estima numéricamente
 
 ---
 
-# Efectos fijos
+# Efectos fijos con variable dependiente binaria
 
 - En presencia de efectos fijos, no podemos usar el método de especificar una densidad
+
+- Podemos usar los resultados de la **densidad condicional** para estimar el **logit con efectos fijos** usando los resultados derivados por Chamberlain (1980)
+
+- **No** existe tal cosa como un probit con efectos fijos
+
+---
+
+# Efectos fijos con variable dependiente binaria
+
+- Chamberlain (1980) mostró que una estadística suficiente para $\alpha$ es $c=\sum_t y_t$, es decir, el número de veces que la variable dependiente toma el valor de 1
+
+- Pero hay muchas formas en que la variable dependiente puede tomar el valor $c$
+
+- Definamos el conjunto $B_c=\{d_i | \sum_t d_{it}=\sum_t y_{it}=c \}$ como el conjunto de posibles secuencias de 0s y 1s con las que se puede obtener $c$
+
+  - Por ejempllo, si $T=2$ y $c=1$, el conjunto $B_c$ incluye las secuencias $\{0,1\}$ y $\{1,0\}$
+
+- El resultado clave de Chamberlain (1980) es que al condicionar en $c$, se eliminar $\alpha_i$ y se obtiene la densidad
+
+$$f(y_i|\sum_t y_{it}=c,x_i,\beta)=\frac{exp((cx'_{it})\beta)}{\sum_{d\in B_c}exp((\sum_t d_{it}x'_{it})\beta)}$$
+
+
+---
+
+# Resumen para modelos binarios
+
+- Si asumimos efectos aleatorios
+
+  - Podemos asumir una distribución para los efectos individuales y estimar por máxima verosimilitud
+  
+--
+
+- Si asumimos efectos fijos
+
+  - Recurrimos a la verosimilitud condicional
+  
+  - No siempre es posible implementar la verosimilitud condicional
+  
+  - Se puede usar el logit con efectos fijos, pero no el probit
+
+
+---
+
+class: inverse, middle, center
+
+# Modelos censurados
+
+---
+
+# Modelo censurado
+
+- La versión panel para el modelo censurado es
+
+$$y^*_{it}=\alpha_i+x'_{it}\beta+\varepsilon_{it}$$
+con $\varepsilon_{it}\sim\mathcal{N}(0,\sigma^2_{\varepsilon})$
+
+- La densidad para la observación $i$, $y_i=(y_{i1},\ldots,y_{iT})$ es
+
+$$f(y_i|X_i,\alpha_i,\beta,\sigma^2_{\varepsilon})=\prod_T\left(\frac{1}{\sigma_{\varepsilon}}\phi_{it}\right)^{d_{it}}\left(1-\Phi_{it}\right)^{1-d_{it}}$$
+---
+
+# Tobit con efectos aleatorios
+
+- Proponemos una distribución para la heterogeneidad, $\alpha_i\sim\mathcal{N}(0,\sigma^2_{\alpha})$ 
+
+- Maximizamos la log verosimilitud
+
+$$f(y_i|X_i,\beta,\sigma^2_{\varepsilon},\sigma^2_{\alpha})=\int f(y_i|X_i,\alpha_i,\beta,\sigma^2_{\varepsilon}) \frac{1}{\sqrt{2\pi\sigma^2_{\alpha}}}exp\left(\frac{-\alpha_i}{2\sigma^2_{\varepsilon}}\right)^2 d\alpha_i$$
+---
+
+# Tobit con efectos fijos
+
+- Con páneles cortos, maximizar $f(y_i|X_i,\alpha_i,\beta,\sigma^2_{\varepsilon})$ directamente produce estimadores incosnsitentes debido al problema de parámetros incidentales
+
+- Sin embargo, Heckman & MaCurdy usan un Tobit con efectos fijos y argumentan que con $T=8$ la incosnsitencia no es muy severa
+
+---
+
+# Resumen para modelos censaurados
+
+- Si asumimos efectos aleatorios, podemos estimar el modelo usando la verosimilitud e integrando sobre la distribución de $\alpha_i$
+
+--
+
+- Si asumimos efectos fijos, en general no podemos estimar consistentemente los parámetros
+
+  - Con páneles *no tan cortos* la inconsistencia puede ser menos severa
+  
+  - Usar con precaución
+  
+---
+
+class: inverse, middle, center
+
+# Modelos de selección
+
+---
+
+# Modelos de selección
+
+- Un modelo de selección en panel presenta efectos individuales en la ecuación de resultados y en la de selección
+
+$$
+\begin{aligned}
+y^*_{it}=\alpha_i+x'_{it}\beta+\varepsilon_{it} \\
+d^*_{it}=\delta_i+z'_{it}\gamma+\nu_{it}
+\end{aligned}
+$$
+- Si asumimos efectos aleatorios, se propone una densidad normal para $\alpha_i$ y otra para $\delta_i$ y se maximiza una log verosimilitud con una doble integral
+
+--
+
+- Si se asume un modelo de efectos fijos, en general no se puede estimar la verosimilitud por el problema de los parámetros incidentales
+
+
+---
+
+class: inverse, middle, center
+
+# Modelos de conteo
+
+---
+
+# Modelos de conteo
+
+- La media condicional en el caso panel es
+
+$$E(y_{it}|\alpha_i,x_{it})=exp(\gamma+x'_{it}\beta)=\alpha_iexp(x'_{it}\beta)$$
+- Esto es, la media condicional la podemos especificar como un modelo de un solo índice o como un modelo de efectos multiplicativos
+
+---
+
+# Modelos de conteo con efectos aleatorios
+
+- Si asumimos efectos aleatorios, hay una diversidad de modelos que surgen al darle diferentes formas a la distribución de $\alpha_i$
+
+
+
+---
+
+# Modelos de conteo con efectos fijos
+
+- La log verosimilitud del problema es 
+
+$$\mathcal{L}_N(\beta,\alpha)=\sum\left(-\alpha_i\sum_t\lambda_{it}+\ln \alpha_i\sum_t y_{it}+\sum_t \ln \lambda_{it} - \sum_t \ln y_{it}!\right)$$
+con $\lambda_{it}=exp(x'_{it}\beta)$
+
+- Si maximizamos la log verosimilitud derivando con respecto a $\alpha$ obtenemos que el estimador para los efectos fijos es
+
+$$\hat{\alpha}_i=\sum_t y_{it}/\sum_t \lambda_{it}$$
+---
+
+# Modelos de conteo con efectos fijos
+
+- Al sustituir este resultado de nuevo en la función de log verosimilitud se obtiene una log **versimilitud concentrada**:
+
+$$\mathcal{L}_{N,conc}(\beta)\propto\sum_i\sum_t\left(y_{it}\ln\lambda_{it}-y_{it}\ln\left(\sum \lambda_{is}\right)\right)$$
+- Es decir, con un panel Poisson no existe el problema de los parámetros incidentales
+
 
 ---
 
 # Próxima sesión
 
-- Dos presentaciones
+- Presentación sobre bootstrap
+
+  - **Bootstrap**: Li, H., & Maddala, G. S. (1999). Bootstrap variance estimation of nonlinear functions of parameters: an application to long-run elasticities of energy demand. *Review of Economics and Statistics*, 81(4), 728-733.
+
+- Presentaciones de aplicaciones de panel
 
   - **Panel**: Bwalya, S. M. (2006). Foreign direct investment and technology spillovers: Evidence from panel data analysis of manufacturing firms in Zambia. *Journal of development economics*, 81(2), 514-526.
   
-  - **Bootstrap**: Li, H., & Maddala, G. S. (1999). Bootstrap variance estimation of nonlinear functions of parameters: an application to long-run elasticities of energy demand. *Review of Economics and Statistics*, 81(4), 728-733.
+  - **Panel Poisson**: Castillo, J. C., Mejía, D., & Restrepo, P. (2020). Scarcity without leviathan: The violent effects of cocaine supply shortages in the mexican drug war. *Review of Economics and Statistics*, 102(2), 269-286.
+  
+  - **Panel + VI**: Antman, F. M. (2011). The intergenerational effects of paternal migration on schooling and work: What can we learn from children's time allocations?. *Journal of Development Economics*, 96(2), 200-208.
+
+
 
 ---
 
