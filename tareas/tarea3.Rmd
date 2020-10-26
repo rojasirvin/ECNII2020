@@ -81,7 +81,7 @@ a. [5 puntos] Compruebe que en un modelo de efectos fijos las características q
 
 a. [5 puntos] Compruebe que el estimador de efectos fijos es equivalente a MCO sobre el modelo en diferencias con respecto a la media. Para esto, conserve dos años consecutivos de datos y solo observaciones que tengan datos para salarios y experiencia en los dos años que elija. Luego estime por MCO el modelo con variables transformadas.
 
-a. [5 puntos] Compruebe que el estimador de efectos fijos es equivalente a MCO sobre el modelo en primeras diferencias. Parta de la muestra con dos años de la parte d. para estimar por MCO el modelo con variables transformadas.
+a. [5 puntos] Compruebe que el estimador de efectos fijos es equivalente a MCO sobre el modelo en primeras diferencias. Parta de la muestra con dos años de la parte f. para estimar por MCO el modelo con variables transformadas.
 
 # Pregunta 3
 
