@@ -1,0 +1,124 @@
+---
+title: |
+  | CIDE
+  | Maestría en Economía
+  | Econometría II
+
+subtitle: "Tarea 3"
+author: "Profesor: Irvin Rojas"
+date: "Fecha de entrega: 12 de noviembre a las 11:00."
+output:
+  html_document:
+  toc: true
+---
+  
+## Instrucciones
+  
+La tarea debe entregarse de manera individual, pero se recomienda ampliamente colaborar en grupos de estudio. Las secciones teóricas deben estar desarrolladas en un procesador de textos y enviadas en formato .docx o .pdf. Alternativamente, puede escribir sus respuestas en lápiz y papel, con letra legible y adjuntar un escaneo de sus respuestas. Las secciones prácticas deberán contener archivos de código replicable y archivos de salida en R (o similares, en caso de usar otro software) para considerarse completas. Las tareas deben entregarse antes de la fecha límite a través de Teams. Puede crear una carpeta comprimida que contenga todos sus archivos y subir esta carpeta en Teams. Recuerde que en Teams debe asegurarse de que los archivos se han subido correctamente.
+
+## Pregunta 1
+
+Considere la base de datos *comportamiento_wide.csv*. Esta base contiene información individual de niñas y niños, incluyendo su género, edad, raza e información de sus madres. Además, se incluye una medida auto reportada de autoestima (**self**) y una evaluación de comportamiento antisocial (**anti**). Se quiere conocer cómo influye la autoestima en el comportamiento antisocial. Para cada niño o niña hay tres observaciones en el tiempo. Se busca explicar el comportamiento antisocial en función de la autoestima y la condición de pobreza (**pov**):
+
+$$anti_{it}=\alpha_i+\beta_1 self_{it}+\beta_2 pov_{it}+\varepsilon_{it}$$
+
+a. [3 puntos] La base se encuentra en formato *wide*. Ponga la base en formato *long*, donde haya una columna para cada variable y donde las filas representen a un individuo en un periodo.
+
+a. [2 puntos] Estime la ecuación de comportamiento antisocial empleando MCO *pooled*. ¿Cuáles son los supuestos que se deben cumplir para que $\hat{\beta}_1^{MCO}$ sea consistente?
+
+a. [5 puntos] Estime la ecuación de comportamiento antisocial empleando efectos fijos. ¿Cuáles son los supuestos que se deben cumplir para que $\hat{\beta}_1^{FE}$ sea consistente?
+
+a. [5 puntos] Estime la ecuación de comportamiento antisocial empleando efectos aleatorios. ¿Cuáles son los supuestos que se deben cumplir para que$\hat{\beta}_1^{RE}$ sea consistente?
+
+a. [5 puntos] Se desea incorporar en el análisis el género (**gender**) y una variable dicotómica para los hispanos (**hispanic**). Indique qué modelo usaría y estime dicho modelo.
+
+a. [5 puntos] Regrese al modelo que incluye solo la autoestima y el estado de pobreza como covariables. Realice una prueba de Hausman para determinar si se prefiere un modelo de efectos fijos o uno de efectos aleatorios.
+
+# Pregunta 2
+
+Cuando trabajamos con datos en panel tenemos dos fuentes de variación. Como los individuos difieren entre sí, por ejemplo, algunos tienen mayor habilidad que otros o algunos tienen mayor salario que otros, la primer fuente de variación es la que proviene de comparar entre unidades. Esta primer fuente de variación es la **variación between**. La variación between se define como:
+
+$$s^2_B=\frac{1}{N-1}\sum_i(\bar{x}_i-\bar{x})^2$$
+
+En la expresión anterior $\bar{x}_i=\frac{1}{T}\sum_t x_{it}$ es el promedio de la característica $x$ para un individuo a lo largo del tiempo. Por tanto, $(\bar{x}_i-\bar{x})$ compara esta característica promedio con el promedio de todos los individuos $\bar{x}=\frac{1}{NT}\sum_i\sum_t x_{it}$.
+
+La segunda fuente de variación surge porque las características de los individuos varían a lo largo del tiempo. A esta variación se le llama **variación within**. La variación within se define como:
+
+$$s_W^2=\frac{1}{NT-1}\sum_i\sum_t(x_{it}-\bar{x}_i)^2$$
+Así, la varianza total se define como:
+
+$$s_O^2=\frac{1}{NT-1}\sum_i\sum_t(x_{it}-\bar{x})\approx s^2_B+s^2_W$$
+Considere la base de datos *individuos_empleo_wide.csv*. Esta base de datos contiene información de trabajadores relativa a su salario, su educación y experiencia. En este ejercicio comprobará los resultados vistos en clase respecto al modelo de efectos fijos.
+
+a. [1 puntos] La base de datos está en formato *wide*. Coloque sus datos en formato *long*.
+
+a. [2 puntos] ¿Cómo es la variación *within* y *between* en esta variable? ¿Cuál es mayor y por qué? Para responder a esta pregunta, implemente la siguiente función[^1]:
+
+    ```{r include=T, echo=T, eval=F}
+XTSUM <- function(data, varname, unit) {
+  varname <- enquo(varname)
+  loc.unit <- enquo(unit)
+  ores <- data %>% summarise(ovr.mean=mean(!! varname, na.rm=TRUE), ovr.sd=sd(!! varname, na.rm=TRUE), ovr.min = min(!! varname, na.rm=TRUE), ovr.max=max(!! varname, na.rm=TRUE), ovr.N=sum(as.numeric((!is.na(!! varname)))))
+  bmeans <- data %>% group_by(!! loc.unit) %>% summarise(meanx=mean(!! varname, na.rm=T), t.count=sum(as.numeric(!is.na(!! varname))))
+  bres <- bmeans %>% ungroup() %>% summarise(between.sd = sd(meanx, na.rm=TRUE), between.min = min(meanx, na.rm=TRUE), between.max=max(meanx, na.rm=TRUE), Units=sum(as.numeric(!is.na(t.count))), t.bar=mean(t.count, na.rm=TRUE))
+  wdat <- data %>% group_by(!! loc.unit) %>% mutate(W.x = scale(!! varname, scale=FALSE))
+  wres <- wdat %>% ungroup() %>% summarise(within.sd=sd(W.x, na.rm=TRUE), within.min=min(W.x, na.rm=TRUE), within.max=max(W.x, na.rm=TRUE))
+  return(list(ores=ores,bres=bres,wres=wres))
+}
+```
+[^1]: Propuesta [aquí](https://stackoverflow.com/questions/49282083/xtsum-command-for-r).
+
+    Posteriormente, estime la varianza within, between y total como sigue:
+
+    ```{r include=T, echo=T, eval=F}
+XTSUM(data=DATA, varname=x, unit=id)
+    ```
+a. [2 puntos] Repita el procedimiento anterior para la variable **black**. ¿Qué sucede en este caso?
+
+a. [5 puntos] Para estudiar la regresión entre salario y experiencia se propone estudiar el siguiente modelo: $$wage_{it}=\alpha_i+\beta exper_{it}+\varepsilon_{it}$$ Compruebe que el estimador de efectos fijos es equivalente a MCO con dummies de individuos.
+
+a. [5 puntos] Compruebe que en un modelo de efectos fijos las características que no varían en el tiempo no pueden ser identificadas. Use la variable **black** para comprobarlo.
+
+a. [5 puntos] Compruebe que el estimador de efectos fijos es equivalente a MCO sobre el modelo en diferencias con respecto a la media. Para esto, conserve dos años consecutivos de datos y solo observaciones que tengan datos para salarios y experiencia en los dos años que elija. Luego estime por MCO el modelo con variables transformadas.
+
+a. [5 puntos] Compruebe que el estimador de efectos fijos es equivalente a MCO sobre el modelo en primeras diferencias. Parta de la muestra con dos años de la parte d. para estimar por MCO el modelo con variables transformadas.
+
+# Pregunta 3
+
+La librería *ExPanDaR* es muy útila para visualizar datos en formato de panel. Use la base en formato *long* que construyó para la pregunta 2.
+
+a. [5 puntos] Use la función *ExPanD* para crear una aplicación interactiva que le permita explorar sus datos. Un aspecto que puede apreciar es el porcentaje de datos faltantes. ¿Qué variable tiene el mayor porcentaje de *NA*?
+
+a. [5 puntos] No siempre es útil crear una aplicación interactiva. Usando funciones, puede crear aspectos específicos objetos en la aplicación interactiva y trabajar con ellos de acuerdo a sus necesidades. Por ejemplo, use la función *prepare_missing_values_graph* de este paquete para visualizar el porcentaje de datos faltantes.
+
+# Pregunta 4
+
+Considere la base de datos *tarea_examen.csv*. Esta base contiene información sobre 519 estudiantes en 23 escuelas. Nos interesa la relación entre el tiempo dedicado a realizar la tarea (**tiempo**) y el resultado de un examen de econometría (**calificacion**). Las variables **escuela_id** y **estudiante_id** identifican a las escuelas y los estudiantes, respectivamente. El modelo a estimar es el siguiente:
+
+$$calificacion_{is}=\alpha+\beta tiempo_{is}+\varepsilon_{is}$$
+donde $i$ indexa a los estudiantes y $s$ indexa a las escuelas.
+
+a. [3 puntos] ¿Por qué decimos que estos datos están agrupados?
+
+a. [2 puntos] Estime la ecuación de calificación usando MCO ignorando la agrupación de datos. ¿Qué concluye?
+
+a. [3 puntos] Estime la ecuación de calificación usando MCO y errores robustos a heteroscedasticidad. ¿Qué cambia y por qué?
+
+a. [2 puntos] Estime la ecuación de calificación usando MCO y variables indicadoras de escuela. ¿Qué resuelve este procedimiento?
+
+a. [5 puntos] Estime la ecuación de calificación usando MCO y con errores agrupados a nivel escuela. ¿Qué resuelve este procedimiento?
+
+a. [5 puntos] Estime la ecuación de calificación usando MCO, variables indicadoras de escuela y con errores agrupados a nivel escuela. ¿Qué resuelve este procedimiento?
+
+# Pregunta 5
+
+Considere la base *capital_trabajo.csv*. Con una función de producción Cobb-Douglas las participaciones del capital y el trabajo en el valor de la producción se pueden estimar usando una regresión lineal. En algunas aplicaciones es de interés conocer el cociente de las participaciones estimadas.
+
+a. [10 puntos] Usando 500 repeticiones bootstrap estime el error estándar del cociente capital-trabajo. Para ello realice el siguiente procedimiento:
+    i. Genere una matriz vacía de 500 filas para coleccionar sus relaciones estimadas.
+    i. En cada una de las repeticiones obtenga una muestra con remplazo a partir de la muestra original.
+    i. Estime por MCO los coeficientes sobre el log del capital y el log del trabajo. La variable dependiente es el log del valor de la producción. Calcule el cociente de los coeficientes estimados. Guarde el cociente en la matriz.
+    i. Repita ii. y iii. 500 veces.
+    i. Calcule la desviación estándar de los cocientes estimados. 
+
+a. [10 puntos] Compruebe que su cálculo aproxima el error estándar obtenido con el étodo Delta. Para ello, después de estimar la ecuación del valor de la producción con la muestra original puede usar la función *deltaMethod* del paquete *car*.

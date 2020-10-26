@@ -433,6 +433,9 @@ $$\hat{\alpha}_i=\sum_t y_{it}/\sum_t \lambda_{it}$$
 $$\mathcal{L}_{N,conc}(\beta)\propto\sum_i\sum_t\left(y_{it}\ln\lambda_{it}-y_{it}\ln\left(\sum \lambda_{is}\right)\right)$$
 - Es decir, con un panel Poisson no existe el problema de los parámetros incidentales
 
+---
+
+# Resumen para modelos de conteo
 
 ---
 
