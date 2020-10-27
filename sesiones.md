@@ -34,6 +34,11 @@
 
 [Sesión 19](https://rojasirvin.github.io/ECNII2020/sesiones/s19/sesion19.html#1). Modelos no lineales en panel
 
+[Sesión 20](https://rojasirvin.github.io/ECNII2020/sesiones/s20/sesion20.html#1). Diferencia en diferencias
+
+[Sesión 21](https://rojasirvin.github.io/ECNII2020/sesiones/s21/sesion21.html#1). Aplicaciones de modelos de panel
+
+
 <!---
 
 commented

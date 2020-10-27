@@ -1,0 +1,106 @@
+.remark-slide-content {
+  border-top: 0px solid #007935;
+  border-bottom: 0px solid #007935;
+  font-size: 1.5em;
+  padding: 20px 60px;
+}
+
+.remark-slide-content > h1 {
+  margin-top: 20px;
+  margin-bottom: 0px;
+}
+
+.inverse {
+  background-color: #007935;
+  border:none;
+  font-color: #fff;
+  text-shadow: none;
+}
+
+.inverse, .inverse h1, .inverse h2, .inverse a {
+  color: #fff;
+}
+
+.inverse h3 {
+  color: #000;
+}
+
+.inverse code {
+  color: #E1E000;
+}
+
+.footnote {
+  border-top: 1px solid #007935;
+  font-size: 0.6em;
+}
+
+.remark-code-line-highlighted { background-color: rgba(225, 224, 0, 0.6); }
+
+h1, h2 {
+  color: #007935;
+}
+
+h3 {
+  color: #47484D;
+  margin: 0px;
+  padding: 0px;
+}
+
+code {
+  color: #007935;
+}
+
+a {
+  color: #3F97B5;
+  text-decoration: none;
+  transition: all .2s ease-in-out;
+}
+
+a:hover {
+    font-size: 1.2em;
+    color: #EC008C;
+}
+
+.remark-slide-number {
+  font-size: 0.6em;
+}
+
+.title-slide {
+  background-image: url(https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/122010/logo_cide_verde.png?itok=NUstTkpt);
+  background-position: 50% 50%;
+  background-size: 150px;
+  border: 0px solid #154733;;
+}
+
+.title-slide h1 {
+  padding-top: 10px;
+  font-size: 60px;
+  text-align: center;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+
+.title-slide h2 {
+  font-size: 40px;
+  text-align: center;
+  padding-top: 0px;
+  margin-top: 0px;
+  padding-bottom: 120px;
+  margin-bottom: 120px;
+}
+
+.title-slide h3 {
+  font-size: 30px;
+  color: #26272A;
+  text-align: center;
+  text-shadow: none;
+  padding: 18px;
+  margin: 0px;
+  line-height: 1;
+}
+
+.title-slide .remark-slide-number {
+  display: none;
+}
+
+.mjx-chtml { font-size: 100% !important; }

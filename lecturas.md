@@ -62,7 +62,7 @@ Todas las lecturas son obligatorias pues permiten una discusión informada en la
 + **Panel + VI**: Antman, F. M. (2011). The intergenerational effects of paternal migration on schooling and work: What can we learn from children's time allocations?. *Journal of Development Economics*, 96(2), 200-208.
 
 *Semana 11*
-+ CT, Capítulo 17 (secciones 17.1 – 17.4 u 17.6-17.11).
++ CT, Capítulo 17 (secciones 17.1 – 17.4 y 17.6-17.11).
 + **Riesgo**: De Uña-Alvarez, J., Otero-Giráldez, M. S., & Alvarez-Llorente, G. (2003). Estimation under length-bias and right-censoring: an application to unemployment duration analysis for married women. *Journal of Applied Statistics*, 30(3), 283-291.
 
 *Semana 12*

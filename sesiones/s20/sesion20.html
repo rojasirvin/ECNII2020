@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Diferencia en diferencias</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.5/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+    <script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: title-slide
+
+
+
+&lt;style type="text/css"&gt;
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+&lt;/style&gt;
+
+
+.title[
+# Sesión 20. Diferencia en diferencias
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas &lt;br&gt; División de Economía
+]
+
+---
+
+class: inverse, middle, center
+
+# Estimador de diferencia en diferencias
+
+---
+
+# Estimador de diferencia en diferencias
+
+- Frecuentemente usado en la literatura de efectos de tratamiento
+
+- Puede ser generalizado a otros contextos
+
+--
+
+- Consideremos un tratamiento binario
+
+- Hay unidades que reciben un tratamiento o intervención y otras que no
+
+- Tenemos datos en panel, pre y post intervención
+
+- En la formulación más simple, el tratamiento ocurre en algún momento entre el periodo 1 y el periodo `\(T\)` afectando a todas las unidades tratadas al mismo tiempo
+
+---
+
+# Dobles diferencias
+
+- Consideremos el siguiente modelo con efectos fijos `\(\phi_i\)` y efectos temporales `\(\delta_t\)`
+
+`$$y_{it,0}=\phi_i+\delta_t+\varepsilon_{it}$$`
+- Supongamos un efecto constante de tratamiento
+
+`$$y_{it,1}=y_{it,0}+\alpha$$`
+
+- Por tanto, la variable observada es
+
+
+$$
+`\begin{aligned}
+y_{it}&amp;=(1-D_{it})y_{it,0}+D_{it}y_{it,1} \\
+&amp;=\phi_i+\delta_t+\alpha D_{it}+\varepsilon_{it}
+\end{aligned}`
+$$
+donde `\(D_{it}\)` es un indicador de si la unidad `\(i\)` es tratada en el periodo `\(t\)`
+
+---
+
+# Dobles diferencias
+- Calculemos entonces el valor esperado dado el tratamiento, suponiendo que `\(t=\{post\;pre}\)`
+
+  - `\(E(y_{i,post}|D_{i,post}=1)=\phi_i+\delta_{post}+\alpha\)`
+  
+  - `\(E(y_{i,post}|D_{i,post}=0)=\phi_i+\delta_{post}\)`
+  
+  - `\(E(y_{i,pre}|D_{i,post}=1)=\phi_i+\delta_{pre}\)`
+  
+  - `\(E(y_{i,pre}|D_{i,post}=0)=\phi_i+\delta_{pre}\)`
+
+
+- Por tanto
+
+$$
+`\begin{aligned}
+E(y_{i,post}-y_{i,pre}|D_{i,post}=1)-E(y_{i,post}-y_{i,pre}|D_{i,post}=0)&amp;=(\phi_i+\delta_{post}+\alpha-\phi-\delta{pre})-(\phi_i+\delta_{post}-\phi_i-\delta_{pre}) \\
+&amp;=\alpha+(\delta_{post}-\delta_{pre})-(\delta_{post}-\delta_{pre}) \\
+&amp;=\alpha
+\end{aligned}`
+$$
+
+---
+
+# Formulación general
+
+
+$$
+D_{it}=
+`\begin{cases}
+1 \quad\quad\text{recibe el tratamiento} \\
+0 \quad\quad\text{no lo recibe} \\
+\end{cases}`
+$$
+
+- Supongamos un modelo de efectos fijos
+
+`$$y_{it}=\phi D_{it}+\delta_t+\alpha_i+\varepsilon_{it}$$`
+
+
+---
+
+# Primeras diferencias
+
+- Expresando el modelo en primeras diferencias podemos eliminar `\(\alpha_i\)`
+
+`$$\Delta y_{it}=\phi\Delta D_{it}+(\delta_t-\delta_{t-1})+\Delta\varepsilon_{it}$$`
+- Podemos estimar el efecto de tratamiento por MCO a este modelo transformado
+
+---
+
+# Diferencia en diferencias
+
+- Consideremos un caso estilizado con dos periodos donde el tratamiento solo ocurre en el segundo de ellos:
+
+  - `\(D_{i1}=0\)` para todos los individuos
+  - `\(D_{i2}=1\)` para los tratados
+  - `\(D_{i2}=0\)` para los no tratados
+
+--
+
+- Como tenemos dos periodos, podemos eliminar el subíndice `\(t\)`
+
+`$$\Delta y_{i}=\phi D_{i}+\delta+\nu_i$$`
+
+- Podemos estiamar `\(\phi\)` con una regresión de `\(\Delta y_i\)` sobre el intercepto y la dummy `\(D_i\)`
+
+
+- El **estimador de diferencia en diferencias (DID)** es
+
+`$$\hat{\phi}=\Delta\bar{y}^T-\Delta\bar{y}^{NT}$$`
+- `\(\Delta\bar{y}^T\)` es la media muestral de `\(\Delta y_i\)` para los tratados (análogo para los no tratados)
+
+---
+
+# Diferencia en diferencias
+
+- El estimador de DID en este caso estilizado consiste en
+
+  - Calcular las diferencias a lo largo de tiempo en los tratados y en los no tratados
+  - Obtener la diferencia entre estas diferencias temporales
+  
+--
+
+- En la práctica, corremos la siguiente regresión
+
+`$$y_{it}=\rho_0+\alpha T_i + \delta P_t + \phi T_iP_t+u_{it}$$`
+
+donde `\(T_i\)` es indica el haber recibido el tratamiento y `\(P_t\)` es el indicador post intervención
+
+- `\(\phi\)` es el estimador de DID
+  
+--
+
+- La expresión anterior deja claro cuál es el supuesto fundamental para que el estimador de DID sea consistente
+
+- `\(\delta_t=\delta\)`, es decir, los efectos temporales son comúnes entre los individuos, sin importar su estado de tratamiento
+
+- En otras palabras se asumen **tendencias comunes**
+
+
+---
+
+class: inverse, middle, center
+
+# Conclusión sobre modelos de panel
+
+---
+
+# ¿Cómo encaja lo he aprendido?
+
+1. Panel lineal
+
+  - Es lo que todo economista debe saber
+  
+  - Muy probablemente usaré panel en mi tesina por lo que debo saber qué estoy asumiendo al estimar FE, RE o *pooled*
+  
+  - Debo saber manipular datos en panel para hacer análisis básico e implementar FE, RE y *pooled* en algún software
+  
+
+1. Panel y VI
+
+  - Es probable que necesite resolver un problema de endogeneidad en mi tesina
+  
+  - Debo saber escoger qué tipo de estimador usaré, dependiendo de lo que quiero asumir y de lo que no
+  
+1. Panel no lineal
+
+  - Puedo usarlos solo en casos muy específicos y con ciertos supuestos
+
+---
+
+# Próxima sesión
+
+- Comenzaremos a hablar sobre modelos de riesgo
+
+  - CT, Capítulo 17 (secciones 17.1 – 17.4 y 17.6-17.11)
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": null,
+"scroll": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,269 @@
+---
+title: "Diferencia en diferencias"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "22 de octubre de 2020"
+mathspec: true
+header-includes:
+  - \usepackage{amsmath}
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+```
+
+
+.title[
+# Sesión 20. Diferencia en diferencias
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+
+class: inverse, middle, center
+
+# Estimador de diferencia en diferencias
+
+---
+
+# Estimador de diferencia en diferencias
+
+- Frecuentemente usado en la literatura de efectos de tratamiento
+
+- Puede ser generalizado a otros contextos
+
+--
+
+- Consideremos un tratamiento binario
+
+- Hay unidades que reciben un tratamiento o intervención y otras que no
+
+- Tenemos datos en panel, pre y post intervención
+
+- En la formulación más simple, el tratamiento ocurre en algún momento entre el periodo 1 y el periodo $T$ afectando a todas las unidades tratadas al mismo tiempo
+
+---
+
+# Dobles diferencias
+
+- Consideremos el siguiente modelo con efectos fijos $\phi_i$ y efectos temporales $\delta_t$
+
+$$y_{it,0}=\phi_i+\delta_t+\varepsilon_{it}$$
+- Supongamos un efecto constante de tratamiento
+
+$$y_{it,1}=y_{it,0}+\alpha$$
+
+- Por tanto, la variable observada es
+
+
+$$
+\begin{aligned}
+y_{it}&=(1-D_{it})y_{it,0}+D_{it}y_{it,1} \\
+&=\phi_i+\delta_t+\alpha D_{it}+\varepsilon_{it}
+\end{aligned}
+$$
+donde $D_{it}$ es un indicador de si la unidad $i$ es tratada en el periodo $t$
+
+---
+
+# Dobles diferencias
+- Calculemos entonces el valor esperado dado el tratamiento, suponiendo que $t=\{post\;pre}$
+
+  - $E(y_{i,post}|D_{i,post}=1)=\phi_i+\delta_{post}+\alpha$
+  
+  - $E(y_{i,post}|D_{i,post}=0)=\phi_i+\delta_{post}$
+  
+  - $E(y_{i,pre}|D_{i,post}=1)=\phi_i+\delta_{pre}$
+  
+  - $E(y_{i,pre}|D_{i,post}=0)=\phi_i+\delta_{pre}$
+
+
+- Por tanto
+
+$$
+\begin{aligned}
+E(y_{i,post}-y_{i,pre}|D_{i,post}=1)-E(y_{i,post}-y_{i,pre}|D_{i,post}=0)&=(\phi_i+\delta_{post}+\alpha-\phi-\delta{pre})-(\phi_i+\delta_{post}-\phi_i-\delta_{pre}) \\
+&=\alpha+(\delta_{post}-\delta_{pre})-(\delta_{post}-\delta_{pre}) \\
+&=\alpha
+\end{aligned}
+$$
+
+---
+
+# Formulación general
+
+
+$$
+D_{it}=
+\begin{cases}
+1 \quad\quad\text{recibe el tratamiento} \\
+0 \quad\quad\text{no lo recibe} \\
+\end{cases}
+$$
+
+- Supongamos un modelo de efectos fijos
+
+$$y_{it}=\phi D_{it}+\delta_t+\alpha_i+\varepsilon_{it}$$
+
+
+---
+
+# Primeras diferencias
+
+- Expresando el modelo en primeras diferencias podemos eliminar $\alpha_i$
+
+$$\Delta y_{it}=\phi\Delta D_{it}+(\delta_t-\delta_{t-1})+\Delta\varepsilon_{it}$$
+- Podemos estimar el efecto de tratamiento por MCO a este modelo transformado
+
+---
+
+# Diferencia en diferencias
+
+- Consideremos un caso estilizado con dos periodos donde el tratamiento solo ocurre en el segundo de ellos:
+
+  - $D_{i1}=0$ para todos los individuos
+  - $D_{i2}=1$ para los tratados
+  - $D_{i2}=0$ para los no tratados
+
+--
+
+- Como tenemos dos periodos, podemos eliminar el subíndice $t$
+
+$$\Delta y_{i}=\phi D_{i}+\delta+\nu_i$$
+
+- Podemos estiamar $\phi$ con una regresión de $\Delta y_i$ sobre el intercepto y la dummy $D_i$
+
+
+- El **estimador de diferencia en diferencias (DID)** es
+
+$$\hat{\phi}=\Delta\bar{y}^T-\Delta\bar{y}^{NT}$$
+- $\Delta\bar{y}^T$ es la media muestral de $\Delta y_i$ para los tratados (análogo para los no tratados)
+
+---
+
+# Diferencia en diferencias
+
+- El estimador de DID en este caso estilizado consiste en
+
+  - Calcular las diferencias a lo largo de tiempo en los tratados y en los no tratados
+  - Obtener la diferencia entre estas diferencias temporales
+  
+--
+
+- En la práctica, corremos la siguiente regresión
+
+$$y_{it}=\rho_0+\alpha T_i + \delta P_t + \phi T_iP_t+u_{it}$$
+
+donde $T_i$ es indica el haber recibido el tratamiento y $P_t$ es el indicador post intervención
+
+- $\phi$ es el estimador de DID
+  
+--
+
+- La expresión anterior deja claro cuál es el supuesto fundamental para que el estimador de DID sea consistente
+
+- $\delta_t=\delta$, es decir, los efectos temporales son comúnes entre los individuos, sin importar su estado de tratamiento
+
+- En otras palabras se asumen **tendencias comunes**
+
+
+---
+
+class: inverse, middle, center
+
+# Conclusión sobre modelos de panel
+
+---
+
+# ¿Cómo encaja lo he aprendido?
+
+1. Panel lineal
+
+  - Es lo que todo economista debe saber
+  
+  - Muy probablemente usaré panel en mi tesina por lo que debo saber qué estoy asumiendo al estimar FE, RE o *pooled*
+  
+  - Debo saber manipular datos en panel para hacer análisis básico e implementar FE, RE y *pooled* en algún software
+  
+
+1. Panel y VI
+
+  - Es probable que necesite resolver un problema de endogeneidad en mi tesina
+  
+  - Debo saber escoger qué tipo de estimador usaré, dependiendo de lo que quiero asumir y de lo que no
+  
+1. Panel no lineal
+
+  - Puedo usarlos solo en casos muy específicos y con ciertos supuestos
+
+---
+
+# Próxima sesión
+
+- Comenzaremos a hablar sobre modelos de riesgo
+
+  - CT, Capítulo 17 (secciones 17.1 – 17.4 y 17.6-17.11)
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
