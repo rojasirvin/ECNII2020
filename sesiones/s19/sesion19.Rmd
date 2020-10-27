@@ -291,7 +291,7 @@ $$f(y_i|X_i,\beta,\sigma^2_{\alpha})=\int f(y_i|X_i,\beta,\alpha_i) \frac{1}{2\p
 
   - Por ejempllo, si $T=2$ y $c=1$, el conjunto $B_c$ incluye las secuencias $\{0,1\}$ y $\{1,0\}$
 
-- El resultado clave de Chamberlain (1980) es que al condicionar en $c$, se eliminar $\alpha_i$ y se obtiene la densidad
+- El resultado clave de Chamberlain (1980) es que al condicionar en $c$, se elimina $\alpha_i$ y se obtiene la densidad
 
 $$f(y_i|\sum_t y_{it}=c,x_i,\beta)=\frac{exp((cx'_{it})\beta)}{\sum_{d\in B_c}exp((\sum_t d_{it}x'_{it})\beta)}$$
 
@@ -352,7 +352,7 @@ $$f(y_i|X_i,\beta,\sigma^2_{\varepsilon},\sigma^2_{\alpha})=\int f(y_i|X_i,\alph
 
 ---
 
-# Resumen para modelos censaurados
+# Resumen para modelos censurados
 
 - Si asumimos efectos aleatorios, podemos estimar el modelo usando la verosimilitud e integrando sobre la distribución de $\alpha_i$
 

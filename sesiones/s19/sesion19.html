@@ -4,9 +4,11 @@
     <title>Modelos no lineales en panel</title>
     <meta charset="utf-8" />
     <meta name="author" content="Irvin Rojas" />
-    <script src="libs/header-attrs-2.4/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.5/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+    <script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
     <link rel="stylesheet" href="libs/cide.css" type="text/css" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
@@ -243,7 +245,7 @@ class: inverse, middle, center
 
 - Para estimar los parámetros, elegimos una forma para `\(F\)` (probit o logit)
 
-- Primero se debe estimar `\(f(y_i|X_i,\beta,\sigma^2_{\alpha})\)` numéricamente
+- `\(f(y_i|X_i,\beta,\sigma^2_{\alpha})\)` se estima numéricamente
 
 ---
 
@@ -267,7 +269,7 @@ class: inverse, middle, center
 
   - Por ejempllo, si `\(T=2\)` y `\(c=1\)`, el conjunto `\(B_c\)` incluye las secuencias `\(\{0,1\}\)` y `\(\{1,0\}\)`
 
-- El resultado clave de Chamberlain (1980) es que al condicionar en `\(c\)`, se eliminar `\(\alpha_i\)` y se obtiene la densidad
+- El resultado clave de Chamberlain (1980) es que al condicionar en `\(c\)`, se elimina `\(\alpha_i\)` y se obtiene la densidad
 
 `$$f(y_i|\sum_t y_{it}=c,x_i,\beta)=\frac{exp((cx'_{it})\beta)}{\sum_{d\in B_c}exp((\sum_t d_{it}x'_{it})\beta)}$$`
 
@@ -328,7 +330,7 @@ con `\(\varepsilon_{it}\sim\mathcal{N}(0,\sigma^2_{\varepsilon})\)`
 
 ---
 
-# Resumen para modelos censaurados
+# Resumen para modelos censurados
 
 - Si asumimos efectos aleatorios, podemos estimar el modelo usando la verosimilitud e integrando sobre la distribución de `\(\alpha_i\)`
 
@@ -409,6 +411,9 @@ con `\(\lambda_{it}=exp(x'_{it}\beta)\)`
 `$$\mathcal{L}_{N,conc}(\beta)\propto\sum_i\sum_t\left(y_{it}\ln\lambda_{it}-y_{it}\ln\left(\sum \lambda_{is}\right)\right)$$`
 - Es decir, con un panel Poisson no existe el problema de los parámetros incidentales
 
+---
+
+# Resumen para modelos de conteo
 
 ---
 
@@ -422,9 +427,9 @@ con `\(\lambda_{it}=exp(x'_{it}\beta)\)`
 
   - **Panel**: Bwalya, S. M. (2006). Foreign direct investment and technology spillovers: Evidence from panel data analysis of manufacturing firms in Zambia. *Journal of development economics*, 81(2), 514-526.
   
-- **Panel Poisson**: Castillo, J. C., Mejía, D., &amp; Restrepo, P. (2020). Scarcity without leviathan: The violent effects of cocaine supply shortages in the mexican drug war. *Review of Economics and Statistics*, 102(2), 269-286.
-
-- **Panel + VI**: Antman, F. M. (2011). The intergenerational effects of paternal migration on schooling and work: What can we learn from children's time allocations?. *Journal of Development Economics*, 96(2), 200-208.
+  - **Panel Poisson**: Castillo, J. C., Mejía, D., &amp; Restrepo, P. (2020). Scarcity without leviathan: The violent effects of cocaine supply shortages in the mexican drug war. *Review of Economics and Statistics*, 102(2), 269-286.
+  
+  - **Panel + VI**: Antman, F. M. (2011). The intergenerational effects of paternal migration on schooling and work: What can we learn from children's time allocations?. *Journal of Development Economics*, 96(2), 200-208.
 
 
 
