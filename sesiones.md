@@ -38,6 +38,8 @@
 
 [Sesión 21](https://rojasirvin.github.io/ECNII2020/sesiones/s21/sesion21.html#1). Aplicaciones de modelos de panel
 
+[Sesión 22](https://rojasirvin.github.io/ECNII2020/sesiones/s22/sesion22.html#1). Modelos de duración
+
 
 <!---
 
