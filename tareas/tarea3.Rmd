@@ -52,7 +52,7 @@ Considere la base de datos *individuos_empleo_wide.csv*. Esta base de datos cont
 
 a. [1 puntos] La base de datos está en formato *wide*. Coloque sus datos en formato *long*.
 
-a. [2 puntos] ¿Cómo es la variación *within* y *between* en esta variable? ¿Cuál es mayor y por qué? Para responder a esta pregunta, implemente la siguiente función[^1]:
+a. [2 puntos] ¿Cómo es la variación *within* y *between* de la variable **wage**? ¿Cuál es mayor y por qué? Para responder a esta pregunta, implemente la siguiente función[^1]:
 
     ```{r include=T, echo=T, eval=F}
 XTSUM <- function(data, varname, unit) {
