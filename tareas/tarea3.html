@@ -460,7 +460,7 @@ Econometría II</div></h1>
 <p><span class="math display">\[s_O^2=\frac{1}{NT-1}\sum_i\sum_t(x_{it}-\bar{x})\approx s^2_B+s^2_W\]</span> Considere la base de datos <em>individuos_empleo_wide.csv</em>. Esta base de datos contiene información de trabajadores relativa a su salario, su educación y experiencia. En este ejercicio comprobará los resultados vistos en clase respecto al modelo de efectos fijos.</p>
 <ol style="list-style-type: lower-alpha">
 <li><p>[1 puntos] La base de datos está en formato <em>wide</em>. Coloque sus datos en formato <em>long</em>.</p></li>
-<li><p>[2 puntos] ¿Cómo es la variación <em>within</em> y <em>between</em> en esta variable? ¿Cuál es mayor y por qué? Para responder a esta pregunta, implemente la siguiente función<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>:</p>
+<li><p>[2 puntos] ¿Cómo es la variación <em>within</em> y <em>between</em> de la variable <strong>wage</strong>? ¿Cuál es mayor y por qué? Para responder a esta pregunta, implemente la siguiente función<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>:</p>
 <pre class="r"><code>XTSUM &lt;- function(data, varname, unit) {
   varname &lt;- enquo(varname)
   loc.unit &lt;- enquo(unit)
