@@ -1,0 +1,339 @@
+---
+title: "Regresión cuantil"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "3 de noviembre de 2020"
+mathspec: true
+header-includes:
+  - \usepackage{amsmath}
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+library(quantreg)
+
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+```
+
+
+.title[
+# Sesión 23. Regresión cuantil
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+
+# Motivación
+
+- Cuando vemos estadística descriptiva, muchas veces necesitamos más que la media para tener una idea de cómo se ven los datos
+
+- Similarmente, la regresión por MCO nos sirve para descubrir relaciones promedio basadas en $E(y|x)$
+
+- En muchos problemas nos interesan aspectos distribucionales
+
+- ¿Cómo es la distribución del ingreso para las personas con grado universitario comparada con la distribución del ingreso de las personas sin primaria completada?
+
+---
+
+class: inverse, middle, center
+
+# Regresión cuantil
+
+---
+
+# Conceptos
+
+- El cuantil poblacional $q$ de la variable aleatoria $y$, con $q\in(0,1)$, es el valor $\mu_q$ tal que $y\leq \mu_q$ con probabilidad $q$
+
+$$q=P(y\leq \mu_q)=F_y(\mu_q)$$
+
+donde $F_y$ es la función de distribución acumulada de $y$
+
+- Por tanto, $\mu_q=F_y^{-1}(q)$
+
+- Algunos cuantiles comúnmente usados son
+
+  - $q=0.5$ es la mediana
+  
+  - $q=0.25$ es el cuartil inferior
+  
+  - $q=0.75$ es el cuartil superior
+
+- Por ejemplo, si $y$ es el salario mensual y $\mu_{0.75}=6,000$, entonces el 75% de los individuos tiene un salario menor o igual que 6,000
+
+
+---
+
+# Regresión cuantil
+
+- Consideremos ahora la regresión de $y$ dado $x$
+
+- El cuantil poblacional $q$ es la función $\mu_q(x)$ tal que $y$ condicional en $x$ es menor o igual que $\mu_q(x)$
+
+$$\mu_q(x)=F^{-1}_{y|x}(q)$$
+
+donde $F_{y|x}$ es la cdf de $y$ dado $x$
+
+---
+
+# Cuantiles muestrales
+
+- Con una variable aleatoria $y$, podemos estimar el cuantil $\hat{\mu}_q$ como sigue
+
+  1. Ordenamos la muestra en orden ascendente
+  
+  1. $\hat{\mu}_q$ será la $int(Nq)$ésima observación
+
+- Por ejemplo, si $N=97$ y buscamos el cuartil inferior, $p=0.25$
+
+  - $\hat{\mu}_{0.25}$ es el valor de $y$ de la observación $int(24.25)=25$
+  
+--
+
+- Kroenker & Bassett (1978) mostraron que $\hat{\mu}_q$ puede ser estimado como la solución al siguiente problema de minimización
+
+$$\hat{\mu}_q=\arg\min_{\beta} \sum_{i|y_i\geq \beta}^N q|y_i-\beta|+\sum_{i|y_i <\beta}^N(1-q)|y_i-\beta|$$
+---
+
+# Estimador de regresión cuantil
+
+- El **estimador de regresión cuantil** es la solución al problema análogo de regresión lineal
+
+$$\hat{\beta}_q=\arg\min_{\beta_q} \sum_{i|y_i\geq x_i'\beta}^N q|y_i-x_i'\beta_q|+\sum_{i|y_i <x_i'\beta}^N(1-q)|y_i-x_i'\beta_q|$$
+- Se hace explícito queb $\beta_q$ depende de $q$, es decir, el cuantil elegido
+
+--
+
+- Este es un problema de minimización de una función de pérdida, como de los que hablamos de forma general en la [Sesión 2](https://rojasirvin.github.io/ECNII2020/sesiones/s2/sesion2.html#4)
+
+- En el caso de la regresión cuantil tiene la característica de pesar asimétricamente los errores
+  - $(1-q)$ es la penalización para las sobrepredicciones
+  - $q$ es la penalización para las subpredicciones
+
+- El caso especial de $q=0.5$ se conoce como **estimador de regresión en la mediana** o **estimador de mínimas desviaciones absolutas**
+
+---
+
+# Regresión en la mediana
+
+- MCO minimiza $\sum_i e_i^2$
+
+- Regresión en la mediana minimiza $\sum_i |e_i|$
+
+- En el caso de regresión en la mediana, el problema es encontrar $\hat{\beta}_0.5$ que minimiza
+
+$$\sum_i |y_i-x_i'\beta| $$
+
+- Una ventaja del estimador de regresión en la mediana es que es más robusto a la presencia de observaciones atípicas (*outliers*) que MCO
+
+---
+
+# Estimación
+
+- Claramente la función objetivo no es diferenciable
+
+- El problema puede formularse como uno de programación matemática
+
+- [Koenker describe](http://www.econ.uiuc.edu/~roger/research/rq/rq.pdf) algunos de los primeros algoritmos 
+
+--
+
+- Buchinsky (1998) mostró además que 
+
+$$\sqrt{N}(\hat{\beta}_q-\beta_q)\stackrel{d}{\sim}\mathcal{N}\left(0,A^{-1}BA^{-1}\right)$$
+con $$A=p\lim\frac{1}{N}\sum_i f_{u_q}(0|x_i)x_ix_i' \\ B=p\lim\frac{1}{N}\sum_i q(1-q)x_ix_i'$$
+- $f_{u_q}(0|x)$ es la densidad condicional del término de error, $u_q=y-x'\beta_q$
+
+---
+
+# Ejemplo
+
+- Datos de una encuesta levantada en Vietnam en 1997 (tipo ENIGH)
+
+- Datos de 5,006 hogares con gastos médicos
+
+- Consideremos solo la relación entre el gasto médico y el gasto total (como proxy del ingreso total)
+
+- Una elasticidad menor que uno indica que el bien es una *necesidad*
+
+- Usaremos la paquetería *quantreg*
+
+---
+
+# Ejemplo
+
+- Vemos que pasa con MCO
+
+.pull-left[
+```{r echo=T, include=T, eval=T, results=T, message=F, warning=F}
+
+data.wb<-read_csv("./qreg0902.csv",
+                        locale = locale(encoding = "latin1")) %>% 
+  filter(!is.na(lhhex12m)) %>% 
+  rename(lnmed=lhhex12m, lntotal=lhhexp1)
+```
+]
+
+.pull-right[
+.tiny[
+```{r echo=T, include=T, eval=T, results=T, message=F, warning=F}
+summary(r.mco <- lm(lnmed  ~ lntotal, data=data.wb))
+
+```
+]
+
+- MCO indica que los gastos médicos son una necesidad
+]
+---
+# Ejemplo
+
+- Estimemos la regresión cuantil en el cuantil 90
+
+```{r echo=T, include=T, eval=T, results=T, message=F, warning=F}
+summary(r.q90 <- rq(lnmed  ~ lntotal, data=data.wb, tau=0.9))
+```
+
+
+- El cuantil 90 de la distribución del gasto en medicamentos se incrementa en 0.67% cuando el ingreso cambia en 1%
+
+---
+
+# Ejemplo
+
+
+.pull-left[
+- Gráficamente
+
+```{r echo=T, include=T, eval=T, results=T, message=F, warning=F}
+g1 <- ggplot(data.wb, aes(x=lntotal,y=lnmed)) + geom_point() + 
+  geom_abline(intercept=coef(r.q90)[1], slope=coef(r.q90)[2], color="black", linetype="dashed")+
+  geom_abline(intercept=coef(r.mco)[1], slope=coef(r.mco)[2], color="red")
+
+```
+]
+
+.pull-right[
+```{r echo=F, include=T, eval=T, results=T, message=F, warning=F}
+g1
+```
+]
+
+---
+
+# Ejemplo
+
+- Cuando se emplea regresión cuantil, comúnmente se presenta el efecto estimado en múltiples cuantiles
+
+```{r echo=T, include=T, eval=T, results=T, message=F, warning=F}
+r.q1_9 <- rq(lnmed  ~ lntotal, data=data.wb, tau= 1:9/10)
+```
+
+- Podemos ver los coeficientes estimados
+
+.tiny[
+```{r echo=T, include=T, eval=T, results=T, message=F, warning=F}
+coef(r.q1_9)
+```
+]
+
+---
+
+# Ejemplo
+
+.pull-left[
+- Lo que es más ilustrativo es un gráfico con los coeficientes de regresión cuantil y su intervalo de confianza
+
+- Sobreponemos el coeficiente de MCO y su intervalo de confianza
+]
+
+.pull-right[
+```{r out.width="80%", echo=T, include=T, eval=T, results=T, message=F, warning=F}
+plot(summary(r.q1_9), parm="lntotal", ylab="sdfaf")
+```
+]
+
+
+---
+
+# Recomendaciones
+
+- Regresión cuantil nos ayuda a presentar un panorama más completo del problema (así como los cuantiles nos ayudan a describir los datos más allá de la media)
+
+- Algunos autores emplean regresión cuantil como evidencia de errores heterocedásticos cuando el modelo es lineal
+
+- No confundir regresión cuantil con lo siguiente:
+
+  - Partimos la muestra en $Q$ segmentos y hacemos MCO en cada uno de ellos
+  
+- Los efectos cuantil nos dicen efectos sobre distribuciones, no sobre individuos
+
+---
+
+# Próxima sesión
+
+- En la siguiente clase hablaremos sobre modelos no paramétricos
+
+  + CT, Capítulo 9
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**

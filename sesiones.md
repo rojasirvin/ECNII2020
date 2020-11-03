@@ -40,6 +40,8 @@
 
 [Sesión 22](https://rojasirvin.github.io/ECNII2020/sesiones/s22/sesion22.html#1). Modelos de duración
 
+[Sesión 23](https://rojasirvin.github.io/ECNII2020/sesiones/s23/sesion23.html#1). Regresión cuantil
+
 
 <!---
 

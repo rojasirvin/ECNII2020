@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Regresión cuantil</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.5/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+    <script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: title-slide
+
+
+
+&lt;style type="text/css"&gt;
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+&lt;/style&gt;
+
+
+.title[
+# Sesión 23. Regresión cuantil
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas &lt;br&gt; División de Economía
+]
+
+---
+
+# Motivación
+
+- Cuando vemos estadística descriptiva, muchas veces necesitamos más que la media para tener una idea de cómo se ven los datos
+
+- Similarmente, la regresión por MCO nos sirve para descubrir relaciones promedio basadas en `\(E(y|x)\)`
+
+- En muchos problemas nos interesan aspectos distribucionales
+
+- ¿Cómo es la distribución del ingreso para las personas con grado universitario comparada con la distribución del ingreso de las personas sin primaria completada?
+
+---
+
+class: inverse, middle, center
+
+# Regresión cuantil
+
+---
+
+# Conceptos
+
+- El cuantil poblacional `\(q\)` de la variable aleatoria `\(y\)`, con `\(q\in(0,1)\)`, es el valor `\(\mu_q\)` tal que `\(y\leq \mu_q\)` con probabilidad `\(q\)`
+
+`$$q=P(y\leq \mu_q)=F_y(\mu_q)$$`
+
+donde `\(F_y\)` es la función de distribución acumulada de `\(y\)`
+
+- Por tanto, `\(\mu_q=F_y^{-1}(q)\)`
+
+- Algunos cuantiles comúnmente usados son
+
+  - `\(q=0.5\)` es la mediana
+  
+  - `\(q=0.25\)` es el cuartil inferior
+  
+  - `\(q=0.75\)` es el cuartil superior
+
+- Por ejemplo, si `\(y\)` es el salario mensual y `\(\mu_{0.75}=6,000\)`, entonces el 75% de los individuos tiene un salario menor o igual que 6,000
+
+
+---
+
+# Regresión cuantil
+
+- Consideremos ahora la regresión de `\(y\)` dado `\(x\)`
+
+- El cuantil poblacional `\(q\)` es la función `\(\mu_q(x)\)` tal que `\(y\)` condicional en `\(x\)` es menor o igual que `\(\mu_q(x)\)`
+
+`$$\mu_q(x)=F^{-1}_{y|x}(q)$$`
+
+donde `\(F_{y|x}\)` es la cdf de `\(y\)` dado `\(x\)`
+
+---
+
+# Cuantiles muestrales
+
+- Con una variable aleatoria `\(y\)`, podemos estimar el cuantil `\(\hat{\mu}_q\)` como sigue
+
+  1. Ordenamos la muestra en orden ascendente
+  
+  1. `\(\hat{\mu}_q\)` será la `\(int(Nq)\)`ésima observación
+
+- Por ejemplo, si `\(N=97\)` y buscamos el cuartil inferior, `\(p=0.25\)`
+
+  - `\(\hat{\mu}_{0.25}\)` es el valor de `\(y\)` de la observación `\(int(24.25)=25\)`
+  
+--
+
+- Kroenker &amp; Bassett (1978) mostraron que `\(\hat{\mu}_q\)` puede ser estimado como la solución al siguiente problema de minimización
+
+`$$\hat{\mu}_q=\arg\min_{\beta} \sum_{i|y_i\geq \beta}^N q|y_i-\beta|+\sum_{i|y_i &lt;\beta}^N(1-q)|y_i-\beta|$$`
+---
+
+# Estimador de regresión cuantil
+
+- El **estimador de regresión cuantil** es la solución al problema análogo de regresión lineal
+
+`$$\hat{\beta}_q=\arg\min_{\beta_q} \sum_{i|y_i\geq x_i'\beta}^N q|y_i-x_i'\beta_q|+\sum_{i|y_i &lt;x_i'\beta}^N(1-q)|y_i-x_i'\beta_q|$$`
+- Se hace explícito queb `\(\beta_q\)` depende de `\(q\)`, es decir, el cuantil elegido
+
+--
+
+- Este es un problema de minimización de una función de pérdida, como de los que hablamos de forma general en la [Sesión 2](https://rojasirvin.github.io/ECNII2020/sesiones/s2/sesion2.html#4)
+
+- En el caso de la regresión cuantil tiene la característica de pesar asimétricamente los errores
+  - `\((1-q)\)` es la penalización para las sobrepredicciones
+  - `\(q\)` es la penalización para las subpredicciones
+
+- El caso especial de `\(q=0.5\)` se conoce como **estimador de regresión en la mediana** o **estimador de mínimas desviaciones absolutas**
+
+---
+
+# Regresión en la mediana
+
+- MCO minimiza `\(\sum_i e_i^2\)`
+
+- Regresión en la mediana minimiza `\(\sum_i |e_i|\)`
+
+- En el caso de regresión en la mediana, el problema es encontrar `\(\hat{\beta}_0.5\)` que minimiza
+
+$$\sum_i |y_i-x_i'\beta| $$
+
+- Una ventaja del estimador de regresión en la mediana es que es más robusto a la presencia de observaciones atípicas (*outliers*) que MCO
+
+---
+
+# Estimación
+
+- Claramente la función objetivo no es diferenciable
+
+- El problema puede formularse como uno de programación matemática
+
+- [Koenker describe](http://www.econ.uiuc.edu/~roger/research/rq/rq.pdf) algunos de los primeros algoritmos 
+
+--
+
+- Buchinsky (1998) mostró además que 
+
+`$$\sqrt{N}(\hat{\beta}_q-\beta_q)\stackrel{d}{\sim}\mathcal{N}\left(0,A^{-1}BA^{-1}\right)$$`
+con `$$A=p\lim\frac{1}{N}\sum_i f_{u_q}(0|x_i)x_ix_i' \\ B=p\lim\frac{1}{N}\sum_i q(1-q)x_ix_i'$$`
+- `\(f_{u_q}(0|x)\)` es la densidad condicional del término de error, `\(u_q=y-x'\beta_q\)`
+
+---
+
+# Ejemplo
+
+- Datos de una encuesta levantada en Vietnam en 1997 (tipo ENIGH)
+
+- Datos de 5,006 hogares con gastos médicos
+
+- Consideremos solo la relación entre el gasto médico y el gasto total (como proxy del ingreso total)
+
+- Una elasticidad menor que uno indica que el bien es una *necesidad*
+
+- Usaremos la paquetería *quantreg*
+
+---
+
+# Ejemplo
+
+- Vemos que pasa con MCO
+
+.pull-left[
+
+```r
+data.wb&lt;-read_csv("./qreg0902.csv",
+                        locale = locale(encoding = "latin1")) %&gt;% 
+  filter(!is.na(lhhex12m)) %&gt;% 
+  rename(lnmed=lhhex12m, lntotal=lhhexp1)
+```
+]
+
+.pull-right[
+.tiny[
+
+```r
+summary(r.mco &lt;- lm(lnmed  ~ lntotal, data=data.wb))
+```
+
+```
+## 
+## Call:
+## lm(formula = lnmed ~ lntotal, data = data.wb)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -6.5305 -0.9480  0.1062  1.0636  5.4642 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.93521    0.30515   3.065  0.00219 ** 
+## lntotal      0.57365    0.03248  17.661  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.546 on 5004 degrees of freedom
+## Multiple R-squared:  0.05867,	Adjusted R-squared:  0.05849 
+## F-statistic: 311.9 on 1 and 5004 DF,  p-value: &lt; 2.2e-16
+```
+]
+
+- MCO indica que los gastos médicos son una necesidad
+]
+---
+# Ejemplo
+
+- Estimemos la regresión cuantil en el cuantil 90
+
+
+```r
+summary(r.q90 &lt;- rq(lnmed  ~ lntotal, data=data.wb, tau=0.9))
+```
+
+```
+## 
+## Call: rq(formula = lnmed ~ lntotal, tau = 0.9, data = data.wb)
+## 
+## tau: [1] 0.9
+## 
+## Coefficients:
+##             Value    Std. Error t value  Pr(&gt;|t|)
+## (Intercept)  0.67510  0.43925    1.53692  0.12438
+## lntotal      0.80036  0.04688   17.07153  0.00000
+```
+
+
+- El cuantil 90 de la distribución del gasto en medicamentos se incrementa en 0.67% cuando el ingreso cambia en 1%
+
+---
+
+# Ejemplo
+
+
+.pull-left[
+- Gráficamente
+
+
+```r
+g1 &lt;- ggplot(data.wb, aes(x=lntotal,y=lnmed)) + geom_point() + 
+  geom_abline(intercept=coef(r.q90)[1], slope=coef(r.q90)[2], color="black", linetype="dashed")+
+  geom_abline(intercept=coef(r.mco)[1], slope=coef(r.mco)[2], color="red")
+```
+]
+
+.pull-right[
+![](figures/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Ejemplo
+
+- Cuando se emplea regresión cuantil, comúnmente se presenta el efecto estimado en múltiples cuantiles
+
+
+```r
+r.q1_9 &lt;- rq(lnmed  ~ lntotal, data=data.wb, tau= 1:9/10)
+```
+
+- Podemos ver los coeficientes estimados
+
+.tiny[
+
+```r
+coef(r.q1_9)
+```
+
+```
+##             tau= 0.1  tau= 0.2  tau= 0.3  tau= 0.4  tau= 0.5  tau= 0.6
+## (Intercept) 2.825071 1.7402326 1.0971052 0.6808687 0.5921625 0.6631984
+## lntotal     0.151201 0.3552251 0.4797725 0.5691746 0.6210917 0.6531126
+##              tau= 0.7  tau= 0.8  tau= 0.9
+## (Intercept) 0.4732287 0.3966890 0.6750989
+## lntotal     0.7147830 0.7675658 0.8003567
+```
+]
+
+---
+
+# Ejemplo
+
+.pull-left[
+- Lo que es más ilustrativo es un gráfico con los coeficientes de regresión cuantil y su intervalo de confianza
+
+- Sobreponemos el coeficiente de MCO y su intervalo de confianza
+]
+
+.pull-right[
+
+```r
+plot(summary(r.q1_9), parm="lntotal", ylab="sdfaf")
+```
+
+&lt;img src="figures/unnamed-chunk-9-1.png" width="80%" /&gt;
+]
+
+
+---
+
+# Recomendaciones
+
+- Regresión cuantil nos ayuda a presentar un panorama más completo del problema (así como los cuantiles nos ayudan a describir los datos más allá de la media)
+
+- Algunos autores emplean regresión cuantil como evidencia de errores heterocedásticos cuando el modelo es lineal
+
+- No confundir regresión cuantil con lo siguiente:
+
+  - Partimos la muestra en `\(Q\)` segmentos y hacemos MCO en cada uno de ellos
+  
+- Los efectos cuantil nos dicen efectos sobre distribuciones, no sobre individuos
+
+---
+
+# Próxima sesión
+
+- En la siguiente clase hablaremos sobre modelos no paramétricos
+
+  + CT, Capítulo 9
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": null,
+"scroll": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
