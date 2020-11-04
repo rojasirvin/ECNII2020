@@ -113,6 +113,23 @@ $$\hat{f}_{hist}(x_0)=\frac{1}{N}\sum_i\frac{\mathbf{1}(x_0-h<x_i<x_0+h)}{2h}$$
 - Este peso igual queda claro al reescribir el histograma como
 
 $$\hat{f}_{hist}(x_0)=\frac{1}{Nh}\sum_i\frac{1}{2}\mathbf{1}\left(\Bigg|\frac{x_i-x_0}{h}\Bigg|<1\right)$$
+---
+
+# Densidad Kernel
+
+- El estimador de densidad Kernel (Rosenblatt, 1956) es la generalización del histograma
+
+- Definimos la densidad estimada Kernel como
+
+$$\hat{k}(x_0)=\frac{1}{Nh}\sum_i \mathcal{K}\left(\frac{x_i-x_0}{h}\right)$$
+- $\mathcal{K}$ es una función de pesos Kernel
+
+- $h$ es el ancho de banda o parámetro de suavizaición
+
+- La función Kernel evalúa más datos alrededor de $x_0$ que el histograma (posiblemente todos los datos)
+
+
+
 
 ---
 
