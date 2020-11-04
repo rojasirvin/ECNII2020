@@ -1,0 +1,135 @@
+---
+title: "Métodos no paramétricos"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "5 de noviembre de 2020"
+mathspec: true
+header-includes:
+  - \usepackage{amsmath}
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+library(quantreg)
+
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+```
+
+
+.title[
+# Sesión 24. Métodos no paramétricos
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+
+# Motivación
+
+- Cuando vemos estadística descriptiva, muchas veces necesitamos más que la media para tener una idea de cómo se ven los datos
+
+- Similarmente, la regresión por MCO nos sirve para descubrir relaciones promedio basadas en $E(y|x)$
+
+- En muchos problemas nos interesan aspectos distribucionales
+
+- ¿Cómo es la distribución del ingreso para las personas con grado universitario comparada con la distribución del ingreso de las personas sin primaria completada?
+
+---
+
+class: inverse, middle, center
+
+# Estimación de densidades
+
+---
+
+# Estimación de densidades
+
+- Consideremos una variable aleatoria continua $x$
+
+- **Histograma**: es un estimador de la densidad formado al partir el rango de $x$ en intervalos iguales y calculando la fracción de dados en cada intervalo
+
+- Queremos estimar la densidad $f(x_0)$, es decir, al densidad de $x$ en $x_0$
+
+- Un histograma está definido por
+
+$$\hat{f}_{hist}(x_0)=\frac{1}{N}\sum_i\frac{\mathbf{1}(x_0-h<x_i<x_0+h)}{2h}$$
+
+--
+
+- A $2h$ se le llama el ancho de banda
+
+- El histograma pesa a las observaciones que están dentro el rango dado por $(-h,h)$
+
+- Este peso igual queda claro al reescribir el histograma como
+
+$$\hat{f}_{hist}(x_0)=\frac{1}{Nh}\sum_i\frac{1}{2}\mathbf{1}\left(\Bigg|\frac{x_i-x_0}{h}\Bigg|<1\right)$$
+
+---
+
+# Próxima sesión
+
+- En la siguiente clase hablaremos sobre modelos no paramétricos
+
+  + CT, Capítulo 9
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**

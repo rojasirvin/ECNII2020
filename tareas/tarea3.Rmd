@@ -93,7 +93,7 @@ a. [5 puntos] No siempre es útil crear una aplicación interactiva. Usando func
 
 # Pregunta 4
 
-Considere la base de datos *tarea_examen.csv*. Esta base contiene información sobre 519 estudiantes en 23 escuelas. Nos interesa la relación entre el tiempo dedicado a realizar la tarea (**tiempo**) y el resultado de un examen de econometría (**calificacion**). Las variables **escuela_id** y **estudiante_id** identifican a las escuelas y los estudiantes, respectivamente. El modelo a estimar es el siguiente:
+Considere la base de datos *tarea_examen.csv*. Esta base contiene información sobre 519 estudiantes en 23 escuelas. Nos interesa la relación entre el tiempo dedicado a realizar la tarea (**tiempo**) y el resultado de un examen de econometría (**examen**). Las variables **escuela_id** y **estudiante_id** identifican a las escuelas y los estudiantes, respectivamente. El modelo a estimar es el siguiente:
 
 $$calificacion_{is}=\alpha+\beta tiempo_{is}+\varepsilon_{is}$$
 donde $i$ indexa a los estudiantes y $s$ indexa a las escuelas.
