@@ -42,6 +42,7 @@
 
 [Sesión 23](https://rojasirvin.github.io/ECNII2020/sesiones/s23/sesion23.html#1). Regresión cuantil
 
+[Sesión 24](https://rojasirvin.github.io/ECNII2020/sesiones/s24/sesion24.html#1). Métodos no paramétricos
 
 <!---
 

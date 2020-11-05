@@ -66,11 +66,11 @@ class: inverse, middle, center
 
 ---
 
-# Estimación de densidades
+# Histograma
 
 - Consideremos una variable aleatoria continua `\(x\)`
 
-- **Histograma**: es un estimador de la densidad formado al partir el rango de `\(x\)` en intervalos iguales y calculando la fracción de dados en cada intervalo
+- Un **histograma** es un estimador de la densidad formado al partir el rango de `\(x\)` en intervalos iguales y calculando la fracción de dados en cada intervalo
 
 - Queremos estimar la densidad `\(f(x_0)\)`, es decir, al densidad de `\(x\)` en `\(x_0\)`
 
@@ -80,22 +80,632 @@ class: inverse, middle, center
 
 --
 
-- A `\(2h\)` se le llama el ancho de banda
+- A `\(2h\)` se le llama el ancho de ventana
 
 - El histograma pesa a las observaciones que están dentro el rango dado por `\((-h,h)\)`
+
+---
+
+# Histograma
 
 - Este peso igual queda claro al reescribir el histograma como
 
 `$$\hat{f}_{hist}(x_0)=\frac{1}{Nh}\sum_i\frac{1}{2}\mathbf{1}\left(\Bigg|\frac{x_i-x_0}{h}\Bigg|&lt;1\right)$$`
+- Usemos datos sobre salarios de 175 mujeres para ejemplificar la construcción del histograma
+
+- Usamos 20 ventanas
+
+
+---
+
+# Ejemplo: histograma
+
+.pull-left[
+
+```r
+data.salarios&lt;-read_csv("./salarios.csv",
+                        locale = locale(encoding = "latin1"))
+
+h1 &lt;- data.salarios %&gt;% 
+  ggplot(aes(x=lnhwage)) +
+    geom_histogram(aes(y=..density..),
+                   bins=20,
+                   fill="#69b3a2",
+                   color="#e9ecef",
+                   alpha=0.9) +
+    ggtitle("Histograma del log del salario por horar") +
+    theme(plot.title = element_text(size=15))
+```
+]
+
+.pull-right[
+&lt;img src="figures/unnamed-chunk-3-1.png" width="100%" /&gt;
+]
+---
+
+# Densidad Kernel
+
+- El estimador de densidad Kernel (Rosenblatt, 1956) es la generalización del histograma
+
+- Definimos la densidad estimada Kernel como
+
+`$$\hat{k}(x_0)=\frac{1}{Nh}\sum_i \mathit{K}\left(\frac{x_i-x_0}{h}\right)$$`
+- `\(\mathit{K}\)` es una función de pesos Kernel
+
+- `\(h\)` es el ancho de banda o parámetro de suavizaición
+
+- La función Kernel evalúa más datos alrededor de `\(x_0\)` que el histograma (posiblemente todos los datos)
+
+---
+
+# Función Kernel
+
+- La función `\(\mathit{K}\)` cumple con
+
+  1. `\(\mathit{K}(z)\)` es simétrica alrededor de 0 y es continua
+  
+  1. `\(\int\mathit{K}(z)dz=1\)`, `\(\int z\mathit{K}(z)dz=0\)` y `\(\int|\mathit{K}(z)|dz&lt;\infty\)`
+  
+  1. i) `\(K(z)=0\)` si `\(|z|\geq z_0\)` para algún  `\(z_0\)`, o ii) `\(|z|K(z)\to 0\)` si `\(|z|\to\infty\)`
+  
+  1. `\(\int z^2 \mathit{K}(z)dz=\kappa\)`, donde `\(\kappa\)` es una constante
+
+--
+
+- Una función que satisface estas condiciones puede ser una función Kernel para pesar las observaciones y estimar la densidad en `\(x_0\)`
+
+- Al proveer `\(\mathit{K}\)` y `\(h\)`, es relativamente fácil obtener el estimador de la densidad
+
+---
+
+# Funciones Kernel comúnmente usadas
+
+| Kernel | `\(\mathit{K}\)` |
+|:---|:---:|
+| Uniforme, *box* o rectangular | `\(\frac{1}{2} \mathbf{1}(abs(z)&lt;1)\)` |
+| Triangular | `\((1-abs(z))\mathbf{1}(abs(z)&lt;1)\)` |
+| Epanechnikov o cuadrático | `\(\frac{3}{4}(1-z^2)\mathbf{1}(abs(z)&lt;1)\)` |
+| Normal o gausiano | `\(\frac{1}{\sqrt{2\pi}}exp(-z^2/2)\)` |
+
+
+---
+
+# Elección del ancho de banda
+
+- Un ancho de banda pequeño reduce el sesgo (usamos observaciones muy parecidas, aunque pocas)
+
+- Un ancho de banda grande mejora la suavización
+
+- El ancho de banda es una decisión más importante que la elección del tipo de Kernel
+
+--
+
+- Consideremos el error cuadrático medio como una medida de desempeño
+
+`$$MSE(\hat{f}(x_0))=E\left(\hat{f}
+(x_0)-f(x_0)\right) ^2$$`
+
+- Una medida global de qué tan buena es la aproximación es el **error cuadrado promedio integrado**
+
+`$$MISE(h)=\int MSE(\hat{f}(x_0))dx_0$$`
+---
+
+# Elección del ancho de banda
+
+- Silverman (1986) muestra que
+
+`$$h^*=\delta \left(\int f'' (x_0)^2dx_0\right)^{-0.2}N^{-0.2}$$`
+donde `\(\delta=\left(\frac{\int \mathit{K}(z)^2dz}{(\int z^2\mathit{K}(z)dz})^2\right)\)`
+
+--
+
+- Noten que `\(h^*\)` depende de la curvatura de la densidad
+
+- Si `\(f(x)\)` es muy variable, `\(h\)` será pequeña
+
+
+---
+
+# Estimación Kernel en la práctica
+
+- Usamos `\(\delta\)` estimador por Silverman, dependiendo del Kernel elegido
+
+| Kernel | `\(\mathit{K}\)` | `\(\delta\)` |
+|:---|:---:|:---:|
+|Uniforme, *box* o rectangular| `\(\frac{1}{2}\mathbf{1}(abs(z)&lt;1)\)` |  1.3510 |
+| Triangular | `\((1-abs(z))\mathbf{1}(abs(z)&lt;1)\)` | - |
+| Epanechnikov o cuadrático | `\(\frac{3}{4}(1-z^2)\mathbf{1}(abs(z)&lt;1)\)` | 1.7188 |
+| Normal o gausiano | `\(\frac{1}{\sqrt{2\pi}}exp(-z^2/2)\)` | 0.7764 |
+
+--
+
+- El estimador *plug-in* de Silverman funciona casi siempre
+
+`$$h^*_{Silverman}=1.3643\delta\left(\min \left\{s,\frac{iqr}{1.349}\right\}\right)N^{-0.2}$$`
+donde `\(s\)` es la desviación estándar de los datos, `\(iqr\)` es el rango intercuartil y `\(\frac{iqr}{1.349}\)` protege en presencia de observaciones atípicas
+
+
+
+
+---
+
+# Ejemplo: densidad Kernel estimada
+
+- Estimamos un Kernel epanechnikov con el ancho de banda óptimo
+
+- Primero calculemos el ancho de banda óptimo
+
+- Usamos `\(\delta\)` calculado por Silverman
+
+
+```r
+delta &lt;- 1.7188 # Ver CT
+w.sd &lt;- sd(data.salarios$lnhwage)
+w.iqr.adj &lt;- IQR(data.salarios$lnhwage)/1.349
+w.N &lt;- nrow(data.salarios)
+constante &lt;- 1.3643
+ajuste &lt;- min(w.sd,w.iqr.adj)
+h &lt;- constante*delta*ajuste*w.N^(-0.2) # ancho de banda
+```
+
+
+
+
+---
+
+# Ejemplo: densidad Kernel estimada
+
+.pull-left[
+- El parámetro *bw* en *geom_density* especifica el ancho de banda
+
+- Pero en R, el ancho de banda es lo que para nosotros es el ancho de ventana
+
+- Debemos de especificar la mitad de `\(h\)`
+
+
+```r
+k1 &lt;- data.salarios %&gt;% 
+  ggplot(aes(x=lnhwage)) +
+    geom_histogram(aes(y=..density..), bins=20, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
+    geom_density(kernel="epanechnikov", bw=h/2 , n=50)+
+    theme(plot.title = element_text(size=15))
+```
+]
+
+.pull-right[
+&lt;img src="figures/unnamed-chunk-6-1.png" width="100%" /&gt;
+]
+
+---
+
+# Ejemplo: densidad Kernel estimada
+
+.pull-left[
+
+- Vemos cómo el ancho de banda seleccionado modifica el Kernel estimado
+
+
+```r
+k2 &lt;- data.salarios %&gt;% 
+  ggplot(aes(x=lnhwage)) +
+    geom_histogram(aes(y=..density..), bins=20, fill="#69b3a2", color="#e9ecef", alpha=0.9)+
+    geom_density(aes(x=lnhwage, color='Óptimo'), kernel="epanechnikov", bw=h/2, adjust=1)+
+    geom_density(aes(x=lnhwage, color='1/2 óptimo'), kernel="epanechnikov", bw=h/2, adjust=0.5)+
+    geom_density(aes(x=lnhwage, color='2 óptimo'), kernel="epanechnikov", bw=h/2, adjust=2)+
+    theme(legend.position = 'right')+
+    scale_color_manual("h",values = c('Óptimo' = 'black', '1/2 óptimo' = 'red', '2 óptimo'='blue'))
+```
+]
+
+.pull-right[
+&lt;img src="figures/unnamed-chunk-8-1.png" width="100%" /&gt;
+]
+
+---
+
+# Ejemplo: densidad Kernel estimada
+
+.pull-left[
+
+- Notamos que la elección del tipo de Kernel es menos relevante
+
+
+```r
+delta.gausiano &lt;- 0.7764
+delta.uniforme &lt;- 1.3510
+delta.cuartico &lt;- 2.0362
+
+h.gausiano &lt;- constante*delta.gausiano*ajuste*w.N^(-0.2)
+h.uniforme &lt;- constante*delta.uniforme*ajuste*w.N^(-0.2)
+h.cuartico &lt;- constante*delta.cuartico*ajuste*w.N^(-0.2)
+
+k3 &lt;- data.salarios %&gt;% 
+  ggplot(aes(x=lnhwage)) +
+    geom_histogram(aes(y=..density..), bins=20, fill="#69b3a2", color="#e9ecef", alpha=0.9)+
+    geom_density(aes(x=lnhwage, color='epanechnikov'), kernel="epanechnikov", bw=h/2, adjust=1)+
+    geom_density(aes(x=lnhwage, color='gausiano'), kernel="gaussian", bw=h.gausiano/2, adjust=1)+   
+    geom_density(aes(x=lnhwage, color='uniforme'), kernel="rectangular", bw=h.uniforme/2, adjust=1)+
+    geom_density(aes(x=lnhwage, color='cuártico'), kernel="biweight", bw=h.cuartico/2, adjust=1)+
+    theme(legend.position = 'right')+
+    scale_color_manual("Kernel", values = c('epanechnikov' = 'black', 'gausiano' = 'red', 'uniforme'='blue', 'cuártico'='green'))
+```
+]
+
+.pull-right[
+&lt;img src="figures/unnamed-chunk-10-1.png" width="100%" /&gt;
+]
+
+
+---
+
+class: inverse, middle, center
+
+# Regresión local no paramétrica
+
+---
+
+# Regresión local no paramétrica
+
+- Consideremos el siguiente modelo con un regresor escalar
+
+`$$y_i=m(x_i)+\varepsilon_i$$`
+
+- Tenemos `\(N\)` observaciones y `\(\varepsilon_i\sim iid(0,\sigma^2_{\varepsilon})\)`
+
+- Queremos usar las `\(x\)` para decir algo sobre `\(y\)` pero no queremos darle un modelo paramétrico
+
+---
+
+# Promedios locales ponderados
+
+- Supongamos que para un valor de `\(x\)`, digamos `\(x_0\)`, observamos `\(N_0\)` valores de `\(y\)`
+
+- Una forma de estimar `\(m(x_0)\)` es con la media muestral `\(\tilde{x}(x_0)\)`
+
+- El problema es que este estimador puede ser muy ruidoso con regresores discretos y muestras pequeñas
+
+--
+
+- Una alternativa es mirar en una vecindad de `\(x_0\)`
+
+
+- Definimos un **estimador de medias ponderadas local**
+
+`$$\hat{m}(x_0)=\sum_{i=1}^Nw_{i0,h}y_i$$`
+
+- Los pesos `\(w_{i0,h}\)`, con `\(\sum_i w_{i0,h}=1\)` indican cuánto pesan las observaciones alrededor de `\(x_0\)`, dándole más peso a las más cercanas
+
+- `\(h\)` es el ancho de ventana
+
+---
+
+# Promedios locales ponderados
+
+- Si decidimos que cada observación en la vecindad dada por `\(h\)`, el estimador local es
+
+`$$\hat{m}(x_0)=\frac{\sum_i\mathbf{1}\left(\Bigg|\frac{x_i-x_0}{h}\Bigg|&lt;1\right)y_i}{\sum_i\mathbf{1}\left(\Bigg|\frac{x_i-x_0}{h}\Bigg|&lt;1\right)}$$`
+- El numerador es la suma de `\(y_i\)` para las observaciones dentro del ancho de banda
+
+- El denominador es el número de unidades sobre las que se está sumando
+
+---
+
+# Promedios locales ponderados
+
+- De hecho, las predicciones de MCO también pueden expresarse como un estimador de medias ponderadas
+
+- Algo de álgebra resulta en
+
+`$$\hat{m}_{MCO}(x_0)=\sum_i\left\{\frac{1}{N}+\frac{(x_0-\bar{x})(x_i-\bar{x})}{\sum_j (x_j-\bar{x})^2}\right\}y_i$$`
+---
+
+# Estimador de vecinos más cercanos
+
+- Consideremos una vecindad de tamaño `\(k\)`, donde tenemos `\((k-1)/2\)` observaciones con `\(x&lt;x_0\)` y otras tantas para `\(x&gt;x_0\)`
+
+- Entonces, el estimador de **k vecinos más cercanos**, de **media móvil** o de **media móvil local**
+
+`$$\hat{m}_{k-NN}(x_0)=\frac{1}{k}\sum_i \mathbf{1}(x_i\in N_k(x_0))y_i$$`
+- Aquí `\(k\)` juega el papel de `\(h\)`
+
+- `\(h\)` es variable: `\(h_0\)` es igual a la distancia entre `\(x_0\)` y el más lejano de los `\(k\)` vecinos más cercanos
+
+- A `\(k/N\)` se le conoce como *lapso* o *span*
+
+---
+
+# Regresión kernel
+
+- Una extensión natural el estimador de promedios locales ponderados es usar una función Kernel para pesar más las observaciones más cercanas a `\(x_0\)`
+
+- Esto resulta en el **estimador de regresión Kernel**
+
+`$$\hat{m}(x_0)=\frac{\frac{1}{Nh}\sum_i\mathit{K}\left(\frac{x_i-x_0}{h}\right)y_i}{\frac{1}{Nh}\sum_i\mathit{K}\left(\frac{x_i-x_0}{h}\right)}$$`
+---
+
+# Regresión local lineal
+
+- Podemos asumir que `\(m(x)\)` es lineal en la vecindad de `\(x_0\)`
+
+`$$m(x)=a_0+b_o(x-x_0)$$`
+- El **estimador de regresión local lineal** se obtiene al esocger `\(a_0\)` y `\(b_0\)` que resuelven resolver
+
+`$$\sum_i \mathit{K}\left(\frac{x_i-x_0}{h}\right)(y_i-a_0-b_0(x_i-x_0))^2$$`
+
+- Obtenemos `\(\hat{m}(x)=\hat{a}_0+\hat{b}_0(x-x_0)\)`
+
+--
+
+- En general, podemos asumir un polinomio de orden `\(p\)` para `\(m(x)\)` y resolver
+
+
+`$$\sum_i \mathit{K}\left(\frac{x_i-x_0}{h}\right)\left(y_i-a_{0,0}-a_{0,1}(x_i-x_0)-\ldots-a_{0,p}\frac{(x_i-x_0)^p}{p!}\right)^2$$`
+---
+
+# Estimador Lowess
+
+- Un estimador comúnmente usado es el **estimador suavizador de puntos con pesos locales**  (*locally weighted scatterplot smoothing estimator*) o **Lowess**
+
+- Caso especial del estimador polinomial
+
+  - Kernel tricúbico, `\(\mathit{K}=(70/81)(1-abs(z)^3)^3\mathbf{1}(abs(z)&lt;1)\)`
+
+  - Otorga menor peso a observaciones con residuales grandes
+  
+--
+
+- Resulta robusto a la presencia de observaciones atípicas
+
+- Es intensivo en cómputo
+
+
+---
+
+# Ejemplo: regresión no paramétrica
+
+- Simulamos un proceso
+
+
+```r
+N &lt;- 100
+u &lt;- rnorm(n=N, mean=0, sd=25)
+x &lt;- seq(1:N)
+y &lt;- 150 + 6.5*x -0.15*x^2+0.001*x^3+u
+
+data.sim &lt;- as.data.frame(cbind(x,y))
+```
+
+
+- Usamos la función *knn.reg* de la paquetería *FNN*
+
+
+```r
+knn5 &lt;- knn.reg(data.sim$x, y=data.sim$y, k=5)
+knn25 &lt;- knn.reg(data.sim$x, y=data.sim$y, k=25)
+
+data.sim &lt;- data.sim %&gt;% 
+  mutate(y5=knn5$pred) %&gt;% 
+  mutate(y25=knn25$pred)
+```
+---
+
+# Ejemplo: regresión no paramétrica
+
+- Notamos que `\(h\)` más grande genera una función más suave
+
+.pull-left[
+
+```r
+np1 &lt;- data.sim %&gt;% 
+  ggplot(aes(x=x,y=y))+
+  geom_point()+
+  geom_smooth(aes(x=x,y=y, color='MCO'), method=lm, se=FALSE)+
+  geom_line(aes(x=x,y=y5, color='kNN, k=5'))+
+  geom_line(aes(x=x,y=y25, color='kNN, k=25'))+
+  theme(legend.position = 'right')+
+  scale_color_manual("Método", values = c('kNN, k=5' = 'blue', 'kNN, k=25'='green', 'MCO'='black'))
+```
+]
+
+.pull-right[
+&lt;img src="figures/unnamed-chunk-14-1.png" width="100%" /&gt;
+
+]
+
+---
+
+# Ejemplo: regresión no paramétrica
+
+- Y ahora incluimos la función generada por Lowess
+
+.pull-left[
+
+```r
+fit.lowess &lt;- lowess(data.sim$x, y=data.sim$y, f=25/100)
+
+data.sim &lt;- data.sim %&gt;% 
+  mutate(y.lowess=fit.lowess$y)
+  
+np2 &lt;- data.sim %&gt;% 
+  ggplot(aes(x=x,y=y))+
+  geom_point()+
+  geom_smooth(aes(x=x,y=y, color='MCO cúbico'), method=lm, formula= y ~ x+I(x^2)+I(x^3), se=FALSE)+
+  geom_line(aes(x=x,y=y.lowess, color='Lowess k=25'))+    theme(legend.position = 'right')+
+  scale_color_manual("Método", values = c('MCO cúbico' = 'blue', 'Lowess k=25' = 'red'))
+```
+]
+
+.pull-right[
+&lt;img src="figures/unnamed-chunk-16-1.png" width="100%" /&gt;
+
+]
+
+---
+
+class: inverse, middle, center
+
+# Regresión semiparamétrica
+
+
+---
+
+# Regresión semiparamétrica
+
+- La teoría económica puede informar sobre la estructura de problemas y queremos introducir esta estructura en los modelos
+
+- Con muchos regresores, la estimación no paramétrica se vuelve impráctica
+
+- Podemos usar modelos *híbridos* que tengan una parte paramétrica y otra no paramétrica
+
+- Algunos de estos modelos son más usados que otros en microeconometría
+
+
+---
+
+# Modelos lineal parcial
+
+- Especificamos
+
+`$$E(y|x,z)=x'\beta+\lambda(z)$$`
+
+donde `\(\lambda(cdot)\)` es una función escalar no especificada
+
+- Por ejemplo, la demanda de cierto bien puede ser lineal en `\(x\)` y no lineal en `\(z\)`
+
+- El modelo de regresión es
+
+$$y_i=x_i'\beta+\lambda(z_i)+\varepsilon_i \\ E(\varepsilon_i | x_i,z_i)=0 $$
+---
+
+# Transformación de Robinson
+
+- Robinson (1988) propone lo siguiente
+
+  1. Aplicando el operador de esperanza y por la ley de expectativas iteradas
+  
+  `$$E(y_i|z_i)=E(x_i'\beta|z_i)+E(\lambda(z_i)|z_i)+E(\varepsilon_i|z_i) = E(x_i|z_i)'\beta+\lambda(z_i)$$`
+
+  1. Restando a la ecuación de `\(y_i\)` original
+  
+  `$$y_i-E(y_i|z_i)=(x_i-E(x_i|z_i))'\beta+\varepsilon_i$$`
+
+---
+
+# Estimador de Robinson
+
+- El **estimador de Robinson** consiste en hacer MCO a la ecuación transformada
+
+`$$y_i-\hat{m}_{yi}=(x-\hat{m}_{xi})'\beta_{LP}+\nu$$`
+
+--
+
+- `\(\hat{m}_{yi}\)` y `\(\hat{m}_{xi}\)` son predicciones obtenidas por regresiones no paramétricas de `\(y\)` y `\(x\)` sobre `\(z\)`
+
+- Robinson (1988) muestra que el estimador LP es consistente y asintóticamente normal
+
+- Ver CT, Sección 9.7.3, con las expresiones de la varianza del estimador de Robinson
+
+---
+
+# Ejemplo: estimador de Robinson
+
+- Usamos la función *npplreg* de la paquetería *np*
+
+- Usaremos una base de datos que viene con *np* con 524 observaciones
+
+  - Tenemos datos de edad, raza, salarios, educación, experiencia
+
+
+```r
+data(wage1)
+colnames(wage1)
+```
+
+```
+##  [1] "wage"     "educ"     "exper"    "tenure"   "nonwhite" "female"  
+##  [7] "married"  "numdep"   "smsa"     "northcen" "south"    "west"    
+## [13] "construc" "ndurman"  "trcommpu" "trade"    "services" "profserv"
+## [19] "profocc"  "clerocc"  "servocc"  "lwage"    "expersq"  "tenursq"
+```
+---
+
+# Ejemplo: estimador de Robinson
+
+.pull-left[
+- Propongamos un modelo donde el salario por hora depende no paramétricamente de la experiencia
+
+$$\ln w_i= \beta_0+\beta_1 educ_i + \beta_2 tenure_i + \lambda(exper_i) $$
+
+- La función *npplregbw* nos permite obtener los anchos de banda apropiados para cada variable
+
+
+```r
+bw &lt;- npplregbw(formula=lwage~educ+ tenure | exper, data=wage1)
+```
+
+- Pasamos el objeto *bw* a la función *npplreg*
+
+```r
+model.pl &lt;- npplreg(bw)
+```
+
+]
+
+.pull-right[
+
+```r
+summary(model.pl)
+```
+
+```
+## 
+## Partially Linear Model
+## Regression data: 526 training points, in 3 variable(s)
+## With 2 linear parametric regressor(s), 1 nonparametric regressor(s)
+## 
+##                   y(z)
+## Bandwidth(s): 2.050976
+## 
+##                   x(z)
+## Bandwidth(s): 3.160555
+##               5.238182
+## 
+##                      educ     tenure
+## Coefficient(s): 0.0836069 0.02091947
+## 
+## Kernel Regression Estimator: Local-Constant
+## Bandwidth Type: Fixed
+## 
+## Residual standard error: 0.4176529
+## R-squared: 0.3814675
+## 
+## Continuous Kernel Type: Second-Order Gaussian
+## No. Continuous Explanatory Vars.: 1
+```
+]
+
+---
+
+# Ejemplo: estimador de Robinson
+
+.pull-left[
+
+- Graficamos resultados
+
+```r
+g.robinson &lt;- npplot(bw)
+```
+
+&lt;img src="figures/unnamed-chunk-21-1.png" width="100%" /&gt;
+]
 
 ---
 
 # Próxima sesión
 
-- En la siguiente clase hablaremos sobre modelos no paramétricos
+- En la siguiente clase hablaremos sobre los conceptos básicos de evaluación experimental para estimar efectos de tratamiento
 
-  + CT, Capítulo 9
-
+  - CT, Capítulo 25
 ---
 
 class: center, middle
