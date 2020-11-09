@@ -50,13 +50,16 @@ class: title-slide
 
 # Motivación
 
-- Cuando vemos estadística descriptiva, muchas veces necesitamos más que la media para tener una idea de cómo se ven los datos
+- Hemos trabajado hasta ahora modelando las distribuciones de variables aleatorias o la media condicional
 
-- Similarmente, la regresión por MCO nos sirve para descubrir relaciones promedio basadas en `\(E(y|x)\)`
+- Muchos problemas nos dan cierta estructura (restricciones de homogeneidad, por ejemplo) que nos hacen asumir ciertos modelos
 
-- En muchos problemas nos interesan aspectos distribucionales
+- En otras ocasiones, podemos analizar los datos sin imponer supuestos distribucionales y dejar *que los datos hablen*
 
-- ¿Cómo es la distribución del ingreso para las personas con grado universitario comparada con la distribución del ingreso de las personas sin primaria completada?
+- Los métodos no paramétricos son buenos aliados para la representación de relaciones
+
+- Frecuentemente complementamos análisis paramétricos con sus contrapartes no paramétricas
+
 
 ---
 
@@ -246,6 +249,11 @@ w.N &lt;- nrow(data.salarios)
 constante &lt;- 1.3643
 ajuste &lt;- min(w.sd,w.iqr.adj)
 h &lt;- constante*delta*ajuste*w.N^(-0.2) # ancho de banda
+h
+```
+
+```
+## [1] 0.5453854
 ```
 
 

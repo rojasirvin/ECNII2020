@@ -1,8 +1,8 @@
 ---
-title: "Métodos no paramétricos"
+title: "Evaluación experimental"
 author: "Irvin Rojas"
 institute: "CIDE"
-date: "5 de noviembre de 2020"
+date: "10 de noviembre de 2020"
 mathspec: true
 header-includes:
   - \usepackage{amsmath}
@@ -62,7 +62,7 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
 
 .title[
-# Sesión 24. Métodos no paramétricos
+# Sesión 25. Evaluación experimental
 ]
 .subtitle[
 ## Econometría II
@@ -88,7 +88,6 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 - Los métodos no paramétricos son buenos aliados para la representación de relaciones
 
 - Frecuentemente complementamos análisis paramétricos con sus contrapartes no paramétricas
-
 
 ---
 
