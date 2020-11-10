@@ -79,636 +79,655 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
 # Motivación
 
-- Hemos trabajado hasta ahora modelando las distribuciones de variables aleatorias o la media condicional
+- Los métodos experimentales son populares para resolver problemas del tipo causal
 
-- Muchos problemas nos dan cierta estructura (restricciones de homogeneidad, por ejemplo) que nos hacen asumir ciertos modelos
+- La experimentación permite controlar *el ambiente* y centrar la atención en la pregunta causal de interés (como se hace en un laboratorio clínico, por ejemplo)
 
-- En otras ocasiones, podemos analizar los datos sin imponer supuestos distribucionales y dejar *que los datos hablen*
+--
 
-- Los métodos no paramétricos son buenos aliados para la representación de relaciones
+- Duflo, Banerjee y Kremer ganaron el Nobel en 2019 por sus contribuciones a entender lo que funciona y no en el combate a la pobreza
 
-- Frecuentemente complementamos análisis paramétricos con sus contrapartes no paramétricas
+- Estos autores no solo contribuyen en un aspecto de relevancia de política pública, sino en cómo pensar, formular y solucionar problemas
+
+- Esta forma de plantear problemas se puede extender a otras áreas de la economía y otras ciencias sociales
 
 ---
 
 class: inverse, middle, center
 
-# Estimación de densidades
+# Causalidad en un problema de evaluación
 
 ---
 
-# Histograma
+# Efecto causal
 
-- Consideremos una variable aleatoria continua $x$
+- Pensemos en un tratamiento binario (por ejemplo, recibir un programa de empleo)
 
-- Un **histograma** es un estimador de la densidad formado al partir el rango de $x$ en intervalos iguales y calculando la fracción de dados en cada intervalo
+$$T_i=\begin{cases}
+1 \quad\text{tratado} \\
+0 \quad\text{no tratado}
+\end{cases}$$
 
-- Queremos estimar la densidad $f(x_0)$, es decir, al densidad de $x$ en $x_0$
+- El resultado que cada individuo tendría bajo cada régimen de tratamiento
 
-- Un histograma está definido por
-
-$$\hat{f}_{hist}(x_0)=\frac{1}{N}\sum_i\frac{\mathbf{1}(x_0-h<x_i<x_0+h)}{2h}$$
-
---
-
-- A $2h$ se le llama el ancho de ventana
-
-- El histograma pesa a las observaciones que están dentro el rango dado por $(-h,h)$
-
----
-
-# Histograma
-
-- Este peso igual queda claro al reescribir el histograma como
-
-$$\hat{f}_{hist}(x_0)=\frac{1}{Nh}\sum_i\frac{1}{2}\mathbf{1}\left(\Bigg|\frac{x_i-x_0}{h}\Bigg|<1\right)$$
-- Usemos datos sobre salarios de 175 mujeres para ejemplificar la construcción del histograma
-
-- Usamos 20 ventanas
-
-
----
-
-# Ejemplo: histograma
-
-.pull-left[
-```{r echo=T, include=T, eval=T, results=T, message=F, warning=F}
-
-data.salarios<-read_csv("./salarios.csv",
-                        locale = locale(encoding = "latin1"))
-
-h1 <- data.salarios %>% 
-  ggplot(aes(x=lnhwage)) +
-    geom_histogram(aes(y=..density..),
-                   bins=20,
-                   fill="#69b3a2",
-                   color="#e9ecef",
-                   alpha=0.9) +
-    ggtitle("Histograma del log del salario por horar") +
-    theme(plot.title = element_text(size=15))
-
-```
-]
-
-.pull-right[
-```{r out.width="100%", echo=F, include=T, eval=T, results=T, message=F, warning=F}
-h1
-```
-]
----
-
-# Densidad Kernel
-
-- El estimador de densidad Kernel (Rosenblatt, 1956) es la generalización del histograma
-
-- Definimos la densidad estimada Kernel como
-
-$$\hat{k}(x_0)=\frac{1}{Nh}\sum_i \mathit{K}\left(\frac{x_i-x_0}{h}\right)$$
-- $\mathit{K}$ es una función de pesos Kernel
-
-- $h$ es el ancho de banda o parámetro de suavizaición
-
-- La función Kernel evalúa más datos alrededor de $x_0$ que el histograma (posiblemente todos los datos)
-
----
-
-# Función Kernel
-
-- La función $\mathit{K}$ cumple con
-
-  1. $\mathit{K}(z)$ es simétrica alrededor de 0 y es continua
+  - $y_{1i}$ con $T_i=1$
   
-  1. $\int\mathit{K}(z)dz=1$, $\int z\mathit{K}(z)dz=0$ y $\int|\mathit{K}(z)|dz<\infty$
+  - $y_{0i}$ con $T_i=0$
+
+---
+
+# Efecto causal
   
-  1. i) $K(z)=0$ si $|z|\geq z_0$ para algún  $z_0$, o ii) $|z|K(z)\to 0$ si $|z|\to\infty$
+- Supongamos pudiéramos conocer que:
   
-  1. $\int z^2 \mathit{K}(z)dz=\kappa$, donde $\kappa$ es una constante
+$$y_{a}=\begin{cases}
+y_{1,a}=1\\
+y_{0,a}=0
+\end{cases}$$
 
---
+es decir, si no hubiera recibo el tratamiento, estaría empleado cinco días después
 
-- Una función que satisface estas condiciones puede ser una función Kernel para pesar las observaciones y estimar la densidad en $x_0$
+- Similarmente, conocemos que:
 
-- Al proveer $\mathit{K}$ y $h$, es relativamente fácil obtener el estimador de la densidad
+$$y_{b}=\begin{cases}
+y_{1,b}=0\\
+y_{0,b}=0
+\end{cases}$$
 
----
-
-# Funciones Kernel comúnmente usadas
-
-| Kernel | $\mathit{K}$ |
-|:---|:---:|
-| Uniforme, *box* o rectangular | $\frac{1}{2} \mathbf{1}(abs(z)<1)$ |
-| Triangular | $(1-abs(z))\mathbf{1}(abs(z)<1)$ |
-| Epanechnikov o cuadrático | $\frac{3}{4}(1-z^2)\mathbf{1}(abs(z)<1)$ |
-| Normal o gausiano | $\frac{1}{\sqrt{2\pi}}exp(-z^2/2)$ |
-
+- **Efecto causal para un individuo**: el tratamiento tiene un efecto causal para $i$ si $y_{1i}\neq y_{0i}$
+  
+- En nuestro ejemplo, el tratamiento tuvo un efecto causal en $a$, pero no en $b$
 
 ---
 
-# Elección del ancho de banda
+# Resultados potenciales
 
-- Un ancho de banda pequeño reduce el sesgo (usamos observaciones muy parecidas, aunque pocas)
+- $y_{1i}$ y $y_{0i}$ se conocen como resultados potenciales o contrafactuales
 
-- Un ancho de banda grande mejora la suavización
+- El término *potencial* se debe a que solo vemos uno de ellos
 
-- El ancho de banda es una decisión más importante que la elección del tipo de Kernel
+- En nuestro ejemplo, solo observamos que $y_{a}=y_{1,a}=1$
 
---
-
-- Consideremos el error cuadrático medio como una medida de desempeño
-
-$$MSE(\hat{f}(x_0))=E\left(\hat{f}
-(x_0)-f(x_0)\right) ^2$$
-
-- Una medida global de qué tan buena es la aproximación es el **error cuadrado promedio integrado**
-
-$$MISE(h)=\int MSE(\hat{f}(x_0))dx_0$$
----
-
-# Elección del ancho de banda
-
-- Silverman (1986) muestra que
-
-$$h^*=\delta \left(\int f'' (x_0)^2dx_0\right)^{-0.2}N^{-0.2}$$
-donde $\delta=\left(\frac{\int \mathit{K}(z)^2dz}{(\int z^2\mathit{K}(z)dz})^2\right)$
-
---
-
-- Noten que $h^*$ depende de la curvatura de la densidad
-
-- Si $f(x)$ es muy variable, $h$ será pequeña
-
+- En general, el efecto causal para un individuo no puede ser identificado
 
 ---
 
-# Estimación Kernel en la práctica
+# Efectos causales promedio
 
-- Usamos $\delta$ estimador por Silverman, dependiendo del Kernel elegido
-
-| Kernel | $\mathit{K}$ | $\delta$ |
-|:---|:---:|:---:|
-|Uniforme, *box* o rectangular| $\frac{1}{2}\mathbf{1}(abs(z)<1)$ |  1.3510 |
-| Triangular | $(1-abs(z))\mathbf{1}(abs(z)<1)$ | - |
-| Epanechnikov o cuadrático | $\frac{3}{4}(1-z^2)\mathbf{1}(abs(z)<1)$ | 1.7188 |
-| Normal o gausiano | $\frac{1}{\sqrt{2\pi}}exp(-z^2/2)$ | 0.7764 |
-
---
-
-- El estimador *plug-in* de Silverman funciona casi siempre
-
-$$h^*_{Silverman}=1.3643\delta\left(\min \left\{s,\frac{iqr}{1.349}\right\}\right)N^{-0.2}$$
-donde $s$ es la desviación estándar de los datos, $iqr$ es el rango intercuartil y $\frac{iqr}{1.349}$ protege en presencia de observaciones atípicas
-
-
-
-
----
-
-# Ejemplo: densidad Kernel estimada
-
-- Estimamos un Kernel epanechnikov con el ancho de banda óptimo
-
-- Primero calculemos el ancho de banda óptimo
-
-- Usamos $\delta$ calculado por Silverman
-
-```{r echo=T, include=T, eval=T, results=T, message=F, warning=F}
-delta <- 1.7188 # Ver CT
-w.sd <- sd(data.salarios$lnhwage)
-w.iqr.adj <- IQR(data.salarios$lnhwage)/1.349
-w.N <- nrow(data.salarios)
-constante <- 1.3643
-ajuste <- min(w.sd,w.iqr.adj)
-h <- constante*delta*ajuste*w.N^(-0.2) # ancho de banda
-h
-```
-
-
-
-
----
-
-# Ejemplo: densidad Kernel estimada
+- Supongamos que podemos estudiar a una población con $N=20$
 
 .pull-left[
-- El parámetro *bw* en *geom_density* especifica el ancho de banda
+```{r table_zeus1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 
-- Pero en R, el ancho de banda es lo que para nosotros es el ancho de ventana
+tabl <- "
+| i         | $y_{0i}$           | $y_{1i}$  |
+|-----------|:----------:|:----------:|
+| 1 | 0 | 1 |
+|2 | 1 | 0 |
+| 3 | 0 | 0 |
+| 4 |0|0|
+| 5 |0 |0|
+|6 | 1 | 0|
+|7 | 0 | 0 |
+| 8 | 0 | 1 |
+| 9 | 1 | 1 |
+| 10 | 1 | 0 |
+"
+cat(tabl)
 
-- Debemos de especificar la mitad de $h$
-
-```{r echo=T, include=T, eval=T, results=T, message=T, warning=F}
-k1 <- data.salarios %>% 
-  ggplot(aes(x=lnhwage)) +
-    geom_histogram(aes(y=..density..), bins=20, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
-    geom_density(kernel="epanechnikov", bw=h/2 , n=50)+
-    theme(plot.title = element_text(size=15))
 ```
 ]
-
 .pull-right[
-```{r out.width="100%", echo=F, include=T, eval=T, results=T, message=F, warning=F}
-k1
+```{r table_zeus2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+
+tabl <- "
+| i         | $y_{0i}$           | $y_{1i}$  |
+|-----------|:----------:|:----------:|
+| 11 |0 | 1 |
+| 12 | 1 | 1 |
+| 13 | 1 | 1 |
+| 14 | 0 | 1 |
+| 15 | 0 | 1 |
+| 16 | 0 | 1 |
+| 17 | 1 | 1 |
+| 18 | 1 | 0 |
+| 19 | 1 | 0 |
+| 20 | 1 | 0 |
+
+"
+cat(tabl)
+
 ```
 ]
 
 ---
 
-# Ejemplo: densidad Kernel estimada
+# Efectos causales promedio
 
-.pull-left[
+- De la tabla podemos concluir que $P(y{1i}=1)=10/20=0.5$, es decir, la mitad de quienes reciben el tratamiento estarían empleados
 
-- Vemos cómo el ancho de banda seleccionado modifica el Kernel estimado
+- Y también observamos que $P(y_{0i}=1)=0.5$, es decir, que la probabilidad de estar empleado de no haber recibido el tratamiento es también de 0.5
 
-```{r echo=T, include=T, eval=T, results=T, message=T, warning=F}
-k2 <- data.salarios %>% 
-  ggplot(aes(x=lnhwage)) +
-    geom_histogram(aes(y=..density..), bins=20, fill="#69b3a2", color="#e9ecef", alpha=0.9)+
-    geom_density(aes(x=lnhwage, color='Óptimo'), kernel="epanechnikov", bw=h/2, adjust=1)+
-    geom_density(aes(x=lnhwage, color='1/2 óptimo'), kernel="epanechnikov", bw=h/2, adjust=0.5)+
-    geom_density(aes(x=lnhwage, color='2 óptimo'), kernel="epanechnikov", bw=h/2, adjust=2)+
-    theme(legend.position = 'right')+
-    scale_color_manual("h",values = c('Óptimo' = 'black', '1/2 óptimo' = 'red', '2 óptimo'='blue'))
-```
-]
+--
 
-.pull-right[
-```{r out.width="100%", echo=F, include=T, eval=T, results=T, message=F, warning=F}
-k2
-```
-]
+- En el anterior ejemplo, el tratamiento no tiene un efecto causal pues la probabilidad de estar empleado con y sin el tratamiento es igual
+
+- **Efecto causal promedio** en una población: un efecto causal promedio de $T$ en el resultado $y$ está presente si $P(Y_{1i}=1\neq Y_{0i}=1)$ en la población de interés
+
+- Cuando pensamos en **poblaciones**, podemos usar expectativas para definir el efecto causal promedio: $E(Y_{1i}\neq E_{0i})$, lo cual permite generalizar a resultados no binarios
+
+- La ausencia de efectos individuales promedio no implica ausencia de efectos individuales
 
 ---
 
-# Ejemplo: densidad Kernel estimada
+# Variabilidad aleatoria
 
-.pull-left[
+- En la práctica, casi nunca podemos observar a la población de interés, sino solo a una muestra
 
-- Notamos que la elección del tipo de Kernel es menos relevante
+- Por tanto, $P(y_{ti}=y)$ no puede ser observada sino estimada
 
-```{r echo=T, include=T, eval=T, results=T, message=T, warning=F}
-delta.gausiano <- 0.7764
-delta.uniforme <- 1.3510
-delta.cuartico <- 2.0362
+- Debido al error muestral, la proporción que está empleada en la muestra no es numéricamente igual a la proporción que está empleada en la población
 
-h.gausiano <- constante*delta.gausiano*ajuste*w.N^(-0.2)
-h.uniforme <- constante*delta.uniforme*ajuste*w.N^(-0.2)
-h.cuartico <- constante*delta.cuartico*ajuste*w.N^(-0.2)
+--
 
-k3 <- data.salarios %>% 
-  ggplot(aes(x=lnhwage)) +
-    geom_histogram(aes(y=..density..), bins=20, fill="#69b3a2", color="#e9ecef", alpha=0.9)+
-    geom_density(aes(x=lnhwage, color='epanechnikov'), kernel="epanechnikov", bw=h/2, adjust=1)+
-    geom_density(aes(x=lnhwage, color='gausiano'), kernel="gaussian", bw=h.gausiano/2, adjust=1)+   
-    geom_density(aes(x=lnhwage, color='uniforme'), kernel="rectangular", bw=h.uniforme/2, adjust=1)+
-    geom_density(aes(x=lnhwage, color='cuártico'), kernel="biweight", bw=h.cuartico/2, adjust=1)+
-    theme(legend.position = 'right')+
-    scale_color_manual("Kernel", values = c('epanechnikov' = 'black', 'gausiano' = 'red', 'uniforme'='blue', 'cuártico'='green'))
+- La hipótesis que queremos probar es que hay un efecto causal en la población
+
+- Pero al trabajar con muestras, puede haber diferencias que surjan solo por el muestreo
+
+- Nuestra tarea es tratar de distinguir estas diferencias de los verdaderos efectos causales
+
+---
+
+class: inverse, middle, center
+
+# El experimento ideal
+
+---
+
+# El efecto de los hospitales
+
+- ¿Los hospitales hacen que la gente sea más sana?
+
+- Podemos conseguir datos de encuestas sobre cuántas veces las personas han ido al hospital en el último año
+
+```{r table_hospital, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+
+tabl <- "
+
+|Grupo | N | Salud (1-5)| Error estándar|
+|-|:-:|:-:|:-:|
+|Hospitalizados | 7,774 | 3.21 | 0.014 |
+|No hospitalizados | 90,049 | 3.93 | 0.003 |
+|Diferencia | | 0.72 | |
+| (t) | | (58.9) | |
+"
+cat(tabl)
+
 ```
-]
 
-.pull-right[
-```{r out.width="100%", echo=F, include=T, eval=T, results=T, message=F, warning=F}
-k3
-```
-]
+--
+
+
+- ¿Tiene sentido? ¿Los hospitales enferman?
+
+- ¿Qué sucede?
+
+---
+
+# Comparaciones observacionales
+
+- Pensemos de nuevo en términos del *Modelo de Rubin* de resultados potenciales
+
+$$y_{i}=\begin{cases}
+y_{1i}=1\quad\text{si }D_i=1\\
+y_{0i}=0 \quad \text{si } D_i=0
+\end{cases}$$
+
+
+- Solo vemos al individuo en una situación, $y_i$:
+
+$$y_i=y_{0i}+(y_{1i}-y_{0i})D_i$$
+--
+
+- ¿Qué nos dicen las comparaciones observacionales?
+
+- Supongamos que tenemos acceso a datos sobre tratados y no tratados
+
+- Podemos calcular $E(y_i|D_i=1)-E(y_i|D_i=0)$:
+
+$$
+\begin{aligned}
+E(y_i|D_i=1)-E(y_i|D_i=0)=&E(y_{1i}|D_i=1)-E(y_{oi}|D_i=0)+\\& \underbrace{E(y_{0i}|D_i=1)-E(y_{0i}|D_i=1)}_0 
+\end{aligned}
+$$
+---
+
+# Sesgo de selección
+
+
+- Reordenando:
+
+$$
+\begin{aligned}
+E(y_i|D_i=1)-E(y_i|D_i=0)=&\overbrace{ E(y_{1i}|D_i=1)-E(y_{0i}|D_i=1)}^{\text{Efecto promedio en los tratados}}+\\& \underbrace{E(y_{0i}|D_i=1)-E(y_{oi}|D_i=0)}_{\text{Sesgo de selección}}
+\end{aligned}
+$$
+
+- El primer término nos da la diferencia promedio en la variable de salud entre los hospitalizados y lo que les hubiera pasado si no hubieran sido hospitalizados
+
+- En nuestro ejemplo, el **sesgo** de selección es la diferencia en salud entre los hospitalizados y los no hospitalizados
+
+- Específicamente, si quienes van al hospital tienen una peor salud, podemos esperar que $E(y_{0i}|D_i=1)-E(y_{oi}|D_i=0)<0$
+
+---
+
+# Sesgo de selección
+
+- Al hacer aseveraciones basadas en comparaciones observacionales se incluye el efecto causal del tratamiento, pero también el sesgo de selección
+
+- El sesgo de selección puede ser positivo o negativo
+
+- El objetivo de las estrategias de evaluación es eliminar el sesgo de selección
+
+---
+
+# Tratamiento aleatorio
+
+- Supongamos que tenemos la posibilidad de aleatorizar el tratamiento, es decir, hacer que $Y_i$ y $D_i$ sean independientes
+
+- En ese caso, por independencia: $E(Y_{0i}|D_i=0)=E(Y_{0i}|D_i=1)$
+
+- De la definición de comparación observacional:
+
+$$
+\begin{aligned}
+E(y_i|D_i=1)-E(y_i|D_i=0)=&E(y_{1i}|D_i=1)-E(y_{0i}|D_i=0)
+\end{aligned}
+$$
+
+- Sustituyendo el resultado de independencia:
+
+$$
+\begin{aligned}
+E(y_i|D_i=1)-E(y_i|D_i=0)&=E(y_{1i}|D_i=1)-E(y_{0i}|D_i=1) \\
+& =E(y_{1i}-y_{0i}|D_i=1) \\
+& =\underbrace{E(y_{1i}-y_{0i})}_{\text{Efecto causal}}
+\end{aligned}
+$$
+
+---
+
+class: inverse, middle, center
+
+# Motivación con efectos constantes
+
+
+---
+
+# Regresión para la idenfiticación de efectos causales
+
+- Con fines de simplificación, asumamos un efecto de tratamiento constante: $y_{1i}-y_{0i}=\rho$
+
+- Consideremos el valor observado para un individuo 
+$$y_i=y_{0i}+(y_{1i}-y_{0i})D_i$$
+
+- Sumemos y restemos $E(y_{0i})$:
+
+$$
+\begin{aligned}
+y_i&=E(y_{0i})+(y_{1i}-y_{0i})D_i+y_{0i}-E(y_{0i}) \\
+&=\underbrace{\alpha}_{E(y_{0i})}+\underbrace{\rho}_{(y_{1i}-y_{0i})} D_i + \underbrace{\nu_i}_{y_{0i}-E(y_{0i})}
+\end{aligned}
+$$
+
+- Ahora evaluemos:
+
+$$
+\begin{aligned}
+&E(y|D_i=1)=\alpha+\rho+E(\nu_i|D_i=1) \\
+&E(y|D_i=0)=\alpha+E(\nu_i|D_i=0)
+\end{aligned}
+$$
+
+---
+
+# Regresión para la idenfiticación de efectos causales
+
+- Restando
+
+$$
+\begin{aligned}
+E(y|D_i=1)-E(y|D_i=0)&=\rho+\overbrace{E(\nu_i|D_i=1)-E(\nu_i|D_i=0)}^{\text{Sesgo de selección}} \\
+&=\rho+E(y_{1i}|D_i=1)-E(y_{0i}|D_i=0)
+\end{aligned}
+$$
+- Es decir, el sesgo de selección es igual a la correlación entre el término de error y $D_i$
+
+- Y, de acuerdo a la segunda línea, también es igual a la diferencia en el resultado potencial (de no tratamiento), entre aquellos que son tratados y los que no son tratados
+
+- En nuestro ejemplo del hospital, es muy probable que el sesgo de selección sea negativo porque los tratados son quienes tienen peor salud (en el estado no tratado)
+
+- Como vimos antes, con asignación aleatoria, el sesgo de selección desaparece, por lo que una regresión de $y_i$ en $D_i$ estima el efecto causal $\rho$
+
+---
+
+# Regresión corta y larga
+
+- Con un tratamiento binario y asignado aleatoriamente, podemos estimar el efecto usando una regresión:
+
+$$y_i=\alpha+\beta T_i + u_i$$
+
+- Es muy común, sin embargo, usar **controles**
+
+- Si una serie de características $X$ no está correlacionada con $T_i$, se puede incluir en una versión larga de la regresión antes descrita:
+
+$$y_i=\alpha+\beta T_i + X_i'\gamma + u_i$$
+- El valor numérico de $\hat{\beta}$ en la regresión larga será muy cercano al obtenido con la regresión corta, pero se incrementa la precisión de los parámetros estimados
+
+- Dado que emplearemos regresión ampliamente en este curso, es necesario fijar algunas ideas sobre cómo entendemos y cómo usamos la regresión en la práctica
+
+
+---
+
+# No siempre es factible
+
+- La aleatorización resuelve muchas cosas, pero muchas veces no es factible
+
+- ¿Qué tendríamos que hacer en el caso de estudio, "¿Los hospitales matan?"
+
+--
+
+- Pensemos en un programa de empleo para ex convictos
+
+- Seguramente una comparación observacional indicaría que estos ganan menos que el resto de la población
+
+- Pero esto no significa que el programa cause un efecto negativo en el ingreso
+
+- Siempre tenemos que pensar en el contrafactual
+
+---
+
+class: inverse, middle, center
+
+# Parámetros de interés de efectos de tratamiento
+
+---
+
+# Supuesto de independencia condicional
+
+- En la sesión anterior vimos que el SIC nos dice que, condicional en $X_i$, los resultados potenciales son independientes del tratamiento
+
+- Cuando el tratamiento se asigna de manera aleatoria y el diseño experimental se mantiene integro, el supuesto es válido
+
+- Más aún, bajo asignación aleatoria, podemos hacer un supuesto aún más fuerte:
+
+$$\{y_{0i},y_{1i}\perp D_i \}$$
+
+---
+
+# Efectos de tratamiento
+
+- Vamos a definir dos medidas de efecto de tratamiento ampliamente usadas en la literatura
+
+- Definamos el cambio en la variable de resultados de un individuo:
+
+$$\Delta_i=y_{1i}-y_{0i}$$
+
+**Efecto promedio del tratamiento** (ATE): se interpreta como la ganancia hipotética debido al tratamiento para un individuo seleccionado al azar en una población
+
+- Este parámetro es de relevancia cuando pensamos en tratamientos de aplicación universal
+
+- Matemáticamente:
+
+$$ATE=E(\Delta)$$
+
+- Con su correspondiente análogo muestral:
+$$\hat{ATE}=\frac{1}{N}\sum_i^N\Delta_i$$
+
+---
+
+# Efectos de tratamiento
+
+**Efecto promedio del tratamiento en los tratados** (ATET, TT, TOT)
+
+- Como su nombre lo dice, este parámetro solo considera a los individuos que son efectivamente tratados
+
+- Matemáticamente:
+$$ATET=\frac{1}{N_T}\sum_i^{N_T}(\Delta_i|D_i=1)$$
+
+- Y su análogo muestral es:
+
+$$\hat{ATET}=\sum_i^{N_T}(\Delta_i|D_i=1)$$
+
+---
+
+# Efectos de tratamiento
+
+- Heckman (1997) critica el uso del ATE pues pudiera ser irrelevante
+
+- ¿Cuál es el ATE de PROGRESA, por ejemplo?
+
+- La contracrítica es que siempre podemos restringir lo que es la *población* de interés
+
+--
+
+- Noten que el ATET también abre la puerta a casos en los que, aún cuando el tratamiento se asignó aleatoriamente en un grupo, no todos a los que se les asigna el tratamiento efectivamente lo reciben
+
+--
+
+- En ambos casos, no podemos estimar directamente los parámetros pues no observamos $\Delta_i$
+
+- Sin embargo, ya vimos cómo, con una muestra de tratados y no tratados, podemos inferir el efecto del tratamiento, bajo algunos supuestos
 
 
 ---
 
 class: inverse, middle, center
 
-# Regresión local no paramétrica
+# Cumplimiento imperfecto
 
 ---
 
-# Regresión local no paramétrica
+# Cumplimiento imperfecto
 
-- Consideremos el siguiente modelo con un regresor escalar
+- Angrist, Imbens & Rubin (1996)
 
-$$y_i=m(x_i)+\varepsilon_i$$
+- Asignación: $Z_i=\begin{cases} 1 \\0 \\ \end{cases}$
 
-- Tenemos $N$ observaciones y $\varepsilon_i\sim iid(0,\sigma^2_{\varepsilon})$
+- Cumplimiento: $D_i=\begin{cases} 1 \\0 \\ \end{cases}$
 
-- Queremos usar las $x$ para decir algo sobre $y$ pero no queremos darle un modelo paramétrico
+- $Y_i$ variable de resultados
+
+- Nos importa el efecto de $D_i$ sobre $Y_i$ (mucho menos interesante es el efecto de $Z_i$ sobre $Y_i$)
 
 ---
 
-# Promedios locales ponderados
+# Efectos causales y VI
 
-- Supongamos que para un valor de $x$, digamos $x_0$, observamos $N_0$ valores de $y$
+- $D_i(Z)$ es el indicador de cumplir, dada la asignación $Z$
 
-- Una forma de estimar $m(x_0)$ es con la media muestral $\tilde{x}(x_0)$
+- Con cumplimiento perfecto tendríamos $D_i(Z)=Z_i$
 
-- El problema es que este estimador puede ser muy ruidoso con regresores discretos y muestras pequeñas
+- En general, hay asignados que no cumplen y no asignados que cumplen
+
+- $Y_i(Z,D)$ es la variable de interés de $i$
+
+- $Y_i(Z,D)$ y $D_i(Z)$ son resultados potenciales
+
+
+---
+
+# Interpretación causal del estimador de VI
+
+**Proposición 1 en Angrist, Imbens & Rubin (1996)**: interpretación causal del estimador de VI
+
+- Si los supuestos 1 a 5 se cumplen, el estimador de VI es:
+
+$$E(Y_i(1)-Y_i(0)|D_i(1)-D_i(0)=1)=\frac{E(Y_i(D_i(1),1))-Y_i(D_i(0),0)}{E(D_i(1)-D_i(0)}=\lambda_{LATE}$$
+
+- Angrist y coautores llaman a este parámetro el **efecto local promedio del tratamiento** o *LATE*
+
+- El LATE es el efecto causal promedio del tratamiento en un conjunto de individuos cuyo estatus de tratamiento puede ser modificado por la asignación aleatoria
+
+- A estos individuos se les conoce como **cumplidores** o *compliers*
+
+
+---
+
+# Tipos de individuos
+
+- Hay cuatro tipos de individuos:
+
+| | $D_i(0)=0$ | $D_i(0)=1$ | 
+|--|:--:|:--:|
+| $D_i(1)=0$ | $Y_i(1,0)-Y_i(0,0)=0$ | $Y_i(1,0)-Y_i(0,1)=-(Y_i(1)-Y_i(0))$ |
+| | Nunca cumplidor | Retador |
+| $D_i(1)=1$ | $Y_i(1,1)-Y_i(0,0)=Y_i(1)-Y_i(0)$ | $Y_i(1,1)-Y_i(0,1)=0$ |
+| | Cumplidor | Siempre adoptador |
 
 --
 
-- Una alternativa es mirar en una vecindad de $x_0$
+- Los cumplidores cumplen con el tratamiento si se les asigna y no lo cumplen si no se les asigna
 
+- $Z$ es independiente de $D$ para los nunca cumplidores y los siempre adoptadores y el efecto causal es 0 para ambos
 
-- Definimos un **estimador de medias ponderadas local**
+- Los retadores hacen lo contrario a lo que les es asignado
 
-$$\hat{m}(x_0)=\sum_{i=1}^Nw_{i0,h}y_i$$
+- A la suma de nunca cumplidores, siempre adoptadores y retadores se le conoce como **no cumplidores**
 
-- Los pesos $w_{i0,h}$, con $\sum_i w_{i0,h}=1$ indican cuánto pesan las observaciones alrededor de $x_0$, dándole más peso a las más cercanas
-
-- $h$ es el ancho de ventana
-
----
-
-# Promedios locales ponderados
-
-- Si decidimos que cada observación en la vecindad dada por $h$, el estimador local es
-
-$$\hat{m}(x_0)=\frac{\sum_i\mathbf{1}\left(\Bigg|\frac{x_i-x_0}{h}\Bigg|<1\right)y_i}{\sum_i\mathbf{1}\left(\Bigg|\frac{x_i-x_0}{h}\Bigg|<1\right)}$$
-- El numerador es la suma de $y_i$ para las observaciones dentro del ancho de banda
-
-- El denominador es el número de unidades sobre las que se está sumando
+- El supuesto de monotonicidad descarta la existencia de retadores
 
 ---
 
-# Promedios locales ponderados
+# LATE y TT
 
-- De hecho, las predicciones de MCO también pueden expresarse como un estimador de medias ponderadas
+- En general el LATE y el TT difieren
 
-- Algo de álgebra resulta en
+- Pero recordemos que $TOT=E(y_{1i}-y_{0i}|D_i=1)$
 
-$$\hat{m}_{MCO}(x_0)=\sum_i\left\{\frac{1}{N}+\frac{(x_0-\bar{x})(x_i-\bar{x})}{\sum_j (x_j-\bar{x})^2}\right\}y_i$$
----
+- Noten que en el conjunto con $D_i=1$ se encuentran los cumplidores y los siempre adoptadores
 
-# Estimador de vecinos más cercanos
-
-- Consideremos una vecindad de tamaño $k$, donde tenemos $(k-1)/2$ observaciones con $x<x_0$ y otras tantas para $x>x_0$
-
-- Entonces, el estimador de **k vecinos más cercanos**, de **media móvil** o de **media móvil local**
-
-$$\hat{m}_{k-NN}(x_0)=\frac{1}{k}\sum_i \mathbf{1}(x_i\in N_k(x_0))y_i$$
-- Aquí $k$ juega el papel de $h$
-
-- $h$ es variable: $h_0$ es igual a la distancia entre $x_0$ y el más lejano de los $k$ vecinos más cercanos
-
-- A $k/N$ se le conoce como *lapso* o *span*
-
----
-
-# Regresión kernel
-
-- Una extensión natural el estimador de promedios locales ponderados es usar una función Kernel para pesar más las observaciones más cercanas a $x_0$
-
-- Esto resulta en el **estimador de regresión Kernel**
-
-$$\hat{m}(x_0)=\frac{\frac{1}{Nh}\sum_i\mathit{K}\left(\frac{x_i-x_0}{h}\right)y_i}{\frac{1}{Nh}\sum_i\mathit{K}\left(\frac{x_i-x_0}{h}\right)}$$
----
-
-# Regresión local lineal
-
-- Podemos asumir que $m(x)$ es lineal en la vecindad de $x_0$
-
-$$m(x)=a_0+b_o(x-x_0)$$
-- El **estimador de regresión local lineal** se obtiene al esocger $a_0$ y $b_0$ que resuelven resolver
-
-$$\sum_i \mathit{K}\left(\frac{x_i-x_0}{h}\right)(y_i-a_0-b_0(x_i-x_0))^2$$
-
-- Obtenemos $\hat{m}(x)=\hat{a}_0+\hat{b}_0(x-x_0)$
-
---
-
-- En general, podemos asumir un polinomio de orden $p$ para $m(x)$ y resolver
-
-
-$$\sum_i \mathit{K}\left(\frac{x_i-x_0}{h}\right)\left(y_i-a_{0,0}-a_{0,1}(x_i-x_0)-\ldots-a_{0,p}\frac{(x_i-x_0)^p}{p!}\right)^2$$
----
-
-# Estimador Lowess
-
-- Un estimador comúnmente usado es el **estimador suavizador de puntos con pesos locales**  (*locally weighted scatterplot smoothing estimator*) o **Lowess**
-
-- Caso especial del estimador polinomial
-
-  - Kernel tricúbico, $\mathit{K}=(70/81)(1-abs(z)^3)^3\mathbf{1}(abs(z)<1)$
-
-  - Otorga menor peso a observaciones con residuales grandes
-  
---
-
-- Resulta robusto a la presencia de observaciones atípicas
-
-- Es intensivo en cómputo
-
-
----
-
-# Ejemplo: regresión no paramétrica
-
-- Simulamos un proceso
-
-```{r out.width="100%", echo=T, include=T, eval=T, results=T, message=F, warning=F}
-N <- 100
-u <- rnorm(n=N, mean=0, sd=25)
-x <- seq(1:N)
-y <- 150 + 6.5*x -0.15*x^2+0.001*x^3+u
-
-data.sim <- as.data.frame(cbind(x,y))
-```
-
-
-- Usamos la función *knn.reg* de la paquetería *FNN*
-
-```{r out.width="100%", echo=T, include=T, eval=T, results=T, message=F, warning=F}
-
-knn5 <- knn.reg(data.sim$x, y=data.sim$y, k=5)
-knn25 <- knn.reg(data.sim$x, y=data.sim$y, k=25)
-
-data.sim <- data.sim %>% 
-  mutate(y5=knn5$pred) %>% 
-  mutate(y25=knn25$pred)
-
-```
----
-
-# Ejemplo: regresión no paramétrica
-
-- Notamos que $h$ más grande genera una función más suave
-
-.pull-left[
-```{r out.width="100%", echo=T, include=T, eval=T, results=T, message=F, warning=F}
-np1 <- data.sim %>% 
-  ggplot(aes(x=x,y=y))+
-  geom_point()+
-  geom_smooth(aes(x=x,y=y, color='MCO'), method=lm, se=FALSE)+
-  geom_line(aes(x=x,y=y5, color='kNN, k=5'))+
-  geom_line(aes(x=x,y=y25, color='kNN, k=25'))+
-  theme(legend.position = 'right')+
-  scale_color_manual("Método", values = c('kNN, k=5' = 'blue', 'kNN, k=25'='green', 'MCO'='black'))
-
-```
-]
-
-.pull-right[
-```{r out.width="100%", echo=F, include=T, eval=T, results=T, message=F, warning=F}
-np1
-```
-
-]
-
----
-
-# Ejemplo: regresión no paramétrica
-
-- Y ahora incluimos la función generada por Lowess
-
-.pull-left[
-```{r out.width="100%", echo=T, include=T, eval=T, results=T, message=F, warning=F}
-
-fit.lowess <- lowess(data.sim$x, y=data.sim$y, f=25/100)
-
-data.sim <- data.sim %>% 
-  mutate(y.lowess=fit.lowess$y)
-  
-np2 <- data.sim %>% 
-  ggplot(aes(x=x,y=y))+
-  geom_point()+
-  geom_smooth(aes(x=x,y=y, color='MCO cúbico'), method=lm, formula= y ~ x+I(x^2)+I(x^3), se=FALSE)+
-  geom_line(aes(x=x,y=y.lowess, color='Lowess k=25'))+    theme(legend.position = 'right')+
-  scale_color_manual("Método", values = c('MCO cúbico' = 'blue', 'Lowess k=25' = 'red'))
-
-
-```
-]
-
-.pull-right[
-```{r out.width="100%", echo=F, include=T, eval=T, results=T, message=F, warning=F}
-np2
-```
-
-]
+- Si podemos asegurar que no hay siempre adoptadores, el LATE y el TT son iguales
 
 ---
 
 class: inverse, middle, center
 
-# Regresión semiparamétrica
-
-
----
-
-# Regresión semiparamétrica
-
-- La teoría económica puede informar sobre la estructura de problemas y queremos introducir esta estructura en los modelos
-
-- Con muchos regresores, la estimación no paramétrica se vuelve impráctica
-
-- Podemos usar modelos *híbridos* que tengan una parte paramétrica y otra no paramétrica
-
-- Algunos de estos modelos son más usados que otros en microeconometría
-
+# Econometría del LATE
 
 ---
 
-# Modelos lineal parcial
+# Motivación con un estadístico de Wald
 
-- Especificamos
+- Pensemos en un modelo con efectos constantes de tratamiento: $y_{1i}-y_{0i}=\alpha$
 
-$$E(y|x,z)=x'\beta+\lambda(z)$$
+- La variable de resultados está determinada por $y_{0i}=\beta+\varepsilon_i$, donde $\beta=E(y_{0i})$
 
-donde $\lambda(cdot)$ es una función escalar no especificada
+- Entonces, el modelo de resultados potenciales es:
 
-- Por ejemplo, la demanda de cierto bien puede ser lineal en $x$ y no lineal en $z$
-
-- El modelo de regresión es
-
-$$y_i=x_i'\beta+\lambda(z_i)+\varepsilon_i \\ E(\varepsilon_i | x_i,z_i)=0 $$
----
-
-# Transformación de Robinson
-
-- Robinson (1988) propone lo siguiente
-
-  1. Aplicando el operador de esperanza y por la ley de expectativas iteradas
-  
-  $$E(y_i|z_i)=E(x_i'\beta|z_i)+E(\lambda(z_i)|z_i)+E(\varepsilon_i|z_i) = E(x_i|z_i)'\beta+\lambda(z_i)$$
-
-  1. Restando a la ecuación de $y_i$ original
-  
-  $$y_i-E(y_i|z_i)=(x_i-E(x_i|z_i))'\beta+\varepsilon_i$$
-
----
-
-# Estimador de Robinson
-
-- El **estimador de Robinson** consiste en hacer MCO a la ecuación transformada
-
-$$y_i-\hat{m}_{yi}=(x-\hat{m}_{xi})'\beta_{LP}+\nu$$
+$$y_i=\beta+\alpha D_i+\varepsilon_i$$
+- Si $D_i$ no es independiente de $y_{0i}$ (es decir, $y_{0i}$ no es independiente del error), entonces una diferencia de medias entre grupos de $D$ no produce un estimador consistente de $\alpha$
 
 --
 
-- $\hat{m}_{yi}$ y $\hat{m}_{xi}$ son predicciones obtenidas por regresiones no paramétricas de $y$ y $x$ sobre $z$
+- Ahora supongamos que tenemos un **instrumento** $z_i$ tal que $z_i\perp y_i$, es decir, $E(\varepsilon_i|z_i)=0$
 
-- Robinson (1988) muestra que el estimador LP es consistente y asintóticamente normal
+--
 
-- Ver CT, Sección 9.7.3, con las expresiones de la varianza del estimador de Robinson
+- Evaluemos la esperanza de $y_i$ cuando $z_i=1$ y cuando $z_i=0$:
 
----
-
-# Ejemplo: estimador de Robinson
-
-- Usamos la función *npplreg* de la paquetería *np*
-
-- Usaremos una base de datos que viene con *np* con 524 observaciones
-
-  - Tenemos datos de edad, raza, salarios, educación, experiencia
-
-```{r out.width="100%", echo=T, include=T, eval=T, results=T, message=F, warning=F}
-data(wage1)
-colnames(wage1)
-```
----
-
-# Ejemplo: estimador de Robinson
-
-.pull-left[
-- Propongamos un modelo donde el salario por hora depende no paramétricamente de la experiencia
-
-$$\ln w_i= \beta_0+\beta_1 educ_i + \beta_2 tenure_i + \lambda(exper_i) $$
-
-- La función *npplregbw* nos permite obtener los anchos de banda apropiados para cada variable
-
-```{r out.width="100%", echo=T, include=T, eval=T, results=F, message=F, warning=F}
-bw <- npplregbw(formula=lwage~educ+ tenure | exper, data=wage1)
-```
-
-- Pasamos el objeto *bw* a la función *npplreg*
-```{r out.width="100%", echo=T, include=T, eval=T, results=T, message=F, warning=F}
-model.pl <- npplreg(bw)
-```
-
-]
-
-.pull-right[
-```{r out.width="100%", echo=T, include=T, eval=T, results=T, message=F, warning=F}
-summary(model.pl)
-```
-]
+$$
+\begin{aligned}
+E(y_i|z_i=1)&=\beta+\alpha E(D_i=1) \\
+E(y_i|z_i=0)&=\beta+\alpha E(D_i=0) \\
+\end{aligned}
+$$
+- Restando y despejando obtenemos $\alpha=\frac{E(y_i|z_i=1)-E(y_i|z_i=0)}{E(D_i=1)-E(D_i=0)}$, lo cual es conocido como un *estadístico de Wald*
 
 ---
 
-# Ejemplo: estimador de Robinson
+# Mínimos cuadrados en dos etapas (MC2E)
 
-.pull-left[
+- **Modelo estructural**
 
-- Graficamos resultados
-```{r out.width="100%", echo=T, include=T, eval=T, results=F, message=F, warning=F}
-g.robinson <- npplot(bw)
-```
-]
+$$y_i=X_i'\beta+\alpha D_i+\varepsilon_i$$
+
+- Podemos entender la estimación del efecto causal usando dos etapas
+
+--
+
+- **Primera etapa**
+
+$$D_i=X_i'\pi_0+\pi_1z_i+\eta_i$$
+donde $pi_i$ es el efecto causal de la asignación sobre el cumplimiento
+
+- Cuado $D_i$ u $z_i$ son ambas dicotómicas, $\pi_1$ da la proporción de la población que son cumplidores
+
+---
+
+# Mínimos cuadrados en dos etapas (MC2E)
+
+- **Segunda etapa**
+$$y_i=X_i'\beta+\alpha \hat{D}_i+\varepsilon_i$$
+--
+
+- Esta es la forma de pensar el procedimiento, pero en la práctica nunca hacemos esto manualmente
+
+  - Noten que $\hat{D}_i$ es estimada, por lo cual se ignora la variabilidad muestral de la primera etapa y los errores estándar serían inconsistentes
+
+--
+
+- Nota: el estimador de Wald es igual al estimador de MC2E cuando no hay $X$ y cuando $Z$ y $D$ son binarias
+
+---
+
+# Mínimos cuadrados en dos etapas (MC2E)
+
+
+- **Forma reducida**
+
+$$
+\begin{aligned}
+y_i&=X_i'\beta+\alpha(X_i'\pi_0+\pi_1z_1+\eta_i)+\varepsilon_i \\
+&=X_i'\delta_0+\delta_1z_i+\nu_1
+\end{aligned}
+$$
+donde $\delta_1=\alpha\pi_1$ es el coeficiente de forma reducida sobre la variable de asignación
+
+--
+
+- Noten que esto implica que $\alpha=\delta_1/\pi_1$
+
+- Es decir, $\alpha_{MC2E}$ puede interpretarse como la versión reescalada del coeficiente de forma reducida usando el efecto causal de la primera etapa
+
+
 
 ---
 
 # Próxima sesión
 
-- En la siguiente clase hablaremos sobre los conceptos básicos de evaluación experimental para estimar efectos de tratamiento
+- En las siguientes sesiones iremos viendo algunos ejemplos
 
-  - CT, Capítulo 25
+- Riesgo
+
+  - **Riesgo**: De Uña-Alvarez, J., Otero-Giráldez, M. S., & Alvarez-Llorente, G. (2003). Estimation under length-bias and right-censoring: an application to unemployment duration analysis for married women. *Journal of Applied Statistics*, 30(3), 283-291.
+  
+- Métodos semiparamétricos
+
+  - **Semiparamétrico**: Hussinger, K. (2008). R&D and subsidies at the firm level: An application of parametric and semiparametric two‐step selection models. *Journal of applied econometrics*, 23(6), 729-747.
+
+---
+
+# Próxima sesión
+
+- Métodos experimentales
+
+  + **Experimento de campo**: Jensen, R. T., & Miller, N. H. (2008). Giffen behavior and subsistence consumption. *American economic review*, 98(4), 1553-77.
+  
+  + **Correspondencia**: Bertrand, M., & Mullainathan, S. (2004). Are Emily and Greg more employable than Lakisha and Jamal? A field experiment on labor market discrimination. *American economic review*, 94(4), 991-1013.
+  
+  + **LATE**: Gonzalez-Navarro, M., & Quintana-Domeque, C. (2016). Paving streets for the poor: Experimental analysis of infrastructure effects. *Review of Economics and Statistics*, 98(2), 254-267.
+
 ---
 
 class: center, middle

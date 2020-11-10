@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Evaluación experimental</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.5/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+    <script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: title-slide
+
+
+
+&lt;style type="text/css"&gt;
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+&lt;/style&gt;
+
+
+.title[
+# Sesión 25. Evaluación experimental
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas &lt;br&gt; División de Economía
+]
+
+---
+
+# Motivación
+
+- Los métodos experimentales son populares para resolver problemas del tipo causal
+
+- La experimentación permite controlar *el ambiente* y centrar la atención en la pregunta causal de interés (como se hace en un laboratorio clínico, por ejemplo)
+
+--
+
+- Duflo, Banerjee y Kremer ganaron el Nobel en 2019 por sus contribuciones a entender lo que funciona y no en el combate a la pobreza
+
+- Estos autores no solo contribuyen en un aspecto de relevancia de política pública, sino en cómo pensar, formular y solucionar problemas
+
+- Esta forma de plantear problemas se puede extender a otras áreas de la economía y otras ciencias sociales
+
+---
+
+class: inverse, middle, center
+
+# Causalidad en un problema de evaluación
+
+---
+
+# Efecto causal
+
+- Pensemos en un tratamiento binario (por ejemplo, recibir un programa de empleo)
+
+`$$T_i=\begin{cases}
+1 \quad\text{tratado} \\
+0 \quad\text{no tratado}
+\end{cases}$$`
+
+- El resultado que cada individuo tendría bajo cada régimen de tratamiento
+
+  - `\(y_{1i}\)` con `\(T_i=1\)`
+  
+  - `\(y_{0i}\)` con `\(T_i=0\)`
+
+---
+
+# Efecto causal
+  
+- Supongamos pudiéramos conocer que:
+  
+`$$y_{a}=\begin{cases}
+y_{1,a}=1\\
+y_{0,a}=0
+\end{cases}$$`
+
+es decir, si no hubiera recibo el tratamiento, estaría empleado cinco días después
+
+- Similarmente, conocemos que:
+
+`$$y_{b}=\begin{cases}
+y_{1,b}=0\\
+y_{0,b}=0
+\end{cases}$$`
+
+- **Efecto causal para un individuo**: el tratamiento tiene un efecto causal para `\(i\)` si `\(y_{1i}\neq y_{0i}\)`
+  
+- En nuestro ejemplo, el tratamiento tuvo un efecto causal en `\(a\)`, pero no en `\(b\)`
+
+---
+
+# Resultados potenciales
+
+- `\(y_{1i}\)` y `\(y_{0i}\)` se conocen como resultados potenciales o contrafactuales
+
+- El término *potencial* se debe a que solo vemos uno de ellos
+
+- En nuestro ejemplo, solo observamos que `\(y_{a}=y_{1,a}=1\)`
+
+- En general, el efecto causal para un individuo no puede ser identificado
+
+---
+
+# Efectos causales promedio
+
+- Supongamos que podemos estudiar a una población con `\(N=20\)`
+
+.pull-left[
+
+| i         | `\(y_{0i}\)`           | `\(y_{1i}\)`  |
+|-----------|:----------:|:----------:|
+| 1 | 0 | 1 |
+|2 | 1 | 0 |
+| 3 | 0 | 0 |
+| 4 |0|0|
+| 5 |0 |0|
+|6 | 1 | 0|
+|7 | 0 | 0 |
+| 8 | 0 | 1 |
+| 9 | 1 | 1 |
+| 10 | 1 | 0 |
+]
+.pull-right[
+
+| i         | `\(y_{0i}\)`           | `\(y_{1i}\)`  |
+|-----------|:----------:|:----------:|
+| 11 |0 | 1 |
+| 12 | 1 | 1 |
+| 13 | 1 | 1 |
+| 14 | 0 | 1 |
+| 15 | 0 | 1 |
+| 16 | 0 | 1 |
+| 17 | 1 | 1 |
+| 18 | 1 | 0 |
+| 19 | 1 | 0 |
+| 20 | 1 | 0 |
+]
+
+---
+
+# Efectos causales promedio
+
+- De la tabla podemos concluir que `\(P(y{1i}=1)=10/20=0.5\)`, es decir, la mitad de quienes reciben el tratamiento estarían empleados
+
+- Y también observamos que `\(P(y_{0i}=1)=0.5\)`, es decir, que la probabilidad de estar empleado de no haber recibido el tratamiento es también de 0.5
+
+--
+
+- En el anterior ejemplo, el tratamiento no tiene un efecto causal pues la probabilidad de estar empleado con y sin el tratamiento es igual
+
+- **Efecto causal promedio** en una población: un efecto causal promedio de `\(T\)` en el resultado `\(y\)` está presente si `\(P(Y_{1i}=1\neq Y_{0i}=1)\)` en la población de interés
+
+- Cuando pensamos en **poblaciones**, podemos usar expectativas para definir el efecto causal promedio: `\(E(Y_{1i}\neq E_{0i})\)`, lo cual permite generalizar a resultados no binarios
+
+- La ausencia de efectos individuales promedio no implica ausencia de efectos individuales
+
+---
+
+# Variabilidad aleatoria
+
+- En la práctica, casi nunca podemos observar a la población de interés, sino solo a una muestra
+
+- Por tanto, `\(P(y_{ti}=y)\)` no puede ser observada sino estimada
+
+- Debido al error muestral, la proporción que está empleada en la muestra no es numéricamente igual a la proporción que está empleada en la población
+
+--
+
+- La hipótesis que queremos probar es que hay un efecto causal en la población
+
+- Pero al trabajar con muestras, puede haber diferencias que surjan solo por el muestreo
+
+- Nuestra tarea es tratar de distinguir estas diferencias de los verdaderos efectos causales
+
+---
+
+class: inverse, middle, center
+
+# El experimento ideal
+
+---
+
+# El efecto de los hospitales
+
+- ¿Los hospitales hacen que la gente sea más sana?
+
+- Podemos conseguir datos de encuestas sobre cuántas veces las personas han ido al hospital en el último año
+
+
+|Grupo | N | Salud (1-5)| Error estándar|
+|-|:-:|:-:|:-:|
+|Hospitalizados | 7,774 | 3.21 | 0.014 |
+|No hospitalizados | 90,049 | 3.93 | 0.003 |
+|Diferencia | | 0.72 | |
+| (t) | | (58.9) | |
+
+--
+
+
+- ¿Tiene sentido? ¿Los hospitales enferman?
+
+- ¿Qué sucede?
+
+---
+
+# Comparaciones observacionales
+
+- Pensemos de nuevo en términos del *Modelo de Rubin* de resultados potenciales
+
+`$$y_{i}=\begin{cases}
+y_{1i}=1\quad\text{si }D_i=1\\
+y_{0i}=0 \quad \text{si } D_i=0
+\end{cases}$$`
+
+
+- Solo vemos al individuo en una situación, `\(y_i\)`:
+
+`$$y_i=y_{0i}+(y_{1i}-y_{0i})D_i$$`
+--
+
+- ¿Qué nos dicen las comparaciones observacionales?
+
+- Supongamos que tenemos acceso a datos sobre tratados y no tratados
+
+- Podemos calcular `\(E(y_i|D_i=1)-E(y_i|D_i=0)\)`:
+
+$$
+`\begin{aligned}
+E(y_i|D_i=1)-E(y_i|D_i=0)=&amp;E(y_{1i}|D_i=1)-E(y_{oi}|D_i=0)+\\&amp; \underbrace{E(y_{0i}|D_i=1)-E(y_{0i}|D_i=1)}_0 
+\end{aligned}`
+$$
+---
+
+# Sesgo de selección
+
+
+- Reordenando:
+
+$$
+`\begin{aligned}
+E(y_i|D_i=1)-E(y_i|D_i=0)=&amp;\overbrace{ E(y_{1i}|D_i=1)-E(y_{0i}|D_i=1)}^{\text{Efecto promedio en los tratados}}+\\&amp; \underbrace{E(y_{0i}|D_i=1)-E(y_{oi}|D_i=0)}_{\text{Sesgo de selección}}
+\end{aligned}`
+$$
+
+- El primer término nos da la diferencia promedio en la variable de salud entre los hospitalizados y lo que les hubiera pasado si no hubieran sido hospitalizados
+
+- En nuestro ejemplo, el **sesgo** de selección es la diferencia en salud entre los hospitalizados y los no hospitalizados
+
+- Específicamente, si quienes van al hospital tienen una peor salud, podemos esperar que `\(E(y_{0i}|D_i=1)-E(y_{oi}|D_i=0)&lt;0\)`
+
+---
+
+# Sesgo de selección
+
+- Al hacer aseveraciones basadas en comparaciones observacionales se incluye el efecto causal del tratamiento, pero también el sesgo de selección
+
+- El sesgo de selección puede ser positivo o negativo
+
+- El objetivo de las estrategias de evaluación es eliminar el sesgo de selección
+
+---
+
+# Tratamiento aleatorio
+
+- Supongamos que tenemos la posibilidad de aleatorizar el tratamiento, es decir, hacer que `\(Y_i\)` y `\(D_i\)` sean independientes
+
+- En ese caso, por independencia: `\(E(Y_{0i}|D_i=0)=E(Y_{0i}|D_i=1)\)`
+
+- De la definición de comparación observacional:
+
+$$
+`\begin{aligned}
+E(y_i|D_i=1)-E(y_i|D_i=0)=&amp;E(y_{1i}|D_i=1)-E(y_{0i}|D_i=0)
+\end{aligned}`
+$$
+
+- Sustituyendo el resultado de independencia:
+
+$$
+`\begin{aligned}
+E(y_i|D_i=1)-E(y_i|D_i=0)&amp;=E(y_{1i}|D_i=1)-E(y_{0i}|D_i=1) \\
+&amp; =E(y_{1i}-y_{0i}|D_i=1) \\
+&amp; =\underbrace{E(y_{1i}-y_{0i})}_{\text{Efecto causal}}
+\end{aligned}`
+$$
+
+---
+
+class: inverse, middle, center
+
+# Motivación con efectos constantes
+
+
+---
+
+# Regresión para la idenfiticación de efectos causales
+
+- Con fines de simplificación, asumamos un efecto de tratamiento constante: `\(y_{1i}-y_{0i}=\rho\)`
+
+- Consideremos el valor observado para un individuo 
+`$$y_i=y_{0i}+(y_{1i}-y_{0i})D_i$$`
+
+- Sumemos y restemos `\(E(y_{0i})\)`:
+
+$$
+`\begin{aligned}
+y_i&amp;=E(y_{0i})+(y_{1i}-y_{0i})D_i+y_{0i}-E(y_{0i}) \\
+&amp;=\underbrace{\alpha}_{E(y_{0i})}+\underbrace{\rho}_{(y_{1i}-y_{0i})} D_i + \underbrace{\nu_i}_{y_{0i}-E(y_{0i})}
+\end{aligned}`
+$$
+
+- Ahora evaluemos:
+
+$$
+`\begin{aligned}
+&amp;E(y|D_i=1)=\alpha+\rho+E(\nu_i|D_i=1) \\
+&amp;E(y|D_i=0)=\alpha+E(\nu_i|D_i=0)
+\end{aligned}`
+$$
+
+---
+
+# Regresión para la idenfiticación de efectos causales
+
+- Restando
+
+$$
+`\begin{aligned}
+E(y|D_i=1)-E(y|D_i=0)&amp;=\rho+\overbrace{E(\nu_i|D_i=1)-E(\nu_i|D_i=0)}^{\text{Sesgo de selección}} \\
+&amp;=\rho+E(y_{1i}|D_i=1)-E(y_{0i}|D_i=0)
+\end{aligned}`
+$$
+- Es decir, el sesgo de selección es igual a la correlación entre el término de error y `\(D_i\)`
+
+- Y, de acuerdo a la segunda línea, también es igual a la diferencia en el resultado potencial (de no tratamiento), entre aquellos que son tratados y los que no son tratados
+
+- En nuestro ejemplo del hospital, es muy probable que el sesgo de selección sea negativo porque los tratados son quienes tienen peor salud (en el estado no tratado)
+
+- Como vimos antes, con asignación aleatoria, el sesgo de selección desaparece, por lo que una regresión de `\(y_i\)` en `\(D_i\)` estima el efecto causal `\(\rho\)`
+
+---
+
+# Regresión corta y larga
+
+- Con un tratamiento binario y asignado aleatoriamente, podemos estimar el efecto usando una regresión:
+
+`$$y_i=\alpha+\beta T_i + u_i$$`
+
+- Es muy común, sin embargo, usar **controles**
+
+- Si una serie de características `\(X\)` no está correlacionada con `\(T_i\)`, se puede incluir en una versión larga de la regresión antes descrita:
+
+`$$y_i=\alpha+\beta T_i + X_i'\gamma + u_i$$`
+- El valor numérico de `\(\hat{\beta}\)` en la regresión larga será muy cercano al obtenido con la regresión corta, pero se incrementa la precisión de los parámetros estimados
+
+- Dado que emplearemos regresión ampliamente en este curso, es necesario fijar algunas ideas sobre cómo entendemos y cómo usamos la regresión en la práctica
+
+
+---
+
+# No siempre es factible
+
+- La aleatorización resuelve muchas cosas, pero muchas veces no es factible
+
+- ¿Qué tendríamos que hacer en el caso de estudio, "¿Los hospitales matan?"
+
+--
+
+- Pensemos en un programa de empleo para ex convictos
+
+- Seguramente una comparación observacional indicaría que estos ganan menos que el resto de la población
+
+- Pero esto no significa que el programa cause un efecto negativo en el ingreso
+
+- Siempre tenemos que pensar en el contrafactual
+
+---
+
+class: inverse, middle, center
+
+# Parámetros de interés de efectos de tratamiento
+
+---
+
+# Supuesto de independencia condicional
+
+- En la sesión anterior vimos que el SIC nos dice que, condicional en `\(X_i\)`, los resultados potenciales son independientes del tratamiento
+
+- Cuando el tratamiento se asigna de manera aleatoria y el diseño experimental se mantiene integro, el supuesto es válido
+
+- Más aún, bajo asignación aleatoria, podemos hacer un supuesto aún más fuerte:
+
+`$$\{y_{0i},y_{1i}\perp D_i \}$$`
+
+---
+
+# Efectos de tratamiento
+
+- Vamos a definir dos medidas de efecto de tratamiento ampliamente usadas en la literatura
+
+- Definamos el cambio en la variable de resultados de un individuo:
+
+`$$\Delta_i=y_{1i}-y_{0i}$$`
+
+**Efecto promedio del tratamiento** (ATE): se interpreta como la ganancia hipotética debido al tratamiento para un individuo seleccionado al azar en una población
+
+- Este parámetro es de relevancia cuando pensamos en tratamientos de aplicación universal
+
+- Matemáticamente:
+
+`$$ATE=E(\Delta)$$`
+
+- Con su correspondiente análogo muestral:
+`$$\hat{ATE}=\frac{1}{N}\sum_i^N\Delta_i$$`
+
+---
+
+# Efectos de tratamiento
+
+**Efecto promedio del tratamiento en los tratados** (ATET, TT, TOT)
+
+- Como su nombre lo dice, este parámetro solo considera a los individuos que son efectivamente tratados
+
+- Matemáticamente:
+`$$ATET=\frac{1}{N_T}\sum_i^{N_T}(\Delta_i|D_i=1)$$`
+
+- Y su análogo muestral es:
+
+`$$\hat{ATET}=\sum_i^{N_T}(\Delta_i|D_i=1)$$`
+
+---
+
+# Efectos de tratamiento
+
+- Heckman (1997) critica el uso del ATE pues pudiera ser irrelevante
+
+- ¿Cuál es el ATE de PROGRESA, por ejemplo?
+
+- La contracrítica es que siempre podemos restringir lo que es la *población* de interés
+
+--
+
+- Noten que el ATET también abre la puerta a casos en los que, aún cuando el tratamiento se asignó aleatoriamente en un grupo, no todos a los que se les asigna el tratamiento efectivamente lo reciben
+
+--
+
+- En ambos casos, no podemos estimar directamente los parámetros pues no observamos `\(\Delta_i\)`
+
+- Sin embargo, ya vimos cómo, con una muestra de tratados y no tratados, podemos inferir el efecto del tratamiento, bajo algunos supuestos
+
+
+---
+
+class: inverse, middle, center
+
+# Cumplimiento imperfecto
+
+---
+
+# Cumplimiento imperfecto
+
+- Angrist, Imbens &amp; Rubin (1996)
+
+- Asignación: `\(Z_i=\begin{cases} 1 \\0 \\ \end{cases}\)`
+
+- Cumplimiento: `\(D_i=\begin{cases} 1 \\0 \\ \end{cases}\)`
+
+- `\(Y_i\)` variable de resultados
+
+- Nos importa el efecto de `\(D_i\)` sobre `\(Y_i\)` (mucho menos interesante es el efecto de `\(Z_i\)` sobre `\(Y_i\)`)
+
+---
+
+# Efectos causales y VI
+
+- `\(D_i(Z)\)` es el indicador de cumplir, dada la asignación `\(Z\)`
+
+- Con cumplimiento perfecto tendríamos `\(D_i(Z)=Z_i\)`
+
+- En general, hay asignados que no cumplen y no asignados que cumplen
+
+- `\(Y_i(Z,D)\)` es la variable de interés de `\(i\)`
+
+- `\(Y_i(Z,D)\)` y `\(D_i(Z)\)` son resultados potenciales
+
+
+---
+
+# Interpretación causal del estimador de VI
+
+**Proposición 1 en Angrist, Imbens &amp; Rubin (1996)**: interpretación causal del estimador de VI
+
+- Si los supuestos 1 a 5 se cumplen, el estimador de VI es:
+
+`$$E(Y_i(1)-Y_i(0)|D_i(1)-D_i(0)=1)=\frac{E(Y_i(D_i(1),1))-Y_i(D_i(0),0)}{E(D_i(1)-D_i(0)}=\lambda_{LATE}$$`
+
+- Angrist y coautores llaman a este parámetro el **efecto local promedio del tratamiento** o *LATE*
+
+- El LATE es el efecto causal promedio del tratamiento en un conjunto de individuos cuyo estatus de tratamiento puede ser modificado por la asignación aleatoria
+
+- A estos individuos se les conoce como **cumplidores** o *compliers*
+
+
+---
+
+# Tipos de individuos
+
+- Hay cuatro tipos de individuos:
+
+| | `\(D_i(0)=0\)` | `\(D_i(0)=1\)` | 
+|--|:--:|:--:|
+| `\(D_i(1)=0\)` | `\(Y_i(1,0)-Y_i(0,0)=0\)` | `\(Y_i(1,0)-Y_i(0,1)=-(Y_i(1)-Y_i(0))\)` |
+| | Nunca cumplidor | Retador |
+| `\(D_i(1)=1\)` | `\(Y_i(1,1)-Y_i(0,0)=Y_i(1)-Y_i(0)\)` | `\(Y_i(1,1)-Y_i(0,1)=0\)` |
+| | Cumplidor | Siempre adoptador |
+
+--
+
+- Los cumplidores cumplen con el tratamiento si se les asigna y no lo cumplen si no se les asigna
+
+- `\(Z\)` es independiente de `\(D\)` para los nunca cumplidores y los siempre adoptadores y el efecto causal es 0 para ambos
+
+- Los retadores hacen lo contrario a lo que les es asignado
+
+- A la suma de nunca cumplidores, siempre adoptadores y retadores se le conoce como **no cumplidores**
+
+- El supuesto de monotonicidad descarta la existencia de retadores
+
+---
+
+# LATE y TT
+
+- En general el LATE y el TT difieren
+
+- Pero recordemos que `\(TOT=E(y_{1i}-y_{0i}|D_i=1)\)`
+
+- Noten que en el conjunto con `\(D_i=1\)` se encuentran los cumplidores y los siempre adoptadores
+
+- Si podemos asegurar que no hay siempre adoptadores, el LATE y el TT son iguales
+
+---
+
+class: inverse, middle, center
+
+# Econometría del LATE
+
+---
+
+# Motivación con un estadístico de Wald
+
+- Pensemos en un modelo con efectos constantes de tratamiento: `\(y_{1i}-y_{0i}=\alpha\)`
+
+- La variable de resultados está determinada por `\(y_{0i}=\beta+\varepsilon_i\)`, donde `\(\beta=E(y_{0i})\)`
+
+- Entonces, el modelo de resultados potenciales es:
+
+`$$y_i=\beta+\alpha D_i+\varepsilon_i$$`
+- Si `\(D_i\)` no es independiente de `\(y_{0i}\)` (es decir, `\(y_{0i}\)` no es independiente del error), entonces una diferencia de medias entre grupos de `\(D\)` no produce un estimador consistente de `\(\alpha\)`
+
+--
+
+- Ahora supongamos que tenemos un **instrumento** `\(z_i\)` tal que `\(z_i\perp y_i\)`, es decir, `\(E(\varepsilon_i|z_i)=0\)`
+
+--
+
+- Evaluemos la esperanza de `\(y_i\)` cuando `\(z_i=1\)` y cuando `\(z_i=0\)`:
+
+$$
+`\begin{aligned}
+E(y_i|z_i=1)&amp;=\beta+\alpha E(D_i=1) \\
+E(y_i|z_i=0)&amp;=\beta+\alpha E(D_i=0) \\
+\end{aligned}`
+$$
+- Restando y despejando obtenemos `\(\alpha=\frac{E(y_i|z_i=1)-E(y_i|z_i=0)}{E(D_i=1)-E(D_i=0)}\)`, lo cual es conocido como un *estadístico de Wald*
+
+---
+
+# Mínimos cuadrados en dos etapas (MC2E)
+
+- **Modelo estructural**
+
+`$$y_i=X_i'\beta+\alpha D_i+\varepsilon_i$$`
+
+- Podemos entender la estimación del efecto causal usando dos etapas
+
+--
+
+- **Primera etapa**
+
+`$$D_i=X_i'\pi_0+\pi_1z_i+\eta_i$$`
+donde `\(pi_i\)` es el efecto causal de la asignación sobre el cumplimiento
+
+- Cuado `\(D_i\)` u `\(z_i\)` son ambas dicotómicas, `\(\pi_1\)` da la proporción de la población que son cumplidores
+
+---
+
+# Mínimos cuadrados en dos etapas (MC2E)
+
+- **Segunda etapa**
+`$$y_i=X_i'\beta+\alpha \hat{D}_i+\varepsilon_i$$`
+--
+
+- Esta es la forma de pensar el procedimiento, pero en la práctica nunca hacemos esto manualmente
+
+  - Noten que `\(\hat{D}_i\)` es estimada, por lo cual se ignora la variabilidad muestral de la primera etapa y los errores estándar serían inconsistentes
+
+--
+
+- Nota: el estimador de Wald es igual al estimador de MC2E cuando no hay `\(X\)` y cuando `\(Z\)` y `\(D\)` son binarias
+
+---
+
+# Mínimos cuadrados en dos etapas (MC2E)
+
+
+- **Forma reducida**
+
+$$
+`\begin{aligned}
+y_i&amp;=X_i'\beta+\alpha(X_i'\pi_0+\pi_1z_1+\eta_i)+\varepsilon_i \\
+&amp;=X_i'\delta_0+\delta_1z_i+\nu_1
+\end{aligned}`
+$$
+donde `\(\delta_1=\alpha\pi_1\)` es el coeficiente de forma reducida sobre la variable de asignación
+
+--
+
+- Noten que esto implica que `\(\alpha=\delta_1/\pi_1\)`
+
+- Es decir, `\(\alpha_{MC2E}\)` puede interpretarse como la versión reescalada del coeficiente de forma reducida usando el efecto causal de la primera etapa
+
+
+
+---
+
+# Próxima sesión
+
+- En las siguientes sesiones iremos viendo algunos ejemplos
+
+- Riesgo
+
+  - **Riesgo**: De Uña-Alvarez, J., Otero-Giráldez, M. S., &amp; Alvarez-Llorente, G. (2003). Estimation under length-bias and right-censoring: an application to unemployment duration analysis for married women. *Journal of Applied Statistics*, 30(3), 283-291.
+  
+- Métodos semiparamétricos
+
+  - **Semiparamétrico**: Hussinger, K. (2008). R&amp;D and subsidies at the firm level: An application of parametric and semiparametric two‐step selection models. *Journal of applied econometrics*, 23(6), 729-747.
+
+---
+
+# Próxima sesión
+
+- Métodos experimentales
+
+  + **Experimento de campo**: Jensen, R. T., &amp; Miller, N. H. (2008). Giffen behavior and subsistence consumption. *American economic review*, 98(4), 1553-77.
+  
+  + **Correspondencia**: Bertrand, M., &amp; Mullainathan, S. (2004). Are Emily and Greg more employable than Lakisha and Jamal? A field experiment on labor market discrimination. *American economic review*, 94(4), 991-1013.
+  
+  + **LATE**: Gonzalez-Navarro, M., &amp; Quintana-Domeque, C. (2016). Paving streets for the poor: Experimental analysis of infrastructure effects. *Review of Economics and Statistics*, 98(2), 254-267.
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": null,
+"scroll": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

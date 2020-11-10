@@ -44,6 +44,8 @@
 
 [Sesión 24](https://rojasirvin.github.io/ECNII2020/sesiones/s24/sesion24.html#1). Métodos no paramétricos
 
+[Sesión 25](https://rojasirvin.github.io/ECNII2020/sesiones/s25/sesion25.html#1). Evaluación experimental
+
 <!---
 
 commented
