@@ -26,7 +26,7 @@ load("MunichRent.rda")
 
 a. [10 puntos] Estime la densidad Kernel de las rentas por metro cuadrado, *rentsqm*, usando un Kernel epanechnikov. Use el estimador *plug-in* de Silverman para estimar el ancho de ventana óptimo.
 
-a. [10 puntos] Estime por MCO la relación entre el la renta, *rent* y la antiguedad del edificio, controlando por *area* Estime la misma relación, pero con una regresión mediana. Interprete los coeficientes sobre la antiguedad en ambos casos.
+a. [10 puntos] Estime por MCO la relación entre el la renta, *rent* y la antiguedad del edificio, controlando por *area*. Estime la misma relación, pero con una regresión mediana. Interprete los coeficientes sobre la antiguedad en ambos casos.
 
 a. [10 puntos] Estime ahora una regresión cuantil para cada uno de los deciles de la distribución de la renta y represente en una gráfica los coeficientes por regresión cuatil junto con el coeficiente de MCO. ¿Concluye que vale la pena modelar la relación entre rentas y antiguedad usando regresión cuantil?
 
