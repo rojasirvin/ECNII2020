@@ -18,10 +18,10 @@ La tarea debe entregarse de manera individual, pero se recomienda ampliamente co
 
 # Pregunta 1
 
-Considere la base *MunichRent.rda*. Esta base contiene información sobre rentas en la ciudad de Munich, *rent*. Se desea modelar la renta en función de la antiguedad de los edificios en renta, controlando por el área, *area*. La variable *yearc* indica cuándo fue construido el edificio. Para leer este objeto basta con ejectutar lo siguiente:
+Considere la base *MunichRent.rda*. Esta base contiene información sobre rentas en la ciudad de Munich, *rent*. Se desea modelar la renta en función de la antiguedad de los edificios en renta, controlando por el área, *area*. La variable *yearc* indica cuándo fue construido el edificio. Para leer este objeto basta con ejecutar lo siguiente:
 
 ```{r eval=F,ech=T,results=F}
-load("data/MunichRent.rda")
+load("MunichRent.rda")
 ```
 
 a. [10 puntos] Estime la densidad Kernel de las rentas por metro cuadrado, *rentsqm*, usando un Kernel epanechnikov. Use el estimador *plug-in* de Silverman para estimar el ancho de ventana óptimo.
