@@ -1,0 +1,58 @@
+---
+title: |
+  | CIDE
+  | Maestría en Economía
+  | Econometría II
+
+subtitle: "Tarea 4"
+author: "Profesor: Irvin Rojas"
+date: "Fecha de entrega: 8 de diciembre a las 20:00."
+output:
+  html_document:
+  toc: true
+---
+  
+## Instrucciones
+  
+La tarea debe entregarse de manera individual, pero se recomienda ampliamente colaborar en grupos de estudio. Las secciones teóricas deben estar desarrolladas en un procesador de textos y enviadas en formato .docx o .pdf. Alternativamente, puede escribir sus respuestas en lápiz y papel, con letra legible y adjuntar un escaneo de sus respuestas. Las secciones prácticas deberán contener archivos de código replicable y archivos de salida en R (o similares, en caso de usar otro software) para considerarse completas. Las tareas deben entregarse antes de la fecha límite a través de Teams. Puede crear una carpeta comprimida que contenga todos sus archivos y subir esta carpeta en Teams. Recuerde que en Teams debe asegurarse de que los archivos se han subido correctamente.
+
+# Pregunta 1
+
+Considere la base *MunichRent.rda*. Esta base contiene información sobre rentas en la ciudad de Munich, *rent*. Se desea modelar la renta en función de la antiguedad de los edificios en renta, controlando por el área, *area*. La variable *yearc* indica cuándo fue construido el edificio. Para leer este objeto basta con ejectutar lo siguiente:
+
+```{r eval=F,ech=T,results=F}
+load("data/MunichRent.rda")
+```
+
+a. [10 puntos] Estime la densidad Kernel de las rentas por metro cuadrado, *rentsqm*, usando un Kernel epanechnikov. Use el estimador *plug-in* de Silverman para estimar el ancho de ventana óptimo.
+
+a. [10 puntos] Estime por MCO la relación entre el la renta, *rent* y la antiguedad del edificio, controlando por *area* Estime la misma relación, pero con una regresión mediana. Interprete los coeficientes sobre la antiguedad en ambos casos.
+
+a. [10 puntos] Estime ahora una regresión cuantil para cada uno de los deciles de la distribución de la renta y represente en una gráfica los coeficientes por regresión cuatil junto con el coeficiente de MCO. ¿Concluye que vale la pena modelar la relación entre rentas y antiguedad usando regresión cuantil?
+
+# Pregunta 2
+
+Considere la base *crimen_nc.csv*. Esta base contiene datos anuales de 1981 a 1987 sobre crimen del estado de Carolina del Norte en Estados Unidos. Se desea modelar el log de la tasa de crimen, *lcrmrte*, en función del log de la probabilidad de arresto (*lprbarr*) y del log del número de policías per cápita (*lpolpc*).
+
+Se propone incluir como controles la probabilidad de sentencia (*lnprbconv*), la probabilidad de ir a prisión (*lprbpris*), el tiempo promedio de sentencia (*lavgsen*), la densidad de población (*ldensity*), el porcentaje de población joven (*lpctmle*), el porcentaje de la población no blanca (*lpctmin*), los salarios semanales en la construcción (*lwcon*), el transporte (*lwtuc*), el comercio (*lwtrd*), las finanzas (*lwfir*), los servicios (*lwser*), la manufactura (*lwmfg*) y los gobierno federal, estatal y local (*lwfed*, *lwsta* y *lwloc*). Además, se propone controlar por una dummy que indica una ciudad grande (*smsa*) y dummies regionales (*region*), así como efectos fijos por condado y por año.
+
+a. [10 puntos] Estime un modelo de efectos fijos con los regresores descritos anteriormente. Interprete los coeficientes sobre el log de la probabilidad de arresto y el log del número de policías per cápita.
+
+a. [10 puntos] Existe la preocupación de que la variable que indica el número de policías es endógena. Se propone usar como instrumento el porcentaje de los crímenes que son cara a cara (robos, violación, asaltos) con respecto al resto (*lmix*) pues se argumenta que estos crímenes facilitan la identificación del criminal. Se propone usar también como instrumento el ingreso per cápita por impuestos (*ltaxpc*) bajo el argumento de que los condados con preferencia por hacer valer la ley tendrán mayores ingresos para financiar la policía. Estime el modelo de efectos fijos tomando en cuenta la endogeneidad e incluyendo las dos variables propuestas como instrumentos. ¿Cómo cambian sus resultados sobre el efecto del número de policías en el crimen?
+
+a. [10 puntos] Se sospecha que la probabilidad de ser arrestado es también endógena. Use los mismos instrumentos que en la parte c. para estimar el modelo de efectos fijos con dos variables endógenas. ¿Cómo cambian sus conclusiones respecto a número de policías y la probabilidad de ser arrestado con respecto a la parte a.?
+
+# Pregunta 3
+
+Considere la base de datos *patentes.csv*.[^1] Estos datos contienen información sobre empresas de 1970 a 1979, incluyendo el log de su gasto en investigación (*logr*), el log de su acervo de capital (*logk*), el número de patentes que les fueron otorgadas en cada año (*pat*), así como una dummy de si la empresa pertenece al sector científico (*scisect*). En este problema se puede (aunque no sea siempre factible) usar *logr*, *logk* y *scisect* como controles. Use también efectos por año.
+
+[^1]: Datos de provistos por (Cameron & Trivedi (2005))[http://cameron.econ.ucdavis.edu/musbook/mus.html.
+
+a. [10 puntos] Estime un modelo Poisson de efectos aleatorios e interprete el efecto del gasto en investigación. Incluya solo *logr* y los efectos por año como regresores.
+
+a. [10 puntos] Estime un modelo Poisson de efectos aleatorios e interprete el efecto del gasto en investigación. Incluya, además de los regresores de la parte a., *logk* y *scisect* como regresores. ¿Cómo cambia su interpretación del efecto del gasto en investigación?
+
+a. [10 puntos] Estime un modelo Poisson de efectos fijos (*within*) e interprete el efecto del gasto en investigación. Use los mismos controles que en la parte b. ¿Qué ocurre?
+
+a. [10 puntos] Modifique el modelo de efectos fijos de tal forma que pueda estimar el efecto del gasto en investigación. ¿Cómo cambia su conclusión respecto al efecto de dicho gasto?
+
