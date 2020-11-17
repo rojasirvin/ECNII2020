@@ -46,6 +46,9 @@
 
 [Sesión 25](https://rojasirvin.github.io/ECNII2020/sesiones/s25/sesion25.html#1). Evaluación experimental
 
+[Sesión 27](https://rojasirvin.github.io/ECNII2020/sesiones/s27/sesion27.html#1). Modelos de pares
+
+
 <!---
 
 commented

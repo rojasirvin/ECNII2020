@@ -1,0 +1,303 @@
+---
+title: "Modelos de pares"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "17 de noviembre de 2020"
+mathspec: true
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{commath}
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+#library(quantreg)
+library(FNN)
+library(np)
+
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+```
+
+
+.title[
+# Sesión 27. Modelos de pares
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+
+# Motivación
+
+- Hay problemas en los que el comportamiento o los resultados de los pares (*-i*) afectan los resultados de *i*
+
+- Ejemplos
+
+  - Compañeros de clase afectan el proceso de aprendizaje de los demás
+  
+  - Comportamiento antisocial o disruptivo en adolescentes
+  
+  - Empresas copian o imitan a sus competidores
+  
+  - Competencia en un equipo deportivo
+
+---
+
+# Efectos de pares
+
+- Manski (1993) propone una tipología de los *efectos de pares*
+
+- **Efectos endógenos**: se deben a los resultados contemporáneos de los pares
+
+- **Efectos exógenos**: se originan en los contextos de los pares
+
+---
+
+# Modelo lineal en las medias
+
+- Consideremos el siguiente modelo de pares lineal
+
+$$y_i=\alpha+\beta_1 \bar{y}_{-i}+\gamma_1 X_i+\gamma_2 \bar{X}_{-i}+\varepsilon_i$$
+- $\bar{y}_{-i}$ es el promedio de la variable de resultados para los pares
+
+- $\bar{X}_{-i}$ es el promedio de las características de los pares
+
+- A las variables construidas como $\bar{z}_{-i}$ a veces se les conoce como *leave-out mean*
+
+--
+
+- Noten que $\beta_1$ y $\gamma_1$ identifican efectos promedio, independientemente de la posición de $i$ en la distribución de contextos o resultados
+
+---
+
+# Modelo lineal en las medias
+
+- Defectos
+
+  - Poco informativos desde el punto de vista de bienestar pues podemos intercambiar un individuo con $y$ alto y uno con $y$ bajo entre dos grupos y la media quedaría inalterada
+  
+  - No toma en cuenta posibles no linealidades pues un individuo con alto $y$ se podría beneficiar de pares con alto $y$, pero los individuos con bajo $y$ se pueden ver afectados por individuos con alto $y$
+  
+---
+
+# Modelos con no linealidades
+
+- Una forma de capturar no linealidades es la propuesta por Duncan et al (2005) y Sacerdote (2001)
+
+- Supongamos que $D_i$ indica si un universitario bebe en exceso o no
+
+- Cada universitario tiene un compañero de cuarto que puede beber o no
+
+- $Y_i$ es beber en el número de veces que un estudiante bebe en exceso en la universidad
+
+- $D_i$ representa beber en exceso en la preparatoria
+
+$$
+\begin{aligned}
+y_i=\alpha+&\lambda_1(D_i=0))(D_{-i}=0)+\\
+&\lambda_2(D_i=1))(D_{-i}=1)+ \\
+&\lambda_3(D_i=0))(D_{-i}=1)+\varepsilon_i
+\end{aligned}
+$$
+- $\lambda_2$ identifica si un individuo que bebía en la prepa tiene más episodios de ebriedad cuando tiene un cmpañero que también bebía en la prepa
+
+---
+
+# Taxonomía (Hoxby & Weingarth, 2005)
+
+- Modelo de boutique
+
+  - $i$ se beneficia de la presencia de individuos similares a ella
+  
+  - Este modelo motivaría la implementación de clases especiales
+  
+--
+
+- Modelo arcoiris
+
+  - Todos individuos se benefician de tener pares que son distintos
+  
+--
+
+- Modelo de la manzana podrida - estrella
+
+  - La presencia de un individuo con un resultado bajo o alto afecta negativamente a todos los demás
+
+--
+
+- Modelo de comparación envidiosa
+
+  - Individuos con resultados altos afectan negativamente a los otros individuos
+  
+---
+
+# Identificación por MCO
+
+- Estimar por MCO el modelo lineal produce estimadores inconsistentes
+
+1. **Problema del reflejo**: dado que $i$ afecta a $j$, entonces también $j$ afecta a $i$
+
+  - $\beta_1$ tiene un problema de endogeneidad
+  
+1. **Efectos correlacionados**: los individuos se seleccionan en grupos (y el econometrista no observa la razón por la que se conforman)
+
+  - $\beta_1$ y $\gamma_2$ están sesgados hacia arriba si hay selección positiva
+  
+1. El efecto de pares es $\beta_1+\gamma_2$, es decir, el efecto del resultado de $-i$ y el efecto del contexto de $-i$
+
+---
+
+# Soluciones
+
+- Incluir efectos fijos individuales y/o por grupo para controlar parcialemente la selección
+
+- Encontrar variación exógena a la composición de los grupos
+
+  - Experimentos
+  - Variables instrumentales
+
+- Cabe destacar que la mayoría de los estudios no resuelven el problema de identificar por separado $\beta_1$ y $\gamma_2$
+
+- Algunos investigadores recurren al supuesto de que el contexto de $-i$ no afecya directamente al resultado de $i$ ($\gamma_2=0$)
+
+
+---
+
+# Efectos de pares con variación aleatoria
+
+- Sacerdote (2001) estudió un experimento en el que se asignaron compañeros de cuarto de manera aleatoria
+
+- La aleatorización hace que las características de $i$ sean independientes de $-i$
+
+--
+
+- Variables de resultados
+  - Promedio al graduarse
+  - Miembro de fraternidades
+  - Carrera elegida
+  - Participación en atletismo
+  - Bebe alcohol
+
+- Variables de contexto
+  - Rango de calificación en preparatoria
+  - Dummy para preparatoria pública
+  - Lugar de nacimiento
+  - Índice de logro académico
+
+---
+
+# Modelo de pares con aleatorización
+
+- $y$ es el resultado en universidad
+
+- Podemos abstraernos de las variables contextuales dada la aleatorización
+
+- La habilidad se observa con ruido: $A_i+\mu_i$
+
+- $A_i$ es el resultado de una prueba académica en la prepa
+
+$$y_i=\delta+\alpha(A_i+\mu_i)+\beta(A_j+\mu_j)+\gamma y_{j}+\varepsilon_i$$
+
+$$y_j=\delta+\alpha(A_j+\mu_j)+\beta(A_i+\mu_i)+\gamma y_{i}+\varepsilon_j$$
+
+--
+
+- Sustituyendo la segunda ecuación en la primera y resolviendo para $y_i$
+
+$$y_i=\left(\frac{1}{1-\gamma^2}\right)\left((1+\gamma)\delta+(\alpha+\gamma\beta)A_i+(\beta+\gamma\alpha)A_j+(\alpha+\gamma\beta)\mu_i+(\beta+\gamma\alpha)\mu_j+\gamma\varepsilon_j+\varepsilon_i \right)$$
+---
+
+# Modelo de pares con aleatorización
+
+- El modelo puede reescribirse en *forma reducida* como
+
+$$y_i=\pi_0+\pi_1 A_i+\pi_2A_j + \eta_i$$
+
+- $A_j$ es la variable de contexto
+
+- Se puede estimar la ecuación anterior por MCO
+
+- $\pi_1$ y $\pi_2$ son los efectos de forma reducida del contexto propio y del contexto del par
+
+- $\pi_2$ no está contaminado por la selección debido a la aleatorización
+
+- Si se asume que no hay error de medición, $\pi_1=\pi_2=0$, se puede resolver para $\delta$, $\alpha$, $\beta$ y $\gamma$ (resultados en versión de trabajo del artículo)
+
+
+---
+
+# Expliración de no linealidades
+
+- Definir tres dummies para el resultado de $i$ en el 25% más bajo, en el 50% intermedio y en el 25% más alto
+
+- Interactuar las mismas dummies pero de $j$
+
+---
+
+
+
+# Próxima sesión
+
+- Variables instrumentales *shift-share*
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
