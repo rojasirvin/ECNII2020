@@ -48,6 +48,8 @@
 
 [Sesión 27](https://rojasirvin.github.io/ECNII2020/sesiones/s27/sesion27.html#1). Modelos de pares
 
+[Sesión 27](https://rojasirvin.github.io/ECNII2020/sesiones/s28/sesion28.html#1). Econometría espacial
+
 
 <!---
 

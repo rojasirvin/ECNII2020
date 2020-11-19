@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Econometría espacial</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Irvin Rojas" />
+    <script src="libs/header-attrs-2.5/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+    <script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+    <link rel="stylesheet" href="libs/cide.css" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: title-slide
+
+
+
+&lt;style type="text/css"&gt;
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+&lt;/style&gt;
+
+
+.title[
+# Sesión 28. Econometría espacial
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas &lt;br&gt; [rojasirvin.com](https://www.rojasirvin.com/) &lt;br&gt; [&lt;i class="fab fa-github"&gt;&lt;/i&gt;](https://github.com/rojasirvin) [&lt;i class="fab fa-twitter"&gt;&lt;/i&gt;](https://twitter.com/RojasIrvin) [&lt;i class="ai ai-google-scholar"&gt;&lt;/i&gt;](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&amp;hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas &lt;br&gt; División de Economía
+]
+
+---
+
+# Motivación
+
+- Datos con ubicación espacial
+  - Crimen
+  - Desempleo
+  - Demanda por un bien
+
+- El supuesto de independencia de los errores no se sostiene en muchas aplicaciones
+
+--
+
+- Problemas con dependencia espacial
+
+- Varias posibilidades
+
+  - La variable dependiente afecta la variable dependiente de otras unidades vecinas
+  
+  - Los regresores de un vecino afectan la variable dependiente de dicho vecino, pero también la variable dependiente del resto de vecinos
+  
+  - No observables que afectan a los vecinos
+
+---
+
+# Modelo espacial
+
+- Consideremos una variable dependiente `\(y\)` con potenciales efectos espaciales
+
+`$$y_i=\lambda \sum_{j=1}^n w_{ij} y_j+x_i'\beta+\varepsilon_i$$`
+
+- El peso `\(w_{ij}\)` indica qué tan importante es el el valor de la variable dependiente en otras unidades para la misma variable en `\(i\)`
+
+--
+
+- Podemos poner todo en vectores y matrices
+
+`$$y=\lambda Wy+X\beta+\varepsilon$$`
+- `\(W\)` es una matriz de pesos, con `\(W[i,j]=w_{ij}\)`
+
+- El modelo entonces es un sistema de `\(N\times 1\)` ecuaciones de `\(y\)`
+
+- A `\(\lambda W\)` se le conoce como el **rezago espacial** de `\(y\)`
+
+---
+
+# Matriz `\(W\)`
+
+- Los elementos en `\(W\)` indican qué tan *cercano* está `\(i\)` de `\(j\)`
+
+- El término cercano no es necesariamente una distancia geográfica
+
+- Hay infinidad de matrices `\(W\)`
+
+- Los elementos de la diagonal son 0
+
+- `\(\lambda\)` es un *normalizador* a ser estimado
+
+- `\(W\)` se mantiene fija y es provista por el investigador
+
+---
+
+# Modelo SAR
+
+- Noten que el modelo matricial puede resolverse para obtener el **modelo espacial autorregresivo** (SAR):
+
+`$$y=(I-\lambda W)^{-1}X\beta+(I-\lambda W)^{-1}\varepsilon$$`
+--
+
+- El valor esperado de `\(Y\)` dado `\(X\)` es
+
+$$
+`\begin{aligned}
+E(Y|X)&amp;=(I-\lambda W)X\beta \\
+&amp;=s_{ii}x_i\beta+\sum_{j=1}^Ns_{ij}x_j\beta
+\end{aligned}`
+$$
+- `\(s_{ij}\)` es el elemento `\((i,j)\)` de `\((I-\lambda W)^{-1}\)`
+
+--
+
+- Hay dos fuentes de variación de `\(y_i\)`
+
+  1. Un efecto directo del cambio en un covariable
+  
+  1. Un efecto indirecto o *spillover*
+
+---
+
+# Más sobre `\(W\)`
+
+- **Primera ley de la geografía de Tobler (1970)**: todo está relacionado con todo lo demás, pero las cosas cercanas están más relacionadas que las cosas lejanas.
+
+- `\(W\)` puede especificarse usando el inverso de la distancia entre dos puntos
+
+`$$w_{ij}=1/D_{ij}$$`
+
+- Otra forma de especificar `\(W\)` es asignando valores positivos solo a las unidades vecinas
+
+`$$w_{ij}=\begin{cases}d_{ij}\quad\text{si i y j son vecinos}\\ 0 \quad\text{en otro caso}\end{cases}$$`
+
+y donde lo más común es hacer `\(d_{ij}=1\)`
+
+---
+
+# Matrices de distancia
+
+- En la práctica, al usar distancias, se emplean matrices normalizadas
+
+- Normalización por filas
+
+`$$\tilde{w}_{ij}=w_{ij}\left(\frac{1}{\sum_{j=1}^N|w_{ij}|}\right)$$`
+
+- Normalización *min-max*:
+
+`$$\tilde{w}_{ij}=w_{ij}(1/f)$$`
+donde `\(f=min\{\text{suma más grande por filas},\text{suma más grande por columnas}\}\)`
+
+- Espectral:
+
+`$$\tilde{w}_{ij}=w_{ij}(1/|V|)$$`
+donde `\(|V|\)` es el módulo del mayor eigenvalor de `\(W\)`
+
+---
+
+# Rezagos del error
+
+- Modelo más general
+
+$$
+`\begin{aligned}
+y&amp;=\lambda W y + X\beta + u \\
+u&amp;=\rho M u +\varepsilon
+\end{aligned}`
+$$
+donde `\(Mu\)` es el rezago espacial de `\(u\)`
+
+- Este rezago espacial del error permite correlación espacial de los no observables
+
+- `\(\rho\)` es la correlación espacial de los errores
+
+--
+
+- Resolviendo para `\(u\)`
+
+`$$u=(I-\rho M)\varepsilon$$`
+- Sustituyendo en la ecuación de `\(y\)` obtenemos un **modelo espacial autorregresivo combinado** (SAC):
+
+`$$y=(I-\lambda W)^{-1}X\beta+(I-\lambda W)^{-1}(I-\rho M)^{-1}\varepsilon$$`
+---
+
+# Rezagos del error
+
+- Si asumimos que la correlación espacial solo viene del error, `\(\lambda=0\)`, entonces tenemos el **modelo de error espacial**
+
+`$$y=X\beta+(I-\rho M)^{-1}\varepsilon$$`
+---
+
+# Incertidumbre sobre el modelo
+
+- Pensemos que tenemos incertidumbre sobre si es el SAR o el SER el modelo apropiado
+
+- Asumamos la misma matriz de pesos `\(W\)` y el mismo parámetro de persistencia espacial `\(\rho\)` para ambas ecuaciones
+
+$$
+`\begin{aligned}
+y_a&amp;=(I-\rho W)^{-1}X\beta+(I-\rho W)^{-1}\varepsilon \\
+y_b&amp;=X\beta+(I-\rho W)^{-1}\varepsilon
+\end{aligned}`
+$$
+
+- `\(\pi_a\)` y `\(\pi_b\)` son los pesos que le damos a cada modelo, con `\(\pi_a+\pi_b=1\)`
+
+`$$y_c=\pi_a y_a+\pi_b y_b$$`
+--
+
+- Si sustituimos loas expresiones para `\(y_a\)` y `\(y_b\)` y hacemos algo de álgebra tenemos el **modelo espacial de Durbin** (SDM):
+
+$$
+`\begin{aligned}
+y_c&amp;=(I-\rho W)^{-1}X(\pi_a\beta)+(I-\rho W)^{-1}WX(\pi_b\beta)+(I-\rho W)^{-1}\varepsilon \\
+&amp;=(I-\rho W)^{-1}X\beta_1+(I-\rho W)^{-1}WX\beta_2+(I-\rho W)^{-1}\varepsilon
+\end{aligned}`
+$$
+- Tenemos rezagos espaciales en la variable dependiente y los regresores
+
+---
+
+# Estimación
+
+- Asumimos `\(\varepsilon \sim \mathcal{N}(0,\sigma^2I)\)`
+
+- La estimación se realiza por MV
+
+- Ver detalles en [LeSage &amp; Pace (2009)](https://www.routledge.com/Introduction-to-Spatial-Econometrics/LeSage-Pace/p/book/9781420064247)
+
+--
+
+
+- Para el modelo SAR, se puede emplear **máxima verosimilitud concentrada**
+
+- Supongamos que conociéramos `\(\rho=\rho^*\)`
+
+`$$y-\rho^*Wy=X\beta+\varepsilon$$`
+
+--
+
+- Entonces podríamos estimar `\(\beta\)` como
+
+`$$\hat{\beta}=(X'X)^{-1}X'(I-\rho^*W)y$$`
+- También podríamos estimar fácilmente `\(\hat{\sigma}^2\)`
+
+- La *verosimilitud concentrada* se construye una verosimilitud que contiene `\(\hat{\beta}\)` y `\(\hat{\sigma}^2\)` y que se optimiza solo con respecto a `\(\rho\)`
+
+---
+
+# Prueba de Moran
+
+- Moran (1948) propuso una prueba para detectar autocorrelación espacial
+
+- El estadístico `\(I\)` de Moran está definido como
+
+`$$I=\frac{N}{\Omega}\frac{\sum_i\sum_j w_{ij}(x_i-\bar{x})(x_j-\bar{x})}{\sum_i(x_i-\bar{x})^2}$$`
+
+donde `\(\Omega\)` es la suma de todos los `\(w_{ij}\)`
+
+--
+
+- La `\(H_0\)` es que `\(x\)` se distribuye de manera aleatoria en el espacio
+
+
+- Si el valor `\(p\)` asociado es menor que cierto `\(\alpha\)`, rechazamos `\(H_0\)` y se concluye que debemos tomar en cuenta los efectos espaciales
+
+--
+
+- Noten que el estadístico `\(I\)` depende de forma crucial de la especificación de `\(W\)`
+
+---
+
+# Interpretación de parámetros
+
+- Consideremos el modelo SDM
+
+$$
+`\begin{aligned}
+y=(I-\rho W)^{-1}X\beta+(I-\rho W)^{-1}WX\theta+(I-\rho W)^{-1}\varepsilon
+\end{aligned}`
+$$
+- Podemos reescribirlo como
+
+`$$y=\sum_{r=1}^kS_r(W)x_r+V(W)\varepsilon$$`
+donde
+
+`$$S_r(W)=V(W)(I\beta_r+W\theta_r)$$`
+
+y
+
+`$$V(W)=(I-\rho)^{-1}=I+\rho W+\rho^2W^2+\rho^3W^3+\ldots$$`
+---
+
+# Interpretación de parámetros
+
+- Podemos escribir extensivamente este modelo como sigue
+
+`$$\begin{pmatrix} y_1 \\
+y_2 \\
+\vdots \\
+y_n
+\end{pmatrix}=\sum_{r=1}^k \begin{pmatrix} S_r(W)_{11} &amp; S_r(W)_{12} &amp; \ldots &amp; S_r(W)_{1n} \\
+S_r(W)_{21} &amp; S_r(W)_{22} &amp;  &amp; \\ \vdots &amp; \vdots &amp; \ddots &amp; \\
+S_r(W)_{n1} &amp; S_r(W)_{n2} &amp; \ldots &amp; S_r(W)_{nn} \end{pmatrix}
+\begin{pmatrix}(x_{1r} \\
+x_{2r} \\
+\vdots \\
+x_{nr}
+\end{pmatrix} +V(W)\varepsilon$$`
+- Para una observación
+
+`$$y_i=\sum_{r=1}^k(S_r(W)_{i1}X_{1r}+S_r(W)_{i2}X_{2r}+\ldots+S_r(W)_{in}X_{nr})+V(W)_i\varepsilon_i$$`
+---
+
+# Interpretación de parámetros
+
+- De la expresión anterior es evidente que
+
+`$$\frac{\partial y_i}{\partial x_{jr}}=S_r(W)_{ij}$$`
+- Un cambio en el regresor `\(r\)` del individuo `\(j\)` afecta potencialmente a la variable dependiente de todas las demás unidades
+
+--
+
+- Para el efecto *propio*
+
+
+`$$\frac{\partial y_i}{\partial x_{ir}}=S_r(W)_{ii}$$`
+- Este efecto incluye el efecto que `\(i\)` causa en la observación `\(j\)` y que se *rebota* al mismo `\(i\)`
+
+---
+
+# Agregación de efectos
+
+- Los efectos antes calculados son potencialmente distintos para cada unidad
+
+- Podemos construir medidas que resuman estos efectos
+
+--
+
+1. **Impacto directo promedio**: promedio de los efectos que tiene un cambio en el regresor `\(x_r\)` en la unidad `\(i\)`, `\(x_{ir}\)` sobre `\(y_i\)`, calculado para todos los individuos `\(i\)`
+
+1. **Impacto total promedio sobre una observación**: promedio de efectos que produce cambiar `\(x_r\)` en la misma magnitud para todos los `\(n\)` individuos sobre `\(y_i\)`
+
+1. **Impacto total promedio de una observación**: promedio de los impactos en todas las `\(y_i\)` de un cambio en `\(x_r\)` en la observación `\(x_j\)`
+
+--
+
+- Los impactos totales 2. y 3. son numéricamente iguales, pero nos ayudan a interpretar los efectos desde dos puntos de vista
+
+---
+
+# Próxima sesión
+
+- Variables instrumentales *shift-share*
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="libs/cols_macro.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": null,
+"scroll": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

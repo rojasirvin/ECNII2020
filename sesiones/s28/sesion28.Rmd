@@ -1,0 +1,410 @@
+---
+title: "Econometría espacial"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "19 de noviembre de 2020"
+mathspec: true
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{commath}
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+#library(quantreg)
+library(FNN)
+library(np)
+
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+```
+
+
+.title[
+# Sesión 28. Econometría espacial
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+
+# Motivación
+
+- Datos con ubicación espacial
+  - Crimen
+  - Desempleo
+  - Demanda por un bien
+
+- El supuesto de independencia de los errores no se sostiene en muchas aplicaciones
+
+--
+
+- Problemas con dependencia espacial
+
+- Varias posibilidades
+
+  - La variable dependiente afecta la variable dependiente de otras unidades vecinas
+  
+  - Los regresores de un vecino afectan la variable dependiente de dicho vecino, pero también la variable dependiente del resto de vecinos
+  
+  - No observables que afectan a los vecinos
+
+---
+
+# Modelo espacial
+
+- Consideremos una variable dependiente $y$ con potenciales efectos espaciales
+
+$$y_i=\lambda \sum_{j=1}^n w_{ij} y_j+x_i'\beta+\varepsilon_i$$
+
+- El peso $w_{ij}$ indica qué tan importante es el el valor de la variable dependiente en otras unidades para la misma variable en $i$
+
+--
+
+- Podemos poner todo en vectores y matrices
+
+$$y=\lambda Wy+X\beta+\varepsilon$$
+- $W$ es una matriz de pesos, con $W[i,j]=w_{ij}$
+
+- El modelo entonces es un sistema de $N\times 1$ ecuaciones de $y$
+
+- A $\lambda W$ se le conoce como el **rezago espacial** de $y$
+
+---
+
+# Matriz $W$
+
+- Los elementos en $W$ indican qué tan *cercano* está $i$ de $j$
+
+- El término cercano no es necesariamente una distancia geográfica
+
+- Hay infinidad de matrices $W$
+
+- Los elementos de la diagonal son 0
+
+- $\lambda$ es un *normalizador* a ser estimado
+
+- $W$ se mantiene fija y es provista por el investigador
+
+---
+
+# Modelo SAR
+
+- Noten que el modelo matricial puede resolverse para obtener el **modelo espacial autorregresivo** (SAR):
+
+$$y=(I-\lambda W)^{-1}X\beta+(I-\lambda W)^{-1}\varepsilon$$
+--
+
+- El valor esperado de $Y$ dado $X$ es
+
+$$
+\begin{aligned}
+E(Y|X)&=(I-\lambda W)X\beta \\
+&=s_{ii}x_i\beta+\sum_{j=1}^Ns_{ij}x_j\beta
+\end{aligned}
+$$
+- $s_{ij}$ es el elemento $(i,j)$ de $(I-\lambda W)^{-1}$
+
+--
+
+- Hay dos fuentes de variación de $y_i$
+
+  1. Un efecto directo del cambio en un covariable
+  
+  1. Un efecto indirecto o *spillover*
+
+---
+
+# Más sobre $W$
+
+- **Primera ley de la geografía de Tobler (1970)**: todo está relacionado con todo lo demás, pero las cosas cercanas están más relacionadas que las cosas lejanas.
+
+- $W$ puede especificarse usando el inverso de la distancia entre dos puntos
+
+$$w_{ij}=1/D_{ij}$$
+
+- Otra forma de especificar $W$ es asignando valores positivos solo a las unidades vecinas
+
+$$w_{ij}=\begin{cases}d_{ij}\quad\text{si i y j son vecinos}\\ 0 \quad\text{en otro caso}\end{cases}$$
+
+y donde lo más común es hacer $d_{ij}=1$
+
+---
+
+# Matrices de distancia
+
+- En la práctica, al usar distancias, se emplean matrices normalizadas
+
+- Normalización por filas
+
+$$\tilde{w}_{ij}=w_{ij}\left(\frac{1}{\sum_{j=1}^N|w_{ij}|}\right)$$
+
+- Normalización *min-max*:
+
+$$\tilde{w}_{ij}=w_{ij}(1/f)$$
+donde $f=min\{\text{suma más grande por filas},\text{suma más grande por columnas}\}$
+
+- Espectral:
+
+$$\tilde{w}_{ij}=w_{ij}(1/|V|)$$
+donde $|V|$ es el módulo del mayor eigenvalor de $W$
+
+---
+
+# Rezagos del error
+
+- Modelo más general
+
+$$
+\begin{aligned}
+y&=\lambda W y + X\beta + u \\
+u&=\rho M u +\varepsilon
+\end{aligned}
+$$
+donde $Mu$ es el rezago espacial de $u$
+
+- Este rezago espacial del error permite correlación espacial de los no observables
+
+- $\rho$ es la correlación espacial de los errores
+
+--
+
+- Resolviendo para $u$
+
+$$u=(I-\rho M)\varepsilon$$
+- Sustituyendo en la ecuación de $y$ obtenemos un **modelo espacial autorregresivo combinado** (SAC):
+
+$$y=(I-\lambda W)^{-1}X\beta+(I-\lambda W)^{-1}(I-\rho M)^{-1}\varepsilon$$
+---
+
+# Rezagos del error
+
+- Si asumimos que la correlación espacial solo viene del error, $\lambda=0$, entonces tenemos el **modelo de error espacial**
+
+$$y=X\beta+(I-\rho M)^{-1}\varepsilon$$
+---
+
+# Incertidumbre sobre el modelo
+
+- Pensemos que tenemos incertidumbre sobre si es el SAR o el SER el modelo apropiado
+
+- Asumamos la misma matriz de pesos $W$ y el mismo parámetro de persistencia espacial $\rho$ para ambas ecuaciones
+
+$$
+\begin{aligned}
+y_a&=(I-\rho W)^{-1}X\beta+(I-\rho W)^{-1}\varepsilon \\
+y_b&=X\beta+(I-\rho W)^{-1}\varepsilon
+\end{aligned}
+$$
+
+- $\pi_a$ y $\pi_b$ son los pesos que le damos a cada modelo, con $\pi_a+\pi_b=1$
+
+$$y_c=\pi_a y_a+\pi_b y_b$$
+--
+
+- Si sustituimos loas expresiones para $y_a$ y $y_b$ y hacemos algo de álgebra tenemos el **modelo espacial de Durbin** (SDM):
+
+$$
+\begin{aligned}
+y_c&=(I-\rho W)^{-1}X(\pi_a\beta)+(I-\rho W)^{-1}WX(\pi_b\beta)+(I-\rho W)^{-1}\varepsilon \\
+&=(I-\rho W)^{-1}X\beta_1+(I-\rho W)^{-1}WX\beta_2+(I-\rho W)^{-1}\varepsilon
+\end{aligned}
+$$
+- Tenemos rezagos espaciales en la variable dependiente y los regresores
+
+---
+
+# Estimación
+
+- Asumimos $\varepsilon \sim \mathcal{N}(0,\sigma^2I)$
+
+- La estimación se realiza por MV
+
+- Ver detalles en [LeSage & Pace (2009)](https://www.routledge.com/Introduction-to-Spatial-Econometrics/LeSage-Pace/p/book/9781420064247)
+
+--
+
+
+- Para el modelo SAR, se puede emplear **máxima verosimilitud concentrada**
+
+- Supongamos que conociéramos $\rho=\rho^*$
+
+$$y-\rho^*Wy=X\beta+\varepsilon$$
+
+--
+
+- Entonces podríamos estimar $\beta$ como
+
+$$\hat{\beta}=(X'X)^{-1}X'(I-\rho^*W)y$$
+- También podríamos estimar fácilmente $\hat{\sigma}^2$
+
+- La *verosimilitud concentrada* se construye una verosimilitud que contiene $\hat{\beta}$ y $\hat{\sigma}^2$ y que se optimiza solo con respecto a $\rho$
+
+---
+
+# Prueba de Moran
+
+- Moran (1948) propuso una prueba para detectar autocorrelación espacial
+
+- El estadístico $I$ de Moran está definido como
+
+$$I=\frac{N}{\Omega}\frac{\sum_i\sum_j w_{ij}(x_i-\bar{x})(x_j-\bar{x})}{\sum_i(x_i-\bar{x})^2}$$
+
+donde $\Omega$ es la suma de todos los $w_{ij}$
+
+--
+
+- La $H_0$ es que $x$ se distribuye de manera aleatoria en el espacio
+
+
+- Si el valor $p$ asociado es menor que cierto $\alpha$, rechazamos $H_0$ y se concluye que debemos tomar en cuenta los efectos espaciales
+
+--
+
+- Noten que el estadístico $I$ depende de forma crucial de la especificación de $W$
+
+---
+
+# Interpretación de parámetros
+
+- Consideremos el modelo SDM
+
+$$
+\begin{aligned}
+y=(I-\rho W)^{-1}X\beta+(I-\rho W)^{-1}WX\theta+(I-\rho W)^{-1}\varepsilon
+\end{aligned}
+$$
+- Podemos reescribirlo como
+
+$$y=\sum_{r=1}^kS_r(W)x_r+V(W)\varepsilon$$
+donde
+
+$$S_r(W)=V(W)(I\beta_r+W\theta_r)$$
+
+y
+
+$$V(W)=(I-\rho)^{-1}=I+\rho W+\rho^2W^2+\rho^3W^3+\ldots$$
+---
+
+# Interpretación de parámetros
+
+- Podemos escribir extensivamente este modelo como sigue
+
+$$\begin{pmatrix} y_1 \\
+y_2 \\
+\vdots \\
+y_n
+\end{pmatrix}=\sum_{r=1}^k \begin{pmatrix} S_r(W)_{11} & S_r(W)_{12} & \ldots & S_r(W)_{1n} \\
+S_r(W)_{21} & S_r(W)_{22} &  & \\ \vdots & \vdots & \ddots & \\
+S_r(W)_{n1} & S_r(W)_{n2} & \ldots & S_r(W)_{nn} \end{pmatrix}
+\begin{pmatrix}(x_{1r} \\
+x_{2r} \\
+\vdots \\
+x_{nr}
+\end{pmatrix} +V(W)\varepsilon$$
+- Para una observación
+
+$$y_i=\sum_{r=1}^k(S_r(W)_{i1}X_{1r}+S_r(W)_{i2}X_{2r}+\ldots+S_r(W)_{in}X_{nr})+V(W)_i\varepsilon_i$$
+---
+
+# Interpretación de parámetros
+
+- De la expresión anterior es evidente que
+
+$$\frac{\partial y_i}{\partial x_{jr}}=S_r(W)_{ij}$$
+- Un cambio en el regresor $r$ del individuo $j$ afecta potencialmente a la variable dependiente de todas las demás unidades
+
+--
+
+- Para el efecto *propio*
+
+
+$$\frac{\partial y_i}{\partial x_{ir}}=S_r(W)_{ii}$$
+- Este efecto incluye el efecto que $i$ causa en la observación $j$ y que se *rebota* al mismo $i$
+
+---
+
+# Agregación de efectos
+
+- Los efectos antes calculados son potencialmente distintos para cada unidad
+
+- Podemos construir medidas que resuman estos efectos
+
+--
+
+1. **Impacto directo promedio**: promedio de los efectos que tiene un cambio en el regresor $x_r$ en la unidad $i$, $x_{ir}$ sobre $y_i$, calculado para todos los individuos $i$
+
+1. **Impacto total promedio sobre una observación**: promedio de efectos que produce cambiar $x_r$ en la misma magnitud para todos los $n$ individuos sobre $y_i$
+
+1. **Impacto total promedio de una observación**: promedio de los impactos en todas las $y_i$ de un cambio en $x_r$ en la observación $x_j$
+
+--
+
+- Los impactos totales 2. y 3. son numéricamente iguales, pero nos ayudan a interpretar los efectos desde dos puntos de vista
+
+---
+
+# Próxima sesión
+
+- Variables instrumentales *shift-share*
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**
