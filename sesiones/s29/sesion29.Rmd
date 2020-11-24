@@ -1,0 +1,377 @@
+---
+title: "Variables instrumentales shift-share"
+author: "Irvin Rojas"
+institute: "CIDE"
+date: "24 de noviembre de 2020"
+mathspec: true
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{commath}
+output:
+  xaringan::moon_reader:
+    seal: false
+    chakra: "https://remarkjs.com/downloads/remark-latest.min.js"
+    lib_dir: libs
+    nature:
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "center"]
+      ratio: "16:9"
+      beforeInit: ["https://platform.twitter.com/widgets.js", "libs/cols_macro.js"]
+      navigation:
+      scroll: false
+    css: [default, "libs/cide.css", metropolis-fonts, "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-grid.min.css", "https://use.fontawesome.com/releases/v5.7.2/css/all.css", "https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css"]
+include-before:
+- '\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{s}}}{~}}'
+
+---
+class: title-slide
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.path = "figures/")
+
+library(tidyverse)
+library(pacman)
+library(janitor)
+library(sandwich)
+library(modelsummary)
+#library(nnet)
+#library(mlogit)
+#library(quantreg)
+library(FNN)
+library(np)
+
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+
+```
+
+```{css, echo = FALSE}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+```
+
+
+.title[
+# Sesión 29. Variables instrumentales shift-share
+]
+.subtitle[
+## Econometría II
+]
+.author[
+### Irvin Rojas <br> [rojasirvin.com](https://www.rojasirvin.com/) <br> [<i class="fab fa-github"></i>](https://github.com/rojasirvin) [<i class="fab fa-twitter"></i>](https://twitter.com/RojasIrvin) [<i class="ai ai-google-scholar"></i>](https://scholar.google.com/citations?user=FUwdSTMAAAAJ&hl=en)
+]
+
+.affiliation[
+### Centro de Investigación y Docencia Económicas <br> División de Economía
+]
+
+---
+
+# Motivación
+
+- Consideremos la siguiente regresión
+
+$$y_j=\beta_0+\beta_1X_j+u_j$$
+donde $y_j$ es la tasa de crecimiento de los salarios en la localidad $j$ y $X_j$ es la tasa de crecimiento del empleo
+
+- Es un típico problema de endogeneida
+
+- Estamos estimando una relación de equilibrio
+
+- Nos interesa $\beta_1$. la elasticidad de la oferta laboral
+
+--
+
+- Bartik (1991) introdujo una forma ingeniosa de construir un instrumento, luego llamado **instrumento de Bartik** o *shift-share*
+
+---
+
+# Instrumento shift-share
+
+- En su análisis seminal, Bartik definió el instrumento $Z_j$ como
+
+$$Z_j=\sum_{i=1}^{I}s_{ij}G_i$$
+
+donde $i$ indexa los sectores de la industria
+
+--
+
+- $Z_j$ representa, para cada unidad $j$ (ciudad, localidad), el crecimiento del empleo que hubiera ocurrido si cada industria en $j$ hubiera crecido hubiera crecido al mismo ritmo que su contraparte a nivel nacional
+
+- **Share**: $s_{ij}$ es la partición del trabajo empleado en la industria $i$ en el total del trabajo de la región $j$, con  $\sum_{i=1}^I s_{ij}=1$
+
+- **Shift**: $G_j$ es la tasa de crecimiento del empleo en la industria $j$ a nivel nacional
+
+---
+
+# Anatomía del instrumento
+
+- Dunn (1960) propone descomponer la tasa de crecimiento regional de una variable económica entre dos periodos en un sector $i$ como
+
+$$\Delta y_{it}=y_{it-1}g_{it}=y{it-1}(G_t+(G{it}-G_t)+(g_{it}-G_{it}))$$
+
+donde $G_t$ es el promedio nacional de crecimiento a través de los sectores y $G_{it}$ es la tasa de crecimiento nacional promedio para un sector
+
+--
+
+- Esta expresión parte el crecimiento de la variable de interés en tres componentes (la terminología en nigritas es de McMillen, 2010)
+  
+  1. El nacional $G_t$ o **participación nacional**
+  1. El nacional de la industria $i$ con relación al total de la economía $G_{it}-G_t$ o **composición industrial**
+  1. El regional de la industria $i$ con relación al total de la industria $i$ en toda la economía $g_{it}-G_{it}$ o **desplazador regional**
+
+---
+
+# Anatomía del instrumento
+
+- Para construir el shift-share se toman solo los componentes que **no** son locales en la expresión de la tasa de crecimiento en la región $j$, $G_t$ y $G_{it}−G_t$
+
+- Se omite el término potencialmente endógeno $g_{it}−G_{it}$
+
+---
+
+# Forma original del instrument
+
+- En su formulación original, Bartik parte del empleo en la industria $i$, la ciudad $j$ en el periodo $t$, $e_{ijt}$
+
+- Definimos el empleo en la industra $i$ a nivel nacional como $E_{it}=\sum_{j=j}^J= e_{ijt}$
+
+- El instrumento es
+
+$$
+\begin{align}
+Z_{jt}&=E_{ij}(G_t+(G_{it}-G_t))   \\ 
+&=\sum_{j=j}^J e_{ijt-1}(G_t+(G_{it}-G_t)) \\
+&=\sum_{j=j}^J e_{ijt-1}G_{it}\\
+&=\sum_{j=j}^J e_{ijt-1}\left(\frac{E_{it-E_{it-1}}}{E_{it-1}}\right)
+\end{align}
+$$
+
+--
+
+- El instrumento es el cambio absoluto en el empleo en $j$ que hubiera ocurrido si todos los sectores de la industria en $j$ hubieran crecido a sus tasas nacionales
+
+--
+
+- En la aplicación original, Bartik emplea una versión logarítmica
+
+$$\tilde{Z}_{jt}=\ln(e_{jt}+Z_{jt})-\ln e_{jt}$$
+---
+
+# Forma actual
+
+- La formulación shift-share más usada en la actualidad toma la siguiente forma
+
+$$
+\begin{align}
+Z_{jt}=\sum_{j=j}^J \frac{e_{ijt-1}}{e_{jt-1}}\left(\frac{E_{ijt-E_{ijt-1}}}{E_{ijt-1}}\right)
+\end{align}
+$$
+- Aquí $E_{ijt}=\left(\sum_{j=1}^Je_{ijt}\right)-e_{ijt}$
+
+- El *share* considera la participación en el total nacional de las industrias de $i$
+
+- Noten que los *shifts* varían entre $j$ (al estilo *leave-out*) para evitar el hecho de que la ciertas industrias se concentran en algunas cuantas $j$
+
+---
+
+# Identificación
+
+- Tradicionalmente el uso de shift-share ocurría en un contexto con:
+
+  - Un shift aleatorio o casi aleatorio (por ejemplo una política a nivel nacional) para justificar exogeneidad
+  
+  - Heterogeneidad en los shares locales para que el instrumento fuera relevante
+
+- En estudios más recientes, se reconoce que la identificación puede venir por dos caminos
+
+  - Shifts exógenos con el vector de shares como pesos
+  
+  - Shares como instrumentos y choques como pesos
+
+---
+
+# Sobre los shifts y los shares
+
+- Alternativas para especificar los choques de demanda
+
+  - Salarios
+  
+  - Precios al productor
+
+
+--
+
+- Alternativas para especificar la exposición a los choques
+
+  - Empleo que produce exportables
+  
+
+---
+
+class: inverse, middle, center
+
+# Multiplicadores locales
+
+
+---
+
+# Multiplicadores locales
+
+- Moretti (2010) estudia cuánto empleo no comerciable genera el crecimiento del empleo comerciable en una región $i$
+
+- Deseamos estimar
+
+$$\Delta E_{it}^{NT}=\alpha + \gamma \Delta E_{it}^T+X_{it}'\beta+\varepsilon_{it}$$
+
+- MCO produce estimadores inconsistentes por un problema de doble causalidad
+
+  - La razón por la que crece el empleo manufacturero puede ser la misma por la que crece el no manufacturero
+
+---
+
+# Shift-share
+
+- Moretti propone emplear el siguiente instrumento
+
+$$z_{it}=\sum_j w_{ijt} \Delta E_{jt}^T$$
+
+- $\Delta E_{jt}^T$ es el cambio en el empleo en el sector comerciable $j$
+
+- $w_{ijt}$ es la participación del empleo en el sector manufacturero $j$
+
+---
+
+# Resultados
+
+- Se encuentra que cada empleo comerciable genera 1.6 empleos no comerciables
+
+- El efecto es de 2.5 cuando se concentra el análisis en los trabajadores con habilidad alta en el sector manufacturero
+
+- El multiplicador es heterogéneo entre industrias, siendo las de alta tecnología las que generan más empleos no comerciables
+
+
+---
+
+class: inverse, middle, center
+
+# Importaciones chinas
+
+---
+
+# El síndrome chino
+
+- Autor, Dorn y Hanson (2013) estudian el efecto del crecimiento de las exportaciones provenientes de China en los mercados locales de EUA
+
+- Medida de exposición a la competencia de importaciones chinas
+
+$$\Delta IPW_{uit}=\sum_j \frac{L_{ijt}}{L_{ujt}}\frac{\Delta M_{ucjt}}{L_it}$$
+
+
+- $L_{ijt}$ es el trabajo en la región $i$ y la industria $j$ en el periodo $t$ y $L_{ujt}$ es el agregado nacional
+
+- $L_{it}$ es el trabajo en todas las industrias en la región $i$
+
+- $\Delta M_{ucjt}$ mide el cambio en las importaciones chinas en la industria $j$
+
+---
+
+# Problema de endogeneidad
+
+- Las importaciones realizadas pueden estar correlacionadas con choques de demanda por importaciones a nivel industria
+
+- MCO subestima el efecto de las importaciones chinas
+
+--
+
+- Shift-share: calcular la exposición a importaciones chinas en ocho países industrializados
+
+$$\Delta IPW_{oit}=\sum_j \frac{L_{ijt-1}}{L_{ujt-1}}\frac{\Delta M_{ocjt}}{L_it-1}$$
+- $\Delta M_{ocjt}$ son ahora las importaciones chinas en la industria $j$ en ocho países industrializados
+
+- Los pesos están dados por la estructura del empleo 10 años antes de los cambios analizados
+
+
+---
+
+# Resultados
+
+- La especificación econométrica es
+
+$$\Delta L_{it}^m=\alpha_t+\beta_1 \Delta IPW_{uit}+X_{it}'\beta_2+e_{it}$$
+
+donde $\Delta L_{it}^m$ es el cambio en la proporción de empleo manufacturero en la región $i$ entre 1990 y 2007
+
+- El instrumento se construye con el empleo en los ocho países seleccionados en 1980
+
+- Se encuentra que las importaciones crecientes causan mayor desempleo, reducen los salarios locales y reducen la participación en el mercado de trabajo
+
+
+
+---
+
+class: inverse, middle, center
+
+# ¿Qué, cuando, por qué y cómo?
+
+---
+
+# ¿Cómo entender shift-share?
+
+- La reciente contribución de Goldsmith-Pinkham, Sorkin y Swift (2020) pone orden a los supuestos necesarios para la identificación usando instrumentos shift-share
+
+- Un primer resultado téorico es que el estimador por VI en un modelo exactamente identificado es equivalente al estimador de MGM del modelo sobreidentificado usando los shares como instrumentos individuales y a los shifts como matriz de pesos
+
+- Este resultado abre la caja para motivar el uso de shif-share en aplicaciones en las que son los shares los que se argumentan como exógenos
+
+---
+
+# Descomposición del instrumento
+
+- Un segundo resultado muestra que el estimador de VI shift-share puede ser escrito como una combinación lineal de los estimadores de VI usando cada share $Z_k$ a como instrumento la vez
+
+$$\hat{\beta}_{SS}=\sum_k\hat{\alpha}_k\hat{\beta}_k$$
+--
+
+- Cada estimación de un $\hat{\beta}_k$ está sujeta a las mismas condiciones de identificación
+
+  - $Z_k$ debe ser exógeno y relevante
+  
+- Los pesos $\alpha_k$ se pueden estimar
+
+- Este resultado nos dice que en una aplicación se debe argumentar sobre la exogeneidad de los shares que reciben más peso pues en ellos recae la identificación
+
+
+---
+
+# Próxima sesión
+
+- Presentaciones de los últimos tres temas que vimos
+
+  + **Pares**: Carrell, S. E., Malmstrom, F. V., & West, J. E. (2008). Peer effects in academic cheating. *Journal of human resources*, 43(1), 173-207.
+
+  + **Shift share**: Peri, G., & Sparber, C. (2009). Task specialization, immigration, and wages. A*merican Economic Journal: Applied Economics*, 1(3), 135-69.
+
+  + **Espacial**: Li, Y., & Zhu, K. (2017). Spatial dependence and heterogeneity in the location processes of new high‐tech firms in Nanjing, China. *Papers in Regional Science*, 96(3), 519-535.
+
+---
+
+class: center, middle
+
+Presentación creada usando el paquete [**xaringan**](https://github.com/yihui/xaringan) en R.
+
+El *chakra* viene de [remark.js](https://remarkjs.com), [**knitr**](http://yihui.org/knitr), y [R Markdown](https://rmarkdown.rstudio.com).
+
+Material de clase en versión preliminar.
+
+**No reproducir, no distribuir, no citar.**

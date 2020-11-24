@@ -50,6 +50,7 @@
 
 [Sesión 28](https://rojasirvin.github.io/ECNII2020/sesiones/s28/sesion28.html#1). Econometría espacial
 
+[Sesión 29](https://rojasirvin.github.io/ECNII2020/sesiones/s29/sesion29.html#1). Variables instrumentales shift-share
 
 <!---
 
