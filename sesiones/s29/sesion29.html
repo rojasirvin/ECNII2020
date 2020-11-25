@@ -55,11 +55,11 @@ class: title-slide
 `$$y_j=\beta_0+\beta_1X_j+u_j$$`
 donde `\(y_j\)` es la tasa de crecimiento de los salarios en la localidad `\(j\)` y `\(X_j\)` es la tasa de crecimiento del empleo
 
-- Es un típico problema de endogeneida
+- Es un típico problema de endogeneidad
 
 - Estamos estimando una relación de equilibrio
 
-- Nos interesa `\(\beta_1\)`. la elasticidad de la oferta laboral
+- Nos interesa `\(\beta_1\)`, el inverso de la elasticidad de la oferta laboral
 
 --
 
@@ -77,11 +77,11 @@ donde `\(i\)` indexa los sectores de la industria
 
 --
 
-- `\(Z_j\)` representa, para cada unidad `\(j\)` (ciudad, localidad), el crecimiento del empleo que hubiera ocurrido si cada industria en `\(j\)` hubiera crecido hubiera crecido al mismo ritmo que su contraparte a nivel nacional
+- `\(Z_j\)` representa, para cada unidad `\(j\)` (ciudad, localidad), el crecimiento del empleo que hubiera ocurrido si cada industria `\(i\)` en `\(j\)` hubiera crecido hubiera crecido al mismo ritmo que su contraparte a nivel nacional
 
-- **Share**: `\(s_{ij}\)` es la partición del trabajo empleado en la industria `\(i\)` en el total del trabajo de la región `\(j\)`, con  `\(\sum_{i=1}^I s_{ij}=1\)`
+- **Share**: `\(s_{ij}\)` es la participación del trabajo empleado en la industria `\(i\)` en el total del trabajo de la región `\(j\)`, con  `\(\sum_{i=1}^I s_{ij}=1\)`
 
-- **Shift**: `\(G_j\)` es la tasa de crecimiento del empleo en la industria `\(j\)` a nivel nacional
+- **Shift**: `\(G_i\)` es la tasa de crecimiento del empleo en la industria `\(i\)` a nivel nacional
 
 ---
 
@@ -89,13 +89,13 @@ donde `\(i\)` indexa los sectores de la industria
 
 - Dunn (1960) propone descomponer la tasa de crecimiento regional de una variable económica entre dos periodos en un sector `\(i\)` como
 
-`$$\Delta y_{it}=y_{it-1}g_{it}=y{it-1}(G_t+(G{it}-G_t)+(g_{it}-G_{it}))$$`
+`$$\Delta y_{it}=y_{it-1}g_{it}=y_{it-1}(G_t+(G_{it}-G_t)+(g_{it}-G_{it}))$$`
 
 donde `\(G_t\)` es el promedio nacional de crecimiento a través de los sectores y `\(G_{it}\)` es la tasa de crecimiento nacional promedio para un sector
 
 --
 
-- Esta expresión parte el crecimiento de la variable de interés en tres componentes (la terminología en nigritas es de McMillen, 2010)
+- Esta expresión parte el crecimiento de la variable de interés en tres componentes (la terminología en negritas es de McMillen, 2010)
   
   1. El nacional `\(G_t\)` o **participación nacional**
   1. El nacional de la industria `\(i\)` con relación al total de la economía `\(G_{it}-G_t\)` o **composición industrial**
@@ -111,7 +111,7 @@ donde `\(G_t\)` es el promedio nacional de crecimiento a través de los sectores
 
 ---
 
-# Forma original del instrument
+# Forma original del instrumento
 
 - En su formulación original, Bartik parte del empleo en la industria `\(i\)`, la ciudad `\(j\)` en el periodo `\(t\)`, `\(e_{ijt}\)`
 
@@ -122,13 +122,14 @@ donde `\(G_t\)` es el promedio nacional de crecimiento a través de los sectores
 $$
 `\begin{align}
 Z_{jt}&amp;=E_{ij}(G_t+(G_{it}-G_t))   \\ 
-&amp;=\sum_{j=j}^J e_{ijt-1}(G_t+(G_{it}-G_t)) \\
 &amp;=\sum_{j=j}^J e_{ijt-1}G_{it}\\
-&amp;=\sum_{j=j}^J e_{ijt-1}\left(\frac{E_{it-E_{it-1}}}{E_{it-1}}\right)
+&amp;=\sum_{j=j}^J e_{ijt-1}\left(\frac{E_{it}-E_{it-1}}{E_{it-1}}\right)
 \end{align}`
 $$
 
---
+---
+
+# Forma original del instrumento
 
 - El instrumento es el cambio absoluto en el empleo en `\(j\)` que hubiera ocurrido si todos los sectores de la industria en `\(j\)` hubieran crecido a sus tasas nacionales
 
@@ -145,7 +146,7 @@ $$
 
 $$
 `\begin{align}
-Z_{jt}=\sum_{j=j}^J \frac{e_{ijt-1}}{e_{jt-1}}\left(\frac{E_{ijt-E_{ijt-1}}}{E_{ijt-1}}\right)
+Z_{jt}=\sum_{j=j}^J \frac{e_{ijt-1}}{e_{jt-1}}\left(\frac{E_{ijt}-E_{ijt-1}}{E_{ijt-1}}\right)
 \end{align}`
 $$
 - Aquí `\(E_{ijt}=\left(\sum_{j=1}^Je_{ijt}\right)-e_{ijt}\)`
@@ -293,7 +294,7 @@ donde `\(\Delta L_{it}^m\)` es el cambio en la proporción de empleo manufacture
 
 class: inverse, middle, center
 
-# ¿Qué, cuando, por qué y cómo?
+# ¿Qué, cuándo, por qué y cómo?
 
 ---
 
