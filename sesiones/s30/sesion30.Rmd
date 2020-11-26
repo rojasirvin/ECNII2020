@@ -96,13 +96,14 @@ xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
 
 # Pendientes
 
+- Tarea 4
+
+  - 8 de diciembre a las 20:00
+
 - Examen final
 
   - 14 de diciembre a las 10:00
   
-- Tarea 4
-
-  - 8 de diciembre a las 20:00
 
 ---
 
