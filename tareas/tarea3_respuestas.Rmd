@@ -1,0 +1,408 @@
+---
+title: |
+  | CIDE
+  | Maestría en Economía
+  | Econometría II
+
+subtitle: "Tarea 3"
+author: "Profesor: Irvin Rojas"
+date: "Fecha de entrega: 12 de noviembre a las 11:00."
+output:
+  html_document:
+  toc: true
+---
+  
+## Instrucciones
+  
+La tarea debe entregarse de manera individual, pero se recomienda ampliamente colaborar en grupos de estudio. Las secciones teóricas deben estar desarrolladas en un procesador de textos y enviadas en formato .docx o .pdf. Alternativamente, puede escribir sus respuestas en lápiz y papel, con letra legible y adjuntar un escaneo de sus respuestas. Las secciones prácticas deberán contener archivos de código replicable y archivos de salida en R (o similares, en caso de usar otro software) para considerarse completas. Las tareas deben entregarse antes de la fecha límite a través de Teams. Puede crear una carpeta comprimida que contenga todos sus archivos y subir esta carpeta en Teams. Recuerde que en Teams debe asegurarse de que los archivos se han subido correctamente.
+
+
+```{r setup, include=FALSE}
+library(pacman)
+library(janitor)
+library(sandwich)
+library(pastecs)
+#library(nnet)
+library(MASS)
+library(AER)
+library(survival)
+library(ExPanDaR)
+#library(COUNT)
+library(reshape2)
+library(plm)
+library(dplyr)
+
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+```
+
+
+## Pregunta 1
+
+Considere la base de datos *comportamiento_wide.csv*. Esta base contiene información individual de niñas y niños, incluyendo su género, edad, raza e información de sus madres. Además, se incluye una medida auto reportada de autoestima (**self**) y una evaluación de comportamiento antisocial (**anti**). Se quiere conocer cómo influye la autoestima en el comportamiento antisocial. Para cada niño o niña hay tres observaciones en el tiempo. Se busca explicar el comportamiento antisocial en función de la autoestima y la condición de pobreza (**pov**):
+
+$$anti_{it}=\alpha_i+\beta_1 self_{it}+\beta_2 pov_{it}+\varepsilon_{it}$$
+
+a. [3 puntos] La base se encuentra en formato *wide*. Ponga la base en formato *long*, donde haya una columna para cada variable y donde las filas representen a un individuo en un periodo.
+
+    *Hay muchas formas de hacer esto. Podemos usar las funciones pivot_longer y pivot_wider, por ejemplo.*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+data.comp <-read_csv("./comportamiento_wide.csv",
+                      locale = locale(encoding = "latin1")) %>%
+  pivot_longer(
+    c(anti90:anti94,self90:self94,pov90:pov94),
+    names_to = c("measure", "year"),
+    names_pattern = "(.*)(..)"
+  )  %>%
+  pivot_wider(
+    names_from = measure,
+    values_from = value
+  )
+    
+colnames(data.comp)
+```
+
+a. [2 puntos] Estime la ecuación de comportamiento antisocial empleando MCO *pooled*. ¿Cuáles son los supuestos que se deben cumplir para que $\hat{\beta}_1^{MCO}$ sea consistente?
+
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+summary(m.mco <- plm( anti ~ self + pov, data=data.comp, model="pooling", index = c("id", "year")))
+```
+
+    *La variable self tiene un efecto negativo y estadísticamente significativo sobre anti. La variable pov tiene un efecto positivo y estadísticamente significativo. El estimador de MCO será consistente solo si las variables self y pov no están correlacionadas con el error. Además, para estimar este modelo, asumimos que la heterogeneidad no observada α_i puede escribirse simplemente como α. Otra forma de pensar sobre este modelo es si el mismo modelo es válido para todos los periodos como para asumir una ordenada al origen y una pendiente común. El modelo pooled ignora la naturaleza en panel de los datos. Sin embargo, como tenemos a los mismos individuos en varios puntos del tiempo, los errores están agrupados, así que se deben de estimar errores con esta estructura. En este caso, al tomar en cuenta esta correlación entre grupos, los errores estándar son más grandes, pero los resultados siguen siendo significativos. En muchos casos, no tomar en cuenta la estructura agrupada de los errores puede llevar a rechazar hipótesis nulas que son ciertas.*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+    coeftest(m.mco, vcov = vcovHC(m.mco, type = "HC1", cluster="group"))
+```   
+
+a. [5 puntos] Estime la ecuación de comportamiento antisocial empleando efectos fijos. ¿Cuáles son los supuestos que se deben cumplir para que $\hat{\beta}_1^{FE}$ sea consistente?
+
+    *Si asumimos que la heterogeneidad no observada y el error están potencialmente correlacionados, entonces podemos usar un estimador de efectos fijos para deshacernos de la heterogeneidad no observada y estimar consistentemente los parámetros sobre self y pov.*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+m.fe <- plm( anti ~ self + pov, data=data.comp, model="within", index = c("id", "year"))
+
+coeftest(m.fe, vcov = vcovHC(m.fe, type = "HC1", cluster="group"))
+```  
+
+a. [5 puntos] Estime la ecuación de comportamiento antisocial empleando efectos aleatorios. ¿Cuáles son los supuestos que se deben cumplir para que$\hat{\beta}_1^{RE}$ sea consistente?
+
+    *Si estamos dispuestos a asumir que la heterogeneidad no observada y el error son independientes, podemos emplear el estimador de efectos aleatorios. MCO pooled también es consistente pero no es eficiente.*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+m.re <- plm( anti ~ self + pov, data=data.comp, model="random", index = c("id", "year"))
+
+coeftest(m.re, vcov = vcovHC(m.re, type = "HC1", cluster="group"))
+```  
+
+a. [5 puntos] Se desea incorporar en el análisis el género (**gender**) y una variable dicotómica para los hispanos (**hispanic**). Indique qué modelo usaría y estime dicho modelo.
+
+    *No es posible estimar los coeficientes sobre variables que no varían en el tiempo usando efectos fijos, por lo que este modelo queda descartado. Podríamos usar MCO pooled, que impone supuestos muy fuertes. La otra alternativa es un modelo de efectos aleatorios, que asume que la heterogeneidad no observada y el error no están correlacionados.*
+
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+m.sex <- plm( anti ~ self + pov + gender, data=data.comp, model="random", index = c("id", "year"))
+    
+coeftest(m.sex, vcov = vcovHC(m.sex, type = "HC1", cluster="group"))
+```  
+
+a. [5 puntos] Regrese al modelo que incluye solo la autoestima y el estado de pobreza como covariables. Realice una prueba de Hausman para determinar si se prefiere un modelo de efectos fijos o uno de efectos aleatorios.
+
+    *La implementación de la prueba de Hausman indica que se rechaza la H0 de que los coeficientes estimados son iguales (y que el modelo de efectos aleatorios es el adecuado). Hay evidencia de que se prefiere un modelo de efectos fijos, aunque tendremos que vivir con el hecho de no poder estimar el coeficiente asociado a las variables que no varían en el tiempo en este caso.*
+    
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+phtest(m.fe, m.re)
+```  
+
+# Pregunta 2
+
+Cuando trabajamos con datos en panel tenemos dos fuentes de variación. Como los individuos difieren entre sí, por ejemplo, algunos tienen mayor habilidad que otros o algunos tienen mayor salario que otros, la primer fuente de variación es la que proviene de comparar entre unidades. Esta primer fuente de variación es la **variación between**. La variación between se define como:
+
+$$s^2_B=\frac{1}{N-1}\sum_i(\bar{x}_i-\bar{x})^2$$
+
+En la expresión anterior $\bar{x}_i=\frac{1}{T}\sum_t x_{it}$ es el promedio de la característica $x$ para un individuo a lo largo del tiempo. Por tanto, $(\bar{x}_i-\bar{x})$ compara esta característica promedio con el promedio de todos los individuos $\bar{x}=\frac{1}{NT}\sum_i\sum_t x_{it}$.
+
+La segunda fuente de variación surge porque las características de los individuos varían a lo largo del tiempo. A esta variación se le llama **variación within**. La variación within se define como:
+
+$$s_W^2=\frac{1}{NT-1}\sum_i\sum_t(x_{it}-\bar{x}_i)^2$$
+Así, la varianza total se define como:
+
+$$s_O^2=\frac{1}{NT-1}\sum_i\sum_t(x_{it}-\bar{x})\approx s^2_B+s^2_W$$
+Considere la base de datos *individuos_empleo_wide.csv*. Esta base de datos contiene información de trabajadores relativa a su salario, su educación y experiencia. En este ejercicio comprobará los resultados vistos en clase respecto al modelo de efectos fijos.
+
+a. [1 puntos] La base de datos está en formato *wide*. Coloque sus datos en formato *long*.
+
+    *De forma análoga a como hicimos en la pregunta 1:*
+    
+    ```{r tidy=TRUE, include=T,echo=T,collapse=TRUE,warning=FALSE, message=FALSE}
+data.empleo<-read_csv("./individuos_empleo_wide.csv",
+                        locale = locale(encoding = "latin1")) %>%
+  pivot_longer(
+    choice2011:status2017,
+    names_to = c("measure", "year"),
+    names_pattern = "(.*)(....)"
+    )  %>%
+  pivot_wider(
+    names_from = measure,
+    values_from = value
+  )
+```  
+
+a. [2 puntos] ¿Cómo es la variación *within* y *between* de la variable **wage**? ¿Cuál es mayor y por qué? Para responder a esta pregunta, implemente la siguiente función[^1]:
+
+    ```{r include=T, echo=T, eval=T}
+XTSUM <- function(data, varname, unit) {
+  varname <- enquo(varname)
+  loc.unit <- enquo(unit)
+  ores <- data %>% summarise(ovr.mean=mean(!! varname, na.rm=TRUE), ovr.sd=sd(!! varname, na.rm=TRUE), ovr.min = min(!! varname, na.rm=TRUE), ovr.max=max(!! varname, na.rm=TRUE), ovr.N=sum(as.numeric((!is.na(!! varname)))))
+  bmeans <- data %>% group_by(!! loc.unit) %>% summarise(meanx=mean(!! varname, na.rm=T), t.count=sum(as.numeric(!is.na(!! varname))))
+  bres <- bmeans %>% ungroup() %>% summarise(between.sd = sd(meanx, na.rm=TRUE), between.min = min(meanx, na.rm=TRUE), between.max=max(meanx, na.rm=TRUE), Units=sum(as.numeric(!is.na(t.count))), t.bar=mean(t.count, na.rm=TRUE))
+  wdat <- data %>% group_by(!! loc.unit) %>% mutate(W.x = scale(!! varname, scale=FALSE))
+  wres <- wdat %>% ungroup() %>% summarise(within.sd=sd(W.x, na.rm=TRUE), within.min=min(W.x, na.rm=TRUE), within.max=max(W.x, na.rm=TRUE))
+  return(list(ores=ores,bres=bres,wres=wres))
+}
+```
+[^1]: Propuesta [aquí](https://stackoverflow.com/questions/49282083/xtsum-command-for-r).
+
+    Posteriormente, estime la varianza within, between y total como sigue:
+
+    ```{r include=T, echo=T, eval=F}
+XTSUM(data=DATA, varname=x, unit=id)
+    ```
+    
+    *Siguiendo el procedimiento recomendado obtenemos:*
+    
+    ```{r include=T, echo=T, eval=T}
+XTSUM(data.empleo, varname=wage, unit=id)
+```   
+
+*La variable wage presenta una varianza grande. Sin embargo, esta proviene sobre todo de la variación between, es decir, de la variación entre individuos. La variación within es mucho más pequeña, pues esta es la variación de los individuos en el tiempo. Esto era de esperarse pues los salarios tienen alta correlación serial.*
+
+a. [2 puntos] Repita el procedimiento anterior para la variable **black**. ¿Qué sucede en este caso?
+
+    ```{r include=T, echo=T, eval=T}
+XTSUM(data.empleo, varname=black, unit=id)
+```  
+
+    *La variable black identifica a los individuos de raza negra, por lo que no varía en el tiempo. Por tanto, la variación within es cero. La variación total proviene solo de la variación between, es decir, entre individuos.*
+
+a. [5 puntos] Para estudiar la regresión entre salario y experiencia se propone estudiar el siguiente modelo: $$wage_{it}=\alpha_i+\beta exper_{it}+\varepsilon_{it}$$ Compruebe que el estimador de efectos fijos es equivalente a MCO con dummies de individuos.
+
+    *Comprobamos:*
+    
+    ```{r include=T, echo=T, eval=T}
+    m.within <- plm( wage ~ exper, data=data.empleo, model="within", index = c("id", "year"))
+m.dummy <- lm(wage ~ exper+factor(id), data=data.empleo)
+
+stargazer(m.within, m.dummy, keep="exper", type="text")
+```      
+
+a. [5 puntos] Compruebe que en un modelo de efectos fijos las características que no varían en el tiempo no pueden ser identificadas. Use la variable **black** para comprobarlo.
+
+    *Comprobamos que la variable simplemente es omitida del análisis:*
+    
+    ```{r include=T, echo=T, eval=T}
+summary(plm( wage ~ exper+black, data=data.empleo, model="within", index = c("id", "year")))
+
+```  
+
+a. [5 puntos] Compruebe que el estimador de efectos fijos es equivalente a MCO sobre el modelo en diferencias con respecto a la media. Para esto, conserve dos años consecutivos de datos y solo observaciones que tengan datos para salarios y experiencia en los dos años que elija. Luego estime por MCO el modelo con variables transformadas.
+
+    *Nos quedamos con un subconjunto de datos:*
+    
+    ```{r include=T, echo=T, eval=T}
+data.empleo.sub <- data.empleo %>% 
+  select(id,year,wage,exper) %>% 
+  filter(year==2015 | year==2016)
+
+#Nos quedamos con los que no son NA
+data.empleo.sub<- data.empleo.sub[complete.cases(data.empleo.sub), ]
+```  
+
+     *Creamos las variables como diferencias respecto a la media y estimamos el modelo within y el modelo de MCO en las variables transformadas:*
+
+
+    ```{r include=T, echo=T, eval=T}
+data.empleo.sub <- data.empleo.sub %>%
+  group_by(id) %>% 
+  mutate(m.wage=mean(wage), m.exper=mean(exper)) %>% 
+  mutate(dm.wage=wage-m.wage, dm.exper=exper-m.exper)
+
+m.demean <- lm(dm.wage ~ dm.exper, data.empleo.sub)
+m.within <- plm( wage ~ exper, data=data.empleo.sub, model="within", index = c("id", "year"))
+
+stargazer(m.within, m.demean, keep=c("exper","dm.exper"), type="text")
+```  
+
+a. [5 puntos] Compruebe que el estimador de efectos fijos es equivalente a MCO sobre el modelo en primeras diferencias. Parta de la muestra con dos años de la parte f. para estimar por MCO el modelo con variables transformadas.
+
+     *Usando el mismo subconjunto, calculamos ahora las primeras diferencias y estimamos:*
+
+    ```{r include=T, echo=T, eval=T}
+data.empleo.sub <- data.empleo.sub %>%
+  group_by(id) %>% 
+  mutate(d.wage=wage-dplyr::lag(wage, order_by = year),
+         d.exper=exper-dplyr::lag(exper, order_by = year)) %>% 
+  ungroup()
+
+
+m.difs <- lm(d.wage ~ d.exper-1, data=data.empleo.sub)
+
+stargazer(m.within, m.difs, keep=c("exper","d.expr"), type="text")
+```  
+
+# Pregunta 3
+
+La librería *ExPanDaR* es muy úti para visualizar datos en formato de panel. Use la base en formato *long* que construyó para la pregunta 2.
+
+a. [5 puntos] Use la función *ExPanD* para crear una aplicación interactiva que le permita explorar sus datos. Un aspecto que puede apreciar es el porcentaje de datos faltantes. ¿Qué variable tiene el mayor porcentaje de *NA*?
+
+    *Generamos la aplicación. Pueden navegar en y jugar con ella.*
+
+    ```{r include=T, echo=T, eval=F}
+ExPanD(df = data.empleo, ts_id="year", cs_id="id",
+       title = "Wow, mis datos",
+       abstract = "Datos tomados de algún lado.")
+```   
+
+    *Claramente, es la variable wage la que tiene mayor cantidad de NAs, sobre todo, en los primeros años del panel.*
+
+a. [5 puntos] No siempre es útil crear una aplicación interactiva. Usando funciones, puede crear aspectos específicos objetos en la aplicación interactiva y trabajar con ellos de acuerdo a sus necesidades. Por ejemplo, use la función *prepare_missing_values_graph* de este paquete para visualizar el porcentaje de datos faltantes.
+
+    *Si solo nos importan ciertas partes del análisis, podemos obtenerlas por separado. Por ejemplo:*
+
+    ```{r include=T, echo=T, eval=T}
+prepare_missing_values_graph(data.empleo,
+  ts_id = "year")
+```   
+
+# Pregunta 4
+
+Considere la base de datos *tarea_examen.csv*. Esta base contiene información sobre 519 estudiantes en 23 escuelas. Nos interesa la relación entre el tiempo dedicado a realizar la tarea (**tiempo**) y el resultado de un examen de econometría (**examen**). Las variables **escuela_id** y **estudiante_id** identifican a las escuelas y los estudiantes, respectivamente. El modelo a estimar es el siguiente:
+
+$$examen_{is}=\alpha+\beta tiempo_{is}+\varepsilon_{is}$$
+donde $i$ indexa a los estudiantes y $s$ indexa a las escuelas.
+
+a. [3 puntos] ¿Por qué decimos que estos datos están agrupados?
+
+    *Los datos están agrupados a nivel escuela. Los estudiantes en una misma escuela comparten características observadas y no observadas que hacen que cada estudiante adicional en la muestra provea menos información que la que proporcionaría un estudiante independiente tomado al azar.*
+
+a. [2 puntos] Estime la ecuación de calificación usando MCO ignorando la agrupación de datos. ¿Qué concluye?
+
+    *Se concluye que una hora más dedicada a la tarea incrementa en 3.12 puntos la calificación del examen. El error estándar es 0.2861*
+
+    ```{r include=T, echo=T, eval=T}
+    
+    
+data.examen<-read_csv("./tarea_examen.csv",
+                      locale = locale(encoding = "latin1")) 
+
+
+summary(m.mco <- lm(examen ~ tiempo, data=data.examen))
+```   
+
+a. [3 puntos] Estime la ecuación de calificación usando MCO y errores robustos a heteroscedasticidad. ¿Qué cambia y por qué?
+
+    *El coeficiente estimado es el mismo. La fórmula empleada para calcular la varianza es una en forma de sándwich, que toma en cuenta la posible heterocedasticidad. En este caso, no hay diferencias sustanciales entre los errores robustos y los de MCO clásicos por lo que la heterocedasticidad parece no ser un problema.*
+    
+    ```{r include=T, echo=T, eval=T}
+coeftest(m.mco, vcov = vcovHC(m.mco, type = "HC1"))
+```  
+
+a. [2 puntos] Estime la ecuación de calificación usando MCO y variables indicadoras de escuela. ¿Qué resuelve este procedimiento?
+
+    *Al incluir efectos fijos a nivel escuela controlamos por características no observadas a nivel escuela. Estas diferencias se incorporan en el modelo como desplazamientos de la ordenada al origen. Este procedimiento no considera la agrupación de los errores.*
+    
+    ```{r include=T, echo=T, eval=T}
+summary(m.mco.ef <- lm(examen ~ tiempo+factor(escuela_id), data=data.examen))
+```  
+
+a. [5 puntos] Estime la ecuación de calificación usando MCO y con errores agrupados a nivel escuela. ¿Qué resuelve este procedimiento?
+
+    *Al estimar los errores agrupados y robustos a heterocedasticidad se toma en cuenta la correlación que existe en los errores dentro de cada escuela. Los errores agrupados estimados con la opción cluster asumen correlación de errores dentro del grupo, pero no entre grupos. Con respecto a las partes b. y c., el error estándar asociado al tiempo dedicado a la tarea casi se duplica. Este es un ejemplo típico en el que los errores agrupados están inflados con respecto a los errores de MCO clásicos y los errores robustos.*
+    
+    *Nota: es posible que los errores agrupados sean menores que los errores de MCO. Para ver eso, considere un modelo simple con datos agrupados de la forma siguiente: $$y_{ig=\alpha+\beta x_{ig}+u_{ig}}$$ donde $x_{ig}$ es un regresor escalar.*
+    
+    *Se asume que el tamaño promedio de los grupos es $\bar{N}_g$. Moulton (1990) muestra que el error estándar de MCO esta sesgado hacia abajo por una cantidad igual a la raíz de $\tau \approx 1 +\rho_x \rho_u (\bar{N}_g-1)$, donde $\rho_x$ es la correlación dentro de los grupos de $x$ y $\rho_u$ es la correlación dentro de los grupos de los errores. Esto implica que para obtener el error correcto que toma en cuenta la agrupación hay que multiplicar el error de MCO por la raíz de $\tau$. Sin embargo, note que dependiendo del signo y la magnitud de $\rho_x$ y $\rho_u$, la raíz de $\tau$ puede llegar a ser menor que 1 y, por tanto, el error agrupado puede llegar a ser menor que el de MCO. $\tau$ se conoce como el factor de Moulton y puede ser extendido para un modelo más complicado. La intuición funciona de manera similar para un modelo más comlicado: todo depende de las correlaciones entre grupos de los regresores y la correlación de los errores.*
+    
+    ```{r include=T, echo=T, eval=T}
+vcov_id <- cluster.vcov(m.mco, data.examen$escuela_id)
+coeftest(m.mco, vcov_id)
+``` 
+
+a. [5 puntos] Estime la ecuación de calificación usando MCO, variables indicadoras de escuela y con errores agrupados a nivel escuela. ¿Qué resuelve este procedimiento?
+
+    *Al controlar por características no observadas de las escuelas empleando efectos fijos por escuela y además estimando los errores que toman en cuenta la estructura agrupada de los errores obtenemos un coeficiente estimado de 2.36, pero con un error estándar mayor.*
+
+    ```{r include=T, echo=T, eval=T}
+summary(m.mco.ef.gp <- lm(examen ~ tiempo+factor(escuela_id), data=data.examen))
+vcov_id_gp <- cluster.vcov(m.mco.ef.gp, data.examen$escuela_id)
+coeftest(m.mco.ef.gp, vcov_id_gp)
+
+``` 
+
+
+# Pregunta 5
+
+Considere la base *capital_trabajo.csv*. Con una función de producción Cobb-Douglas las participaciones del capital y el trabajo en el valor de la producción se pueden estimar usando una regresión lineal. En algunas aplicaciones es de interés conocer el cociente de las participaciones estimadas.
+
+a. [10 puntos] Usando 500 repeticiones bootstrap estime el error estándar del cociente capital-trabajo. Para ello realice el siguiente procedimiento:
+    i. Genere una matriz vacía de 500 filas para coleccionar sus relaciones estimadas.
+    i. En cada una de las repeticiones obtenga una muestra con remplazo a partir de la muestra original.
+    i. Estime por MCO los coeficientes sobre el log del capital y el log del trabajo. La variable dependiente es el log del valor de la producción. Calcule el cociente de los coeficientes estimados. Guarde el cociente en la matriz.
+    i. Repita ii. y iii. 500 veces.
+    i. Calcule la desviación estándar de los cocientes estimados.
+
+    *En cada repetición bootstrap debemos estimar el siguiente modelo y obtener el ratio de los coeficientes:*
+    
+    ```{r include=T, echo=T, eval=T}
+data.kl<-read_csv("./capital_trabajo.csv",
+                      locale = locale(encoding = "latin1")) 
+
+summary(m1 <- lm(lvalor ~ lcapital + ltrabajo, data=data.kl))
+
+``` 
+
+
+    *La rutina bootstrap es la siguiente:*
+    
+    ```{r include=T, echo=T, eval=T}
+set.seed(120)
+B=500
+obs <- nrow(data.kl)
+
+#Inicializamos el vector donde guardaremos los beta estimados
+beta <- data.frame(beta=matrix(ncol = 1, nrow = B))
+
+for (i in 1:B)
+{
+  data.b <-data.kl[sample(nrow(data.kl),obs, replace = TRUE),]
+  
+  #Corremos regresión
+  
+  m<-lm(lvalor ~ lcapital + ltrabajo, data=data.b)
+  
+  #Guardamos en cada entrada el ratio estimado
+  beta[i,1] <- as.numeric(m$coefficients[2] / m$coefficients[3])
+}
+
+#El error estimado es simplemente la desviación estándar de los B estadísticos estimados
+sd(beta$beta)
+``` 
+
+    *El error estándar estimado es de 0.0509.*
+
+a. [10 puntos] Compruebe que su cálculo aproxima el error estándar obtenido con el étodo Delta. Para ello, después de estimar la ecuación del valor de la producción con la muestra original puede usar la función *deltaMethod* del paquete *car*.
+
+    *Si usamos el método Delta para calcular el error estándar de la combinación no lineal, obtenemos algo muy parecido.*
+
+    ```{r include=T, echo=T, eval=T}
+deltaMethod(m1, "lcapital/ltrabajo")
+``` 
+
