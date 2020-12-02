@@ -112,6 +112,8 @@ $$\hat{f}_{hist}(x_0)=\frac{1}{N}\sum_i\frac{\mathbf{1}(x_0-h<x_i<x_0+h)}{2h}$$
 
 --
 
+- $h$ es el ancho de banda
+
 - A $2h$ se le llama el ancho de ventana
 
 - El histograma pesa a las observaciones que están dentro el rango dado por $(-h,h)$
