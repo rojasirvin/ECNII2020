@@ -1,0 +1,267 @@
+---
+title: |
+  | CIDE
+  | Maestría en Economía
+  | Econometría II
+
+subtitle: "Tarea 4"
+author: "Profesor: Irvin Rojas"
+date: "Fecha de entrega: 8 de diciembre a las 20:00."
+output:
+  html_document:
+  toc: true
+---
+
+
+```{r setup, include=FALSE}
+library(pacman)
+library(janitor)
+library(sandwich)
+library(pastecs)
+library(nnet)
+library(MASS)
+library(AER)
+library(survival)
+library(ExPanDaR)
+#library(COUNT)
+library(reshape2)
+library(quantreg)
+library(plm)
+library(pglm)
+
+p_load(tidyverse, foreign, reshape2, psych, qwraps2, forcats, readxl, 
+       broom, lmtest, margins, plm, rdrobust, multiwayvcov,
+       wesanderson, sandwich, stargazer,
+       readstata13, pscore, optmatch, kdensity, MatchIt, bootstrap, matlib, dplyr)
+
+xfun::pkg_load2(c('base64enc', 'htmltools', 'mime'))
+```
+
+## Instrucciones
+  
+La tarea debe entregarse de manera individual, pero se recomienda ampliamente colaborar en grupos de estudio. Las secciones teóricas deben estar desarrolladas en un procesador de textos y enviadas en formato .docx o .pdf. Alternativamente, puede escribir sus respuestas en lápiz y papel, con letra legible y adjuntar un escaneo de sus respuestas. Las secciones prácticas deberán contener archivos de código replicable y archivos de salida en R (o similares, en caso de usar otro software) para considerarse completas. Las tareas deben entregarse antes de la fecha límite a través de Teams. Puede crear una carpeta comprimida que contenga todos sus archivos y subir esta carpeta en Teams. Recuerde que en Teams debe asegurarse de que los archivos se han subido correctamente.
+
+# Pregunta 1
+
+Considere la base *MunichRent.rda*. Esta base contiene información sobre rentas en la ciudad de Munich, **rent**. Se desea modelar la renta en función de la antiguedad de los edificios en renta, controlando por el área, **area**. La variable **yearc** indica cuándo fue construido el edificio. Para leer este objeto basta con ejecutar lo siguiente:
+
+```{r eval=F,ech=T,results=F}
+load("MunichRent.rda")
+```
+
+a. [10 puntos] Estime la densidad Kernel de las rentas por metro cuadrado, **rentsqm**, usando un Kernel epanechnikov. Use el estimador *plug-in* de Silverman para estimar el ancho de ventana óptimo.
+
+    *Simplemente seguimos el procedimiento que vimos en clase para obtener $h^*$.
+
+    ```{r eval=T, include=T, echo=T, message=F}
+load("./MunichRent.rda")
+
+rentsqm.sd <- sd(MunichRent$rentsqm)
+rentsqm.iqr.adj <- IQR(MunichRent$rentsqm)/1.349
+rentsqm.N <- nrow(MunichRent)
+constante <- 1.3643
+ajuste <- min(rentsqm.sd,rentsqm.iqr.adj)
+
+delta.epa <- 1.7188
+h.epa <- constante*delta.epa*ajuste*rentsqm.N^(-0.2) 
+```
+    *Ahora hacemos el gráfico alimentando el valor de $h$:
+    
+    ```{r eval=T, include=T, echo=T, message=F}
+MunichRent %>% 
+  ggplot(aes(x=rentsqm)) +
+  geom_histogram(aes(y=..density..), bins=20, fill="#69b3a2", color="#e9ecef", alpha=0.9)+
+  geom_density(aes(x=rentsqm, color='Óptimo'), kernel="epanechnikov", bw=h.epa/2, adjust=1)
+    ```
+
+a. [10 puntos] Estime por MCO la relación entre el la renta, **rent** y la antiguedad del edificio, controlando por **area**. Estime la misma relación, pero con una regresión mediana. Interprete los coeficientes sobre la antiguedad en ambos casos.
+
+    *Primero por MCO obtenemos una relación positiva entre la renta y el área y una relación negativa entre la renta y la antiguedad, como era de esperarse. Ambos coeficientes estimados son estadísticamente significativos.*
+
+    ```{r eval=T, include=T, echo=T, message=T}
+MunichRent <- MunichRent %>% 
+  mutate(antiguedad=2020-yearc)
+
+#Por MCO
+summary(r.mco <- lm(rent  ~ area+antiguedad,
+                    data=MunichRent))
+```
+
+    *Ahora realizamos un modelo LAD*:
+
+    ```{r eval=T, include=T, echo=T, message=T}
+summary(r.q50 <- rq(rent  ~ area+antiguedad,
+                    data=MunichRent,
+                    tau=0.5))
+```
+    
+    *Los coeficientes estimados son de una magnitud similar a los de MCO.*
+
+a. [10 puntos] Estime ahora una regresión cuantil para cada uno de los deciles de la distribución de la renta y represente en una gráfica los coeficientes por regresión cuatil junto con el coeficiente de MCO. ¿Concluye que vale la pena modelar la relación entre rentas y antiguedad usando regresión cuantil?
+
+    *Regresión cuantil para cada decil:*
+
+    ```{r eval=T, include=T, echo=T, message=T}
+r.q1_9 <- rq(rent  ~ area+antiguedad,
+                    data=MunichRent,
+                    tau= 1:9/10)
+
+plot(summary(r.q1_9), parm=c("area","antiguedad"))
+
+```
+
+
+# Pregunta 2
+
+Considere la base *crimen_nc.csv*. Esta base contiene datos anuales de 1981 a 1987 sobre crimen del estado de Carolina del Norte en Estados Unidos. Se desea modelar el log de la tasa de crimen, *lcrmrte*, en función del log de la probabilidad de arresto (*lprbarr*) y del log del número de policías per cápita (*lpolpc*).
+
+Se propone incluir como controles la probabilidad de sentencia (*lnprbconv*), la probabilidad de ir a prisión (*lprbpris*), el tiempo promedio de sentencia (*lavgsen*), la densidad de población (*ldensity*), el porcentaje de población joven (*lpctmle*), el porcentaje de la población no blanca (*lpctmin*), los salarios semanales en la construcción (*lwcon*), el transporte (*lwtuc*), el comercio (*lwtrd*), las finanzas (*lwfir*), los servicios (*lwser*), la manufactura (*lwmfg*) y los gobierno federal, estatal y local (*lwfed*, *lwsta* y *lwloc*). Además, se propone controlar por una dummy que indica una ciudad grande (*smsa*) y dummies regionales (*region*), así como efectos fijos por condado y por año.
+
+a. [10 puntos] Estime un modelo de efectos fijos con los regresores descritos anteriormente. Interprete los coeficientes sobre el log de la probabilidad de arresto y el log del número de policías per cápita.
+
+    *Modelo de efetos fijos. Existe una relación negativa entre los arrestos y la tasa de crimen. Sin embargo, parece haber una relación positiva entre el número de policías y la tasa de crimen.*
+    
+    ```{r eval=T, include=T, echo=T, message=F}
+
+data.crime<-read_csv("./crimen_nc.csv",
+                  locale = locale(encoding = "latin1")) 
+    
+
+cr.within <- plm(lcrmrte ~ lprbarr + lpolpc +
+                   lprbconv + lprbpris + lavgsen +
+                   ldensity + lpctymle + lpctmin + 
+                   lwcon + lwtuc + lwtrd + lwfir + 
+                   lwser + lwmfg + lwfed + lwsta + 
+                   lwloc + region + smsa + factor(year),
+                 data = data.crime,
+                 model = "within",
+                 index = c("county","year"))
+summary(cr.within)
+
+```
+
+
+a. [10 puntos] Existe la preocupación de que la variable que indica el número de policías es endógena. Se propone usar como instrumento el porcentaje de los crímenes que son cara a cara (robos, violación, asaltos) con respecto al resto (*lmix*) pues se argumenta que estos crímenes facilitan la identificación del criminal. Se propone usar también como instrumento el ingreso per cápita por impuestos (*ltaxpc*) bajo el argumento de que los condados con preferencia por hacer valer la ley tendrán mayores ingresos para financiar la policía. Estime el modelo de efectos fijos tomando en cuenta la endogeneidad e incluyendo las dos variables propuestas como instrumentos. ¿Cómo cambian sus resultados sobre el efecto del número de policías en el crimen?
+
+    *Noten como _plm_ funciona muy bien para modelos en panel con endogeneidad. Después de "|" incluimos un punto para indicar que conserve los regresores del modelo estructural, quitando el regresor endógeno y añadiendo los instrumentos. Al especificar la endogeneidad del número de policías los resultados son cualitativamente similares a los que se obtuvieron en la parte a.*
+
+    ```{r eval=T, include=T, echo=T, message=T}
+cr.within.iv1 <- plm(lcrmrte ~ lprbarr + lpolpc +
+                       lprbconv + lprbpris + lavgsen +
+                       ldensity + lpctymle + lpctmin +
+                       lwcon + lwtuc + lwtrd + lwfir +
+                       lwser + lwmfg + lwfed + lwsta +
+                       lwloc + region + smsa + factor(year) |
+                       . -lprbarr  + lmix + ltaxpc,
+                 data = data.crime,
+                 model = "within",
+                 index = c("county","year"))
+summary(cr.within.iv1)
+
+```
+
+a. [10 puntos] Se sospecha que la probabilidad de ser arrestado es también endógena. Use los mismos instrumentos que en la parte c. para estimar el modelo de efectos fijos con dos variables endógenas. ¿Cómo cambian sus conclusiones respecto a número de policías y la probabilidad de ser arrestado con respecto a la parte a.?
+
+    *Ahora el modelo exactamente identificado:*
+
+    ```{r eval=T, include=T, echo=T, message=T}
+cr.within.iv2 <- plm(lcrmrte ~ lprbarr + lpolpc +
+                       lprbconv + lprbpris + lavgsen +
+                       ldensity + lpctymle + lpctmin +
+                       lwcon + lwtuc + lwtrd + lwfir +
+                       lwser + lwmfg + lwfed + lwsta +
+                       lwloc + region + smsa + factor(year) |                       lmix + ltaxpc + lprbarr +
+                       . -lprbarr - lpolpc + lmix + ltaxpc,
+                     data = data.crime,
+                     model = "within",
+                     index = c("county","year"))
+summary(cr.within.iv2)
+
+```
+
+    *Comparamos los tres modelos estimados*:
+
+    ```{r eval=T, include=T, echo=T, message=T}
+stargazer(cr.within,cr.within.iv1, cr.within.iv2, type = "text")
+
+```
+
+    *Estos datos son de un estudio de [Baltagi (2006)](https://onlinelibrary.wiley.com/doi/epdf/10.1002/jae.861). Pueden ver que los resultados que produjeron están en la Tabla 1 de su estudio.*
+
+
+
+# Pregunta 3
+
+Considere la base de datos *patentes.csv*.[^1] Estos datos contienen información sobre empresas de 1970 a 1979, incluyendo el log de su gasto en investigación (*logr*), el log de su acervo de capital (*logk*), el número de patentes que les fueron otorgadas en cada año (*pat*), así como una dummy de si la empresa pertenece al sector científico (*scisect*). En este problema se puede (aunque no sea siempre factible) usar *logr*, *logk* y *scisect* como controles. Use también efectos por año.
+
+[^1]: Datos provistos por (Cameron & Trivedi (2005))[http://cameron.econ.ucdavis.edu/musbook/mus.html.
+
+a. [10 puntos] Estime un modelo Poisson de efectos aleatorios e interprete el efecto del gasto en investigación. Incluya solo *logr* y los efectos por año como regresores.
+
+    ```{r eval=T, include=T, echo=T, message=F}
+data.patentes<-read_csv("./patentes.csv",
+                  locale = locale(encoding = "latin1")) %>% 
+  mutate(dpat=ifelse(pat>0,1,0))
+
+summary(pglm(pat ~ logr+factor(year),
+           family = "poisson",
+           model = "random",
+           index = c("id"),
+           method="nr",
+           data=data.patentes))
+
+```
+    *El gasto en investigación tiene un efecto positivo sobre el número de patentes.*
+
+a. [10 puntos] Estime un modelo Poisson de efectos aleatorios e interprete el efecto del gasto en investigación. Incluya, además de los regresores de la parte a., *logk* y *scisect* como regresores. ¿Cómo cambia su interpretación del efecto del gasto en investigación?
+
+    ```{r eval=T, include=T, echo=T, message=F}
+data.patentes<-read_csv("./patentes.csv",
+                  locale = locale(encoding = "latin1")) %>% 
+  mutate(dpat=ifelse(pat>0,1,0))
+
+summary(pglm(pat ~ logr+logk+scisect+factor(year),
+           family = "poisson",
+           model = "random",
+           index = c("id"),
+           method="nr",
+           data=data.patentes))
+
+```
+    *Al controlar por el capital y la dummy de sector científico, la magnitud del coeficiente sobre el gasto en investigación se reduce en magnitud.*
+
+a. [10 puntos] Estime un modelo Poisson de efectos fijos (*within*) e interprete el efecto del gasto en investigación. Use los mismos controles que en la parte b. ¿Qué ocurre?
+
+    ```{r eval=T, include=T, echo=T, message=F}
+data.patentes<-read_csv("./patentes.csv",
+                  locale = locale(encoding = "latin1")) %>% 
+  mutate(dpat=ifelse(pat>0,1,0))
+
+summary(pglm(pat ~ logr+logk+scisect+factor(year),
+           family = "poisson",
+           model = "within",
+           index = c("id"),
+           method="nr",
+           data=data.patentes))
+
+```
+    *Cuando queremos estimar el modelo within obtenemos un error. El problema surge de los regresores que están fijos en el tiempo, como son el capital y la dummy del sector científico. Esto lo sabíamos desde que estudiamos el modelo lineal: la desventaja del estimador within es que no podemos decir nada sobre los regresores invariantes en el tiempo.*
+
+a. [10 puntos] Modifique el modelo de efectos fijos de tal forma que pueda estimar el efecto del gasto en investigación. ¿Cómo cambia su conclusión respecto al efecto de dicho gasto?
+
+    ```{r eval=T, include=T, echo=T, message=F}
+data.patentes<-read_csv("./patentes.csv",
+                  locale = locale(encoding = "latin1")) %>% 
+  mutate(dpat=ifelse(pat>0,1,0))
+
+summary(pglm(pat ~ logr+factor(year),
+           family = "poisson",
+           model = "within",
+           index = c("id"),
+           method="nr",
+           data=data.patentes))
+
+```
+
+    *Si decidimos que hay razones para estimar el modelo within, tenemos que vivir con el hecho de no poder estimar los coeficientes sobre el capital y la dummy del sector científico.*
+
